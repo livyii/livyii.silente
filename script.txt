@@ -1,7 +1,7 @@
--- Livyii Key System + Pompom Silent Aim + Cutesy GUI + Platform Selection + Intro
--- Mobile GUI slightly smaller, headers caps, sub-headers lowercase.
--- Intro: slight yellow blurred background, ambient music that fades out.
--- Added knocked check, cursor aim, and shiftlock support.
+-- Livyii Key System + Pompom Silent Aim + Modern Cutesy GUI
+-- Matches the requested layout (clean rows, pill toggles, full-width sliders)
+-- Fixed shiftlock (believable, no spin), added robust floating toggle button.
+-- Theme: still soft yellow, cream, brown, and pink (cutesy).
 
 -- ===== ADONIS BYPASS =====
 local g = getinfo or debug.getinfo
@@ -79,8 +79,7 @@ genv.SilentAim = genv.SilentAim or {
     RequireTool = true,
     KnockCheck = true,
     UseCursorAim = UIS.MouseEnabled,
-    ShiftlockEnabled = false,       -- NEW
-    ShiftlockKey = Enum.KeyCode.LeftShift,  -- NEW
+    ShiftlockEnabled = false,
     CrosshairEnabled = true,
     CrosshairSize = 10,
     CrosshairGap = 4,
@@ -114,28 +113,46 @@ genv.SilentAim.FOVHue = fh * 360
 
 local cfg = genv.SilentAim
 
--- ===== SHIFTLOCK ENGINE =====
+-- ===== SHIFTLOCK ENGINE (BELIEVABLE & NO SPIN) =====
 local shiftlockConnection = nil
+local savedAutoRotate = true
 
 local function EnableShiftlock()
     if shiftlockConnection then return end
+    local char = LocalPlayer.Character
+    if not char then return end
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not hum or not root then return end
+
+    savedAutoRotate = hum.AutoRotate
+    hum.AutoRotate = false
+
     UIS.MouseBehavior = Enum.MouseBehavior.LockCenter
-    shiftlockConnection = RunService.RenderStepped:Connect(function()
+    UIS.MouseIconEnabled = false
+
+    shiftlockConnection = RunService.RenderStepped:Connect(function(dt)
         local char = LocalPlayer.Character
         if not char then return end
         local hum = char:FindFirstChildOfClass("Humanoid")
         local root = char:FindFirstChild("HumanoidRootPart")
         if not hum or not root then return end
         if hum.Health <= 0 then return end
-        -- Rotate character to match camera look direction
-        local camCF = cam.CFrame
-        local look = camCF.LookVector
-        local flat = Vector3.new(look.X, 0, look.Z)
-        if flat.Magnitude > 0.01 then
-            local targetCF = CFrame.new(root.Position, root.Position + flat.Unit)
-            root.CFrame = CFrame.new(root.Position, root.Position + flat.Unit) * (root.CFrame - root.Position)
-        end
-        -- Lock mouse to center
+
+        -- Extract camera yaw only (ignore pitch so character stays upright)
+        local camLook = cam.CFrame.LookVector
+        local flatLook = Vector3.new(camLook.X, 0, camLook.Z)
+        if flatLook.Magnitude < 0.01 then return end
+        flatLook = flatLook.Unit
+
+        -- Smoothly rotate character to match camera yaw (believable shiftlock)
+        local currentYaw = math.atan2(-root.CFrame.LookVector.X, -root.CFrame.LookVector.Z)
+        local targetYaw = math.atan2(-flatLook.X, -flatLook.Z)
+        local yawDiff = math.atan2(math.sin(targetYaw - currentYaw), math.cos(targetYaw - currentYaw))
+        local newYaw = currentYaw + yawDiff * math.min(dt * 15, 1)
+        
+        root.CFrame = CFrame.new(root.Position) * CFrame.Angles(0, newYaw, 0)
+
         if UIS.MouseBehavior ~= Enum.MouseBehavior.LockCenter then
             UIS.MouseBehavior = Enum.MouseBehavior.LockCenter
         end
@@ -148,9 +165,17 @@ local function DisableShiftlock()
         shiftlockConnection = nil
     end
     UIS.MouseBehavior = Enum.MouseBehavior.Default
+    UIS.MouseIconEnabled = true
+
+    local char = LocalPlayer.Character
+    if char then
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.AutoRotate = savedAutoRotate
+        end
+    end
 end
 
--- Re-apply on respawn
 LocalPlayer.CharacterAdded:Connect(function()
     if cfg.ShiftlockEnabled then
         task.wait(0.3)
@@ -329,20 +354,20 @@ end
 local function LoadMainUI(platform)
     local isMobile = (platform == "mobile")
 
-    local FRAME_W = isMobile and 260 or 260
-    local FRAME_H = isMobile and 360 or 360
-    local CARD_H = isMobile and 38 or 38
-    local TOGGLE_W = isMobile and 48 or 48
-    local TOGGLE_H = isMobile and 22 or 22
-    local TITLE_SIZE = isMobile and 15 or 15
-    local LABEL_SIZE = isMobile and 11 or 11
-    local SLIDER_H = isMobile and 44 or 44
-    local SLIDER_KNOB = isMobile and 14 or 14
-    local SECTION_SIZE = isMobile and 12 or 12
+    local FRAME_W = isMobile and 280 or 280
+    local FRAME_H = isMobile and 420 or 420
+    local CARD_H = isMobile and 44 or 40
+    local TOGGLE_W = isMobile and 50 or 46
+    local TOGGLE_H = isMobile and 24 or 22
+    local TITLE_SIZE = isMobile and 16 or 15
+    local LABEL_SIZE = isMobile and 13 or 12
+    local SLIDER_H = isMobile and 52 or 48
+    local SLIDER_KNOB = isMobile and 16 or 14
+    local SECTION_SIZE = isMobile and 13 or 12
 
-    -- ===== CUTESY MAIN GUI =====
+    -- ===== MODERN CUTESY MAIN GUI (MATCHING REFERENCE IMAGE) =====
     local mainGui = Instance.new("ScreenGui")
-    mainGui.Name = "LivyiiCutesyGui"
+    mainGui.Name = "LivyiiMainGui"
     mainGui.ResetOnSpawn = false
     mainGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     mainGui.DisplayOrder = 999
@@ -360,64 +385,50 @@ local function LoadMainUI(platform)
     mainFrame.Visible = true
     mainFrame.Parent = mainGui
 
-    local shadow = Instance.new("ImageLabel")
-    shadow.Size = UDim2.new(1, 20, 1, 20)
-    shadow.Position = UDim2.new(0, -10, 0, -10)
-    shadow.BackgroundTransparency = 1
-    shadow.Image = "rbxassetid://1316045217"
-    shadow.ImageColor3 = SHADOW
-    shadow.ImageTransparency = 0.7
-    shadow.ZIndex = -1
-    shadow.Parent = mainFrame
-
     local mainCorner = Instance.new("UICorner")
-    mainCorner.CornerRadius = UDim.new(0, 18)
+    mainCorner.CornerRadius = UDim.new(0, 16)
     mainCorner.Parent = mainFrame
 
     local mainStroke = Instance.new("UIStroke")
-    mainStroke.Color = YELLOW
-    mainStroke.Thickness = 2
+    mainStroke.Color = Color3.fromRGB(220, 200, 180)
+    mainStroke.Thickness = 1.5
     mainStroke.Parent = mainFrame
 
     local mainGradient = Instance.new("UIGradient")
     mainGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, BG_COLOR),
-        ColorSequenceKeypoint.new(1, SOFT_PINK),
+        ColorSequenceKeypoint.new(0, WHITE),
+        ColorSequenceKeypoint.new(1, CREAM),
     })
     mainGradient.Rotation = 45
     mainGradient.Parent = mainFrame
 
+    -- Header (Clean, like reference image)
     local header = Instance.new("Frame")
     header.Name = "Header"
-    header.Size = UDim2.new(1, 0, 0, 42)
-    header.BackgroundTransparency = 0.2
-    header.BackgroundColor3 = WHITE
+    header.Size = UDim2.new(1, 0, 0, 45)
+    header.BackgroundTransparency = 1
     header.BorderSizePixel = 0
     header.Parent = mainFrame
 
-    local headerCorner = Instance.new("UICorner")
-    headerCorner.CornerRadius = UDim.new(0, 18)
-    headerCorner.Parent = header
-
     local headerTitle = Instance.new("TextLabel")
-    headerTitle.Size = UDim2.new(1, -80, 1, 0)
-    headerTitle.Position = UDim2.new(0, 12, 0, 0)
+    headerTitle.Size = UDim2.new(1, -60, 1, 0)
+    headerTitle.Position = UDim2.new(0, 15, 0, 0)
     headerTitle.BackgroundTransparency = 1
-    headerTitle.Text = isMobile and "🍮 livyii.main 📱" or "🍮 livyii.main 💻"
+    headerTitle.Text = "🍮 livyii.silent"
     headerTitle.TextColor3 = BROWN
-    headerTitle.TextSize = TITLE_SIZE
+    headerTitle.TextSize = 16
     headerTitle.Font = Enum.Font.GothamBold
     headerTitle.TextXAlignment = Enum.TextXAlignment.Left
     headerTitle.Parent = header
 
     local minBtn = Instance.new("TextButton")
-    minBtn.Size = UDim2.new(0, 22, 0, 22)
-    minBtn.Position = UDim2.new(1, -55, 0.5, -11)
-    minBtn.BackgroundColor3 = WHITE
+    minBtn.Size = UDim2.new(0, 26, 0, 26)
+    minBtn.Position = UDim2.new(1, -35, 0.5, -13)
+    minBtn.BackgroundColor3 = Color3.fromRGB(240, 240, 240)
     minBtn.BorderSizePixel = 0
     minBtn.Text = "−"
     minBtn.TextColor3 = BROWN
-    minBtn.TextSize = 16
+    minBtn.TextSize = 18
     minBtn.Font = Enum.Font.GothamBold
     minBtn.Parent = header
 
@@ -425,25 +436,11 @@ local function LoadMainUI(platform)
     minCorner.CornerRadius = UDim.new(1, 0)
     minCorner.Parent = minBtn
 
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, 22, 0, 22)
-    closeBtn.Position = UDim2.new(1, -30, 0.5, -11)
-    closeBtn.BackgroundColor3 = WHITE
-    closeBtn.BorderSizePixel = 0
-    closeBtn.Text = "X"
-    closeBtn.TextColor3 = BROWN
-    closeBtn.TextSize = 12
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.Parent = header
-
-    local closeCorner = Instance.new("UICorner")
-    closeCorner.CornerRadius = UDim.new(1, 0)
-    closeCorner.Parent = closeBtn
-
+    -- Scroll frame for content
     local scroll = Instance.new("ScrollingFrame")
     scroll.Name = "Scroll"
-    scroll.Size = UDim2.new(1, -16, 1, -90)
-    scroll.Position = UDim2.new(0, 8, 0, 46)
+    scroll.Size = UDim2.new(1, -20, 1, -55)
+    scroll.Position = UDim2.new(0, 10, 0, 45)
     scroll.BackgroundTransparency = 1
     scroll.BorderSizePixel = 0
     scroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -452,139 +449,130 @@ local function LoadMainUI(platform)
     scroll.Parent = mainFrame
 
     local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 6)
+    layout.Padding = UDim.new(0, 8)
     layout.SortOrder = Enum.SortOrder.LayoutOrder
     layout.Parent = scroll
 
     layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 8)
+        scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 10)
     end)
 
-    local footer = Instance.new("TextLabel")
-    footer.Size = UDim2.new(1, 0, 0, 25)
-    footer.Position = UDim2.new(0, 0, 1, -28)
-    footer.BackgroundTransparency = 1
-    footer.Text = isMobile and "livyii.main ✿ mobile" or "livyii.main ✿ pc"
-    footer.TextColor3 = BROWN
-    footer.TextSize = 10
-    footer.Font = Enum.Font.GothamBold
-    footer.TextTransparency = 0.5
-    footer.Parent = mainFrame
+    -- Helper: Modern Toggle Row (Matches reference image)
+    local function makeToggleRow(text, getState, setState)
+        local row = Instance.new("Frame")
+        row.Size = UDim2.new(1, 0, 0, CARD_H)
+        row.BackgroundColor3 = WHITE
+        row.BackgroundTransparency = 0.2
+        row.BorderSizePixel = 0
+        row.Parent = scroll
 
-    local function makeSection(text)
-        local sec = Instance.new("TextLabel")
-        sec.Size = UDim2.new(1, 0, 0, 20)
-        sec.BackgroundTransparency = 1
-        sec.Text = text
-        sec.TextColor3 = BROWN
-        sec.TextSize = SECTION_SIZE
-        sec.Font = Enum.Font.GothamBold
-        sec.TextXAlignment = Enum.TextXAlignment.Left
-        sec.Parent = scroll
-    end
+        local rowCorner = Instance.new("UICorner")
+        rowCorner.CornerRadius = UDim.new(0, 10)
+        rowCorner.Parent = row
 
-    local function makeToggleCard(icon, text, getState, setState)
-        local card = Instance.new("Frame")
-        card.Size = UDim2.new(1, -8, 0, CARD_H)
-        card.BackgroundColor3 = WHITE
-        card.BackgroundTransparency = 0.3
-        card.BorderSizePixel = 0
-        card.Parent = scroll
-
-        local cardCorner = Instance.new("UICorner")
-        cardCorner.CornerRadius = UDim.new(0, 12)
-        cardCorner.Parent = card
-
-        local iconLbl = Instance.new("TextLabel")
-        iconLbl.Size = UDim2.new(0, 24, 1, 0)
-        iconLbl.Position = UDim2.new(0, 6, 0, 0)
-        iconLbl.BackgroundTransparency = 1
-        iconLbl.Text = icon
-        iconLbl.TextSize = isMobile and 18 or 16
-        iconLbl.Parent = card
+        local rowStroke = Instance.new("UIStroke")
+        rowStroke.Color = Color3.fromRGB(230, 220, 210)
+        rowStroke.Thickness = 1
+        rowStroke.Parent = row
 
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -90, 1, 0)
-        label.Position = UDim2.new(0, 32, 0, 0)
+        label.Size = UDim2.new(1, -70, 1, 0)
+        label.Position = UDim2.new(0, 12, 0, 0)
         label.BackgroundTransparency = 1
         label.Text = text
         label.TextColor3 = BROWN
         label.TextSize = LABEL_SIZE
         label.Font = Enum.Font.Gotham
         label.TextXAlignment = Enum.TextXAlignment.Left
-        label.Parent = card
+        label.Parent = row
 
         local toggleBtn = Instance.new("TextButton")
         toggleBtn.Size = UDim2.new(0, TOGGLE_W, 0, TOGGLE_H)
-        toggleBtn.Position = UDim2.new(1, -TOGGLE_W-8, 0.5, -TOGGLE_H/2)
-        toggleBtn.BackgroundColor3 = getState() and PINK or Color3.fromRGB(230, 225, 225)
+        toggleBtn.Position = UDim2.new(1, -TOGGLE_W-10, 0.5, -TOGGLE_H/2)
+        toggleBtn.BackgroundColor3 = getState() and PINK or Color3.fromRGB(220, 220, 220)
         toggleBtn.BorderSizePixel = 0
-        toggleBtn.Text = getState() and "ON" or "OFF"
-        toggleBtn.TextColor3 = WHITE
-        toggleBtn.TextSize = isMobile and 12 or 10
-        toggleBtn.Font = Enum.Font.GothamBold
-        toggleBtn.Parent = card
+        toggleBtn.Text = ""
+        toggleBtn.Parent = row
 
         local toggleCorner = Instance.new("UICorner")
         toggleCorner.CornerRadius = UDim.new(1, 0)
         toggleCorner.Parent = toggleBtn
 
-        card.MouseEnter:Connect(function()
-            TweenService:Create(card, TweenInfo.new(0.2), {BackgroundTransparency = 0.1}):Play()
-        end)
-        card.MouseLeave:Connect(function()
-            TweenService:Create(card, TweenInfo.new(0.2), {BackgroundTransparency = 0.3}):Play()
-        end)
+        -- Knob
+        local knob = Instance.new("Frame")
+        knob.Size = UDim2.new(0, TOGGLE_H - 4, 0, TOGGLE_H - 4)
+        knob.Position = getState() and UDim2.new(1, -(TOGGLE_H - 4) - 2, 0.5, -(TOGGLE_H - 4)/2) or UDim2.new(0, 2, 0.5, -(TOGGLE_H - 4)/2)
+        knob.BackgroundColor3 = WHITE
+        knob.BorderSizePixel = 0
+        knob.Parent = toggleBtn
+
+        local knobCorner = Instance.new("UICorner")
+        knobCorner.CornerRadius = UDim.new(1, 0)
+        knobCorner.Parent = knob
+
+        local knobStroke = Instance.new("UIStroke")
+        knobStroke.Color = Color3.fromRGB(200, 200, 200)
+        knobStroke.Thickness = 1
+        knobStroke.Parent = knob
 
         toggleBtn.MouseButton1Click:Connect(function()
             local newState = not getState()
             setState(newState)
-            TweenService:Create(toggleBtn, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-                BackgroundColor3 = newState and PINK or Color3.fromRGB(230, 225, 225)
+            TweenService:Create(toggleBtn, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                BackgroundColor3 = newState and PINK or Color3.fromRGB(220, 220, 220)
             }):Play()
-            toggleBtn.Text = newState and "ON" or "OFF"
-            toggleBtn.Size = UDim2.new(0, TOGGLE_W+4, 0, TOGGLE_H+2)
-            TweenService:Create(toggleBtn, TweenInfo.new(0.1), {Size = UDim2.new(0, TOGGLE_W, 0, TOGGLE_H)}):Play()
+            TweenService:Create(knob, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                Position = newState and UDim2.new(1, -(TOGGLE_H - 4) - 2, 0.5, -(TOGGLE_H - 4)/2) or UDim2.new(0, 2, 0.5, -(TOGGLE_H - 4)/2)
+            }):Play()
         end)
     end
 
-    local function makeSlider(icon, text, min, max, getValue, setValue)
-        local card = Instance.new("Frame")
-        card.Size = UDim2.new(1, -8, 0, SLIDER_H)
-        card.BackgroundColor3 = WHITE
-        card.BackgroundTransparency = 0.3
-        card.BorderSizePixel = 0
-        card.Parent = scroll
+    -- Helper: Modern Slider Row (Matches reference image)
+    local function makeSliderRow(text, min, max, getValue, setValue)
+        local row = Instance.new("Frame")
+        row.Size = UDim2.new(1, 0, 0, SLIDER_H)
+        row.BackgroundColor3 = WHITE
+        row.BackgroundTransparency = 0.2
+        row.BorderSizePixel = 0
+        row.Parent = scroll
 
-        local cardCorner = Instance.new("UICorner")
-        cardCorner.CornerRadius = UDim.new(0, 12)
-        cardCorner.Parent = card
+        local rowCorner = Instance.new("UICorner")
+        rowCorner.CornerRadius = UDim.new(0, 10)
+        rowCorner.Parent = row
 
-        local iconLbl = Instance.new("TextLabel")
-        iconLbl.Size = UDim2.new(0, 24, 0, 22)
-        iconLbl.Position = UDim2.new(0, 6, 0, 4)
-        iconLbl.BackgroundTransparency = 1
-        iconLbl.Text = icon
-        iconLbl.TextSize = isMobile and 18 or 16
-        iconLbl.Parent = card
+        local rowStroke = Instance.new("UIStroke")
+        rowStroke.Color = Color3.fromRGB(230, 220, 210)
+        rowStroke.Thickness = 1
+        rowStroke.Parent = row
 
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -40, 0, 18)
-        label.Position = UDim2.new(0, 32, 0, 5)
+        label.Size = UDim2.new(0.6, 0, 0, 20)
+        label.Position = UDim2.new(0, 12, 0, 6)
         label.BackgroundTransparency = 1
-        label.Text = text .. ": " .. tostring(getValue())
+        label.Text = text
         label.TextColor3 = BROWN
         label.TextSize = LABEL_SIZE
-        label.Font = Enum.Font.GothamBold
+        label.Font = Enum.Font.Gotham
         label.TextXAlignment = Enum.TextXAlignment.Left
-        label.Parent = card
+        label.Parent = row
+
+        local valueLabel = Instance.new("TextLabel")
+        valueLabel.Size = UDim2.new(0.3, 0, 0, 20)
+        valueLabel.Position = UDim2.new(0.7, -12, 0, 6)
+        valueLabel.BackgroundTransparency = 1
+        valueLabel.Text = tostring(getValue())
+        valueLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+        valueLabel.TextSize = LABEL_SIZE
+        valueLabel.Font = Enum.Font.Gotham
+        valueLabel.TextXAlignment = Enum.TextXAlignment.Right
+        valueLabel.Parent = row
 
         local track = Instance.new("Frame")
-        track.Size = UDim2.new(1, -40, 0, 5)
-        track.Position = UDim2.new(0, 32, 0, SLIDER_H - 20)
-        track.BackgroundColor3 = Color3.fromRGB(240, 235, 235)
+        track.Size = UDim2.new(1, -24, 0, 6)
+        track.Position = UDim2.new(0, 12, 0, SLIDER_H - 18)
+        track.BackgroundColor3 = Color3.fromRGB(230, 230, 230)
         track.BorderSizePixel = 0
-        track.Parent = card
+        track.Parent = row
 
         local trackCorner = Instance.new("UICorner")
         trackCorner.CornerRadius = UDim.new(1, 0)
@@ -604,8 +592,7 @@ local function LoadMainUI(platform)
         knob.Size = UDim2.new(0, SLIDER_KNOB, 0, SLIDER_KNOB)
         knob.Position = UDim2.new((getValue() - min) / (max - min), -SLIDER_KNOB/2, 0.5, -SLIDER_KNOB/2)
         knob.BackgroundColor3 = WHITE
-        knob.BorderSizePixel = 2
-        knob.BorderColor3 = PINK
+        knob.BorderSizePixel = 0
         knob.Text = ""
         knob.Parent = track
 
@@ -613,19 +600,17 @@ local function LoadMainUI(platform)
         knobCorner.CornerRadius = UDim.new(1, 0)
         knobCorner.Parent = knob
 
-        card.MouseEnter:Connect(function()
-            TweenService:Create(card, TweenInfo.new(0.2), {BackgroundTransparency = 0.1}):Play()
-        end)
-        card.MouseLeave:Connect(function()
-            TweenService:Create(card, TweenInfo.new(0.2), {BackgroundTransparency = 0.3}):Play()
-        end)
+        local knobStroke = Instance.new("UIStroke")
+        knobStroke.Color = Color3.fromRGB(200, 200, 200)
+        knobStroke.Thickness = 1
+        knobStroke.Parent = knob
 
         local dragging = false
         local function updateFromX(xPos)
             local pct = math.clamp((xPos - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
             local val = math.floor(min + (max - min) * pct)
             setValue(val)
-            label.Text = text .. ": " .. tostring(val)
+            valueLabel.Text = tostring(val)
             fill.Size = UDim2.new(pct, 0, 1, 0)
             knob.Position = UDim2.new(pct, -SLIDER_KNOB/2, 0.5, -SLIDER_KNOB/2)
         end
@@ -654,29 +639,113 @@ local function LoadMainUI(platform)
         end)
     end
 
-    -- Build sections
-    makeSection("🎯 COMBAT")
-    makeToggleCard("🎯", "crosshair", function() return cfg.CrosshairEnabled end, function(v) cfg.CrosshairEnabled = v end)
-    makeToggleCard("🔄", "crosshair rotation", function() return cfg.CrosshairRotationEnabled end, function(v) cfg.CrosshairRotationEnabled = v end)
-    makeToggleCard("👤", "target highlight", function() return cfg.HighlightEnabled end, function(v) cfg.HighlightEnabled = v end)
-    makeToggleCard("💀", "knocked check", function() return cfg.KnockCheck end, function(v) cfg.KnockCheck = v end)
-    makeToggleCard("🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
-    makeToggleCard("🔒", "shiftlock", function() return cfg.ShiftlockEnabled end, function(v)
+    -- Helper: Modern Dropdown Row (Matches reference image)
+    local function makeDropdownRow(text, options, getValue, setValue)
+        local row = Instance.new("Frame")
+        row.Size = UDim2.new(1, 0, 0, CARD_H + 10)
+        row.BackgroundColor3 = WHITE
+        row.BackgroundTransparency = 0.2
+        row.BorderSizePixel = 0
+        row.Parent = scroll
+
+        local rowCorner = Instance.new("UICorner")
+        rowCorner.CornerRadius = UDim.new(0, 10)
+        rowCorner.Parent = row
+
+        local rowStroke = Instance.new("UIStroke")
+        rowStroke.Color = Color3.fromRGB(230, 220, 210)
+        rowStroke.Thickness = 1
+        rowStroke.Parent = row
+
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(0.5, 0, 0, 20)
+        label.Position = UDim2.new(0, 12, 0, 10)
+        label.BackgroundTransparency = 1
+        label.Text = text
+        label.TextColor3 = BROWN
+        label.TextSize = LABEL_SIZE
+        label.Font = Enum.Font.Gotham
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.Parent = row
+
+        local currentVal = Instance.new("TextButton")
+        currentVal.Size = UDim2.new(0.4, 0, 0, 28)
+        currentVal.Position = UDim2.new(0.55, -5, 0, 6)
+        currentVal.BackgroundColor3 = Color3.fromRGB(245, 245, 245)
+        currentVal.BorderSizePixel = 0
+        currentVal.Text = tostring(getValue())
+        currentVal.TextColor3 = BROWN
+        currentVal.TextSize = LABEL_SIZE
+        currentVal.Font = Enum.Font.GothamBold
+        currentVal.Parent = row
+
+        local currentCorner = Instance.new("UICorner")
+        currentCorner.CornerRadius = UDim.new(0, 6)
+        currentCorner.Parent = currentVal
+
+        local container = Instance.new("Frame")
+        container.Size = UDim2.new(0.4, 0, 0, #options * 24)
+        container.Position = UDim2.new(0.55, -5, 0, CARD_H)
+        container.BackgroundColor3 = WHITE
+        container.BorderSizePixel = 1
+        container.BorderColor3 = Color3.fromRGB(230, 220, 210)
+        container.Visible = false
+        container.ZIndex = 20
+        container.Parent = row
+
+        local containerCorner = Instance.new("UICorner")
+        containerCorner.CornerRadius = UDim.new(0, 6)
+        containerCorner.Parent = container
+
+        local list = Instance.new("UIListLayout")
+        list.Padding = UDim.new(0, 2)
+        list.Parent = container
+
+        currentVal.MouseButton1Click:Connect(function()
+            container.Visible = not container.Visible
+        end)
+
+        for _, opt in ipairs(options) do
+            local obtn = Instance.new("TextButton")
+            obtn.Size = UDim2.new(1, 0, 0, 22)
+            obtn.BackgroundColor3 = Color3.fromRGB(250, 250, 250)
+            obtn.BorderSizePixel = 0
+            obtn.Text = tostring(opt)
+            obtn.TextColor3 = BROWN
+            obtn.TextSize = LABEL_SIZE
+            obtn.Font = Enum.Font.Gotham
+            obtn.Parent = container
+            obtn.MouseButton1Click:Connect(function()
+                currentVal.Text = tostring(opt)
+                container.Visible = false
+                setValue(opt)
+            end)
+        end
+    end
+
+    -- ===== BUILD UI =====
+    makeToggleRow("Silent Aim", function() return cfg.Enabled end, function(v) cfg.Enabled = v end)
+    makeToggleRow("Show FOV Circle", function() return cfg.FOVCircleEnabled end, function(v) cfg.FOVCircleEnabled = v end)
+    makeSliderRow("FOV Size", 1, 500, function() return cfg.FOVRadius end, function(v) cfg.FOVRadius = v end)
+    makeToggleRow("Bypass Revolver", function() return cfg.RevolverBypass end, function(v) cfg.RevolverBypass = v end)
+    makeToggleRow("Wall Check", function() return cfg.WallCheck end, function(v) cfg.WallCheck = v end)
+    makeToggleRow("Target Closest Part", function() return cfg.FollowTarget end, function(v) cfg.FollowTarget = v end)
+    makeDropdownRow("HitPart (16 Parts)", {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"}, function() return cfg.HitPart end, function(v) cfg.HitPart = v end)
+    makeToggleRow("Knocked Check", function() return cfg.KnockCheck end, function(v) cfg.KnockCheck = v end)
+    makeToggleRow("Use Cursor Aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
+    makeToggleRow("Shiftlock", function() return cfg.ShiftlockEnabled end, function(v)
         cfg.ShiftlockEnabled = v
         if v then EnableShiftlock() else DisableShiftlock() end
     end)
+    makeToggleRow("Crosshair", function() return cfg.CrosshairEnabled end, function(v) cfg.CrosshairEnabled = v end)
+    makeToggleRow("Crosshair Rotation", function() return cfg.CrosshairRotationEnabled end, function(v) cfg.CrosshairRotationEnabled = v end)
+    makeToggleRow("Target Highlight", function() return cfg.HighlightEnabled end, function(v) cfg.HighlightEnabled = v end)
+    makeToggleRow("Tracer", function() return cfg.TracerEnabled end, function(v) cfg.TracerEnabled = v end)
+    makeSliderRow("Crosshair Hue", 0, 360, function() return math.floor(cfg.CrosshairHue) end, function(v) cfg.CrosshairHue = v end)
+    makeSliderRow("Tracer Hue", 0, 360, function() return math.floor(cfg.TracerHue) end, function(v) cfg.TracerHue = v end)
+    makeSliderRow("FOV Hue", 0, 360, function() return math.floor(cfg.FOVHue) end, function(v) cfg.FOVHue = v end)
 
-    makeSection("🎨 VISUALS")
-    makeToggleCard("📍", "tracer", function() return cfg.TracerEnabled end, function(v) cfg.TracerEnabled = v end)
-    makeToggleCard("⭕", "fov circle", function() return cfg.FOVCircleEnabled end, function(v) cfg.FOVCircleEnabled = v end)
-    makeSlider("📏", "fov radius", 1, 500, function() return cfg.FOVRadius end, function(v) cfg.FOVRadius = v end)
-
-    makeSection("🌈 COLORS")
-    makeSlider("🎯", "crosshair hue", 0, 360, function() return math.floor(cfg.CrosshairHue) end, function(v) cfg.CrosshairHue = v end)
-    makeSlider("📍", "tracer hue", 0, 360, function() return math.floor(cfg.TracerHue) end, function(v) cfg.TracerHue = v end)
-    makeSlider("⭕", "fov hue", 0, 360, function() return math.floor(cfg.FOVHue) end, function(v) cfg.FOVHue = v end)
-
-    -- Drag
+    -- Drag functionality
     local dragging = false
     local dragStart, startPos
     header.InputBegan:Connect(function(input)
@@ -696,29 +765,22 @@ local function LoadMainUI(platform)
         end
     end)
 
-    -- Minimize / close
+    -- Minimize
     local minimized = false
     minBtn.MouseButton1Click:Connect(function()
         minimized = not minimized
         if minimized then
             scroll.Visible = false
-            footer.Visible = false
-            TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.new(0, FRAME_W, 0, 42) }):Play()
+            TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.new(0, FRAME_W, 0, 45) }):Play()
             minBtn.Text = "+"
         else
             scroll.Visible = true
-            footer.Visible = true
             TweenService:Create(mainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Size = UDim2.new(0, FRAME_W, 0, FRAME_H) }):Play()
             minBtn.Text = "−"
         end
     end)
 
-    closeBtn.MouseButton1Click:Connect(function()
-        local tween = TweenService:Create(mainFrame, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), { Size = UDim2.new(0, 0, 0, 0) })
-        tween:Play()
-        tween.Completed:Connect(function() mainGui:Destroy() end)
-    end)
-
+    -- Intro animation
     mainFrame.Size = UDim2.new(0, 0, 0, 0)
     TweenService:Create(mainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
         Size = UDim2.new(0, FRAME_W, 0, FRAME_H)
@@ -1009,20 +1071,21 @@ local function LoadMainUI(platform)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then dragCross = false end
     end)
 
-    -- ===== FLOATING CIRCLE BUTTON =====
+    -- ===== FLOATING CIRCLE TOGGLE BUTTON (ROBUST) =====
     local floatGui = Instance.new("ScreenGui")
     floatGui.Name = "LivyiiFloatBtn"
     floatGui.ResetOnSpawn = false
     floatGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    floatGui.DisplayOrder = 1001
     floatGui.Parent = PlayerGui
 
     local btnShadow = Instance.new("ImageLabel")
-    btnShadow.Size = UDim2.new(1, 12, 1, 12)
-    btnShadow.Position = UDim2.new(0, -6, 0, -6)
+    btnShadow.Size = UDim2.new(1, 14, 1, 14)
+    btnShadow.Position = UDim2.new(0, -7, 0, -7)
     btnShadow.BackgroundTransparency = 1
     btnShadow.Image = "rbxassetid://1316045217"
     btnShadow.ImageColor3 = SHADOW
-    btnShadow.ImageTransparency = 0.6
+    btnShadow.ImageTransparency = 0.5
     btnShadow.ZIndex = 0
     btnShadow.Parent = floatGui
 
