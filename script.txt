@@ -1,7 +1,7 @@
 -- Livyii Key System + Pompom Silent Aim + Cutesy GUI + Platform Selection + Intro
 -- Mobile GUI slightly smaller, headers caps, sub-headers lowercase.
 -- Intro: slight yellow blurred background, ambient music that fades out.
--- Added knocked check toggle in mini GUI, modern cutesy design.
+-- Added knocked check, cursor aim, and shiftlock support.
 
 -- ===== ADONIS BYPASS =====
 local g = getinfo or debug.getinfo
@@ -51,7 +51,7 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 
--- ===== COLORS (pastel & cute) =====
+-- ===== COLORS =====
 local YELLOW = Color3.fromRGB(255, 240, 170)
 local CREAM = Color3.fromRGB(255, 252, 230)
 local BROWN = Color3.fromRGB(130, 80, 50)
@@ -77,7 +77,10 @@ genv.SilentAim = genv.SilentAim or {
     HitPart = "HumanoidRootPart",
     TeamCheck = false,
     RequireTool = true,
-    KnockCheck = true,          -- NEW: ignore knocked players
+    KnockCheck = true,
+    UseCursorAim = UIS.MouseEnabled,
+    ShiftlockEnabled = false,       -- NEW
+    ShiftlockKey = Enum.KeyCode.LeftShift,  -- NEW
     CrosshairEnabled = true,
     CrosshairSize = 10,
     CrosshairGap = 4,
@@ -110,6 +113,51 @@ local fh = Color3.toHSV(genv.SilentAim.FOVCircleColor)
 genv.SilentAim.FOVHue = fh * 360
 
 local cfg = genv.SilentAim
+
+-- ===== SHIFTLOCK ENGINE =====
+local shiftlockConnection = nil
+
+local function EnableShiftlock()
+    if shiftlockConnection then return end
+    UIS.MouseBehavior = Enum.MouseBehavior.LockCenter
+    shiftlockConnection = RunService.RenderStepped:Connect(function()
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not hum or not root then return end
+        if hum.Health <= 0 then return end
+        -- Rotate character to match camera look direction
+        local camCF = cam.CFrame
+        local look = camCF.LookVector
+        local flat = Vector3.new(look.X, 0, look.Z)
+        if flat.Magnitude > 0.01 then
+            local targetCF = CFrame.new(root.Position, root.Position + flat.Unit)
+            root.CFrame = CFrame.new(root.Position, root.Position + flat.Unit) * (root.CFrame - root.Position)
+        end
+        -- Lock mouse to center
+        if UIS.MouseBehavior ~= Enum.MouseBehavior.LockCenter then
+            UIS.MouseBehavior = Enum.MouseBehavior.LockCenter
+        end
+    end)
+end
+
+local function DisableShiftlock()
+    if shiftlockConnection then
+        shiftlockConnection:Disconnect()
+        shiftlockConnection = nil
+    end
+    UIS.MouseBehavior = Enum.MouseBehavior.Default
+end
+
+-- Re-apply on respawn
+LocalPlayer.CharacterAdded:Connect(function()
+    if cfg.ShiftlockEnabled then
+        task.wait(0.3)
+        DisableShiftlock()
+        EnableShiftlock()
+    end
+end)
 
 -- ===== INTRO SCREEN =====
 local function ShowIntro(platform, callback)
@@ -339,7 +387,6 @@ local function LoadMainUI(platform)
     mainGradient.Rotation = 45
     mainGradient.Parent = mainFrame
 
-    -- Header
     local header = Instance.new("Frame")
     header.Name = "Header"
     header.Size = UDim2.new(1, 0, 0, 42)
@@ -612,7 +659,12 @@ local function LoadMainUI(platform)
     makeToggleCard("🎯", "crosshair", function() return cfg.CrosshairEnabled end, function(v) cfg.CrosshairEnabled = v end)
     makeToggleCard("🔄", "crosshair rotation", function() return cfg.CrosshairRotationEnabled end, function(v) cfg.CrosshairRotationEnabled = v end)
     makeToggleCard("👤", "target highlight", function() return cfg.HighlightEnabled end, function(v) cfg.HighlightEnabled = v end)
-    makeToggleCard("💀", "knocked check", function() return cfg.KnockCheck end, function(v) cfg.KnockCheck = v end)   -- NEW
+    makeToggleCard("💀", "knocked check", function() return cfg.KnockCheck end, function(v) cfg.KnockCheck = v end)
+    makeToggleCard("🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
+    makeToggleCard("🔒", "shiftlock", function() return cfg.ShiftlockEnabled end, function(v)
+        cfg.ShiftlockEnabled = v
+        if v then EnableShiftlock() else DisableShiftlock() end
+    end)
 
     makeSection("🎨 VISUALS")
     makeToggleCard("📍", "tracer", function() return cfg.TracerEnabled end, function(v) cfg.TracerEnabled = v end)
@@ -732,7 +784,7 @@ local function LoadMainUI(platform)
             if plr == LocalPlayer then continue end
             local char = plr.Character
             if not char then continue end
-            if cfg.KnockCheck and isKnocked(char) then continue end   -- NEW: respect toggle
+            if cfg.KnockCheck and isKnocked(char) then continue end
             if cfg.TeamCheck and plr.Team == LocalPlayer.Team then continue end
             local part = char:FindFirstChild(cfg.HitPart) or char:FindFirstChild("HumanoidRootPart")
             if not part then continue end
@@ -821,6 +873,11 @@ local function LoadMainUI(platform)
     end
 
     RunService.RenderStepped:Connect(function(dt)
+        if cfg.UseCursorAim then
+            local mousePos = UIS:GetMouseLocation()
+            cfg.CrosshairPosition = Vector2.new(math.clamp(mousePos.X, 0, cam.ViewportSize.X), math.clamp(mousePos.Y, 0, cam.ViewportSize.Y))
+        end
+
         if cfg.CrosshairRotationEnabled then
             rotationAngle = rotationAngle + cfg.CrosshairRotationSpeed * dt
         end
@@ -918,6 +975,7 @@ local function LoadMainUI(platform)
     local dragOffset = Vector2.new(0, 0)
     UIS.TouchBegan:Connect(function(touch)
         if cfg.FollowTarget and getTarget() then return end
+        if cfg.UseCursorAim then return end
         local pos = touch.Position
         local dist = (pos - cfg.CrosshairPosition).Magnitude
         if dist <= cfg.FOVRadius + 20 then
@@ -932,6 +990,7 @@ local function LoadMainUI(platform)
     UIS.InputBegan:Connect(function(input, gameProcessed)
         if gameProcessed then return end
         if cfg.FollowTarget and getTarget() then return end
+        if cfg.UseCursorAim then return end
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             local pos = Vector2.new(input.Position.X, input.Position.Y)
             local dist = (pos - cfg.CrosshairPosition).Magnitude
