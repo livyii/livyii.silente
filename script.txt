@@ -1,8 +1,7 @@
 -- Livyii Key System + Pompom Silent Aim + Cutesy GUI + Platform Selection + Intro
 -- Mobile GUI slightly smaller, headers caps, sub-headers lowercase.
 -- Intro: slight yellow blurred background, ambient music that fades out.
--- Added circular 🍮 toggle button with modern cutesy design.
--- Enhanced overall GUI with softer colors, shadows, and animations.
+-- Added knocked check toggle in mini GUI, modern cutesy design.
 
 -- ===== ADONIS BYPASS =====
 local g = getinfo or debug.getinfo
@@ -78,6 +77,7 @@ genv.SilentAim = genv.SilentAim or {
     HitPart = "HumanoidRootPart",
     TeamCheck = false,
     RequireTool = true,
+    KnockCheck = true,          -- NEW: ignore knocked players
     CrosshairEnabled = true,
     CrosshairSize = 10,
     CrosshairGap = 4,
@@ -111,7 +111,7 @@ genv.SilentAim.FOVHue = fh * 360
 
 local cfg = genv.SilentAim
 
--- ===== INTRO SCREEN (3s, yellow blur, ambient music fading out) =====
+-- ===== INTRO SCREEN =====
 local function ShowIntro(platform, callback)
     local blur = Instance.new("BlurEffect")
     blur.Size = 0
@@ -153,7 +153,7 @@ local function ShowIntro(platform, callback)
     loadingLabel.Parent = introGui
 
     local sound = Instance.new("Sound")
-    sound.SoundId = "rbxassetid://9046863570" -- calm ambient
+    sound.SoundId = "rbxassetid://9046863570"
     sound.Volume = 0.5
     sound.Looped = false
     sound.Parent = introGui
@@ -180,7 +180,7 @@ local function ShowIntro(platform, callback)
     end)
 end
 
--- ===== PLATFORM SELECTION GUI =====
+-- ===== PLATFORM SELECTION =====
 local function ShowPlatformPicker(callback)
     local platGui = Instance.new("ScreenGui")
     platGui.Name = "LivyiiPlatformPicker"
@@ -312,7 +312,6 @@ local function LoadMainUI(platform)
     mainFrame.Visible = true
     mainFrame.Parent = mainGui
 
-    -- Drop shadow
     local shadow = Instance.new("ImageLabel")
     shadow.Size = UDim2.new(1, 20, 1, 20)
     shadow.Position = UDim2.new(0, -10, 0, -10)
@@ -613,6 +612,7 @@ local function LoadMainUI(platform)
     makeToggleCard("🎯", "crosshair", function() return cfg.CrosshairEnabled end, function(v) cfg.CrosshairEnabled = v end)
     makeToggleCard("🔄", "crosshair rotation", function() return cfg.CrosshairRotationEnabled end, function(v) cfg.CrosshairRotationEnabled = v end)
     makeToggleCard("👤", "target highlight", function() return cfg.HighlightEnabled end, function(v) cfg.HighlightEnabled = v end)
+    makeToggleCard("💀", "knocked check", function() return cfg.KnockCheck end, function(v) cfg.KnockCheck = v end)   -- NEW
 
     makeSection("🎨 VISUALS")
     makeToggleCard("📍", "tracer", function() return cfg.TracerEnabled end, function(v) cfg.TracerEnabled = v end)
@@ -732,7 +732,7 @@ local function LoadMainUI(platform)
             if plr == LocalPlayer then continue end
             local char = plr.Character
             if not char then continue end
-            if isKnocked(char) then continue end
+            if cfg.KnockCheck and isKnocked(char) then continue end   -- NEW: respect toggle
             if cfg.TeamCheck and plr.Team == LocalPlayer.Team then continue end
             local part = char:FindFirstChild(cfg.HitPart) or char:FindFirstChild("HumanoidRootPart")
             if not part then continue end
@@ -950,14 +950,13 @@ local function LoadMainUI(platform)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then dragCross = false end
     end)
 
-    -- ===== FLOATING CIRCLE BUTTON (toggle GUI) =====
+    -- ===== FLOATING CIRCLE BUTTON =====
     local floatGui = Instance.new("ScreenGui")
     floatGui.Name = "LivyiiFloatBtn"
     floatGui.ResetOnSpawn = false
     floatGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     floatGui.Parent = PlayerGui
 
-    -- Shadow for the button
     local btnShadow = Instance.new("ImageLabel")
     btnShadow.Size = UDim2.new(1, 12, 1, 12)
     btnShadow.Position = UDim2.new(0, -6, 0, -6)
@@ -996,7 +995,6 @@ local function LoadMainUI(platform)
     gradient.Rotation = 45
     gradient.Parent = ToggleBtn
 
-    -- Shadow follows the button
     btnShadow.Size = ToggleBtn.Size
     btnShadow.Position = ToggleBtn.Position
     btnShadow.ZIndex = ToggleBtn.ZIndex - 1
@@ -1010,7 +1008,6 @@ local function LoadMainUI(platform)
 
     ToggleBtn.MouseButton1Click:Connect(function()
         mainGui.Enabled = not mainGui.Enabled
-        -- Bounce animation
         TweenService:Create(ToggleBtn, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
             Size = UDim2.new(0, (isMobile and 60 or 50) + 8, 0, (isMobile and 60 or 50) + 8)
         }):Play()
