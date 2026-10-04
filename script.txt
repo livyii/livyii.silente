@@ -1,6 +1,4 @@
--- livyii silent aim - dan ffa bypass edition
--- all guis parented to gethui(), randomized names, getgc filter, deferred hooks, safe patching
-
+-- livyii silent aim - dan ffa bypass edition (bubble pop removed)
 print("[livyii] starting bypass edition...")
 
 local Players = game:GetService("Players")
@@ -15,15 +13,12 @@ local Lighting = game:GetService("Lighting")
 local StarterGui = game:GetService("StarterGui")
 local CoreGui = game:GetService("CoreGui")
 
--- ===== gethui fallback =====
 local hidden_ui = (gethui and gethui()) or (syn and syn.protect_gui and CoreGui) or CoreGui
 
--- ===== random name generator =====
 local function rand_name()
     return tostring(math.random(100000, 999999)) .. "_" .. tostring(math.random(100000, 999999))
 end
 
--- ===== getgc filter =====
 local protected_objects = {}
 setmetatable(protected_objects, {__mode = "k"})
 
@@ -41,7 +36,6 @@ if getgc then
     end)
 end
 
--- ===== helper to register protected objects =====
 local function protect(obj)
     if obj then protected_objects[obj] = true end
     return obj
@@ -50,7 +44,6 @@ end
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local ui_flow_active = true
 
--- ===== notifications =====
 local function notify(title, text, duration)
     pcall(function()
         StarterGui:SetCore("SendNotification", {
@@ -65,7 +58,6 @@ local function clear_blurs()
     end
 end
 
--- ===== colors =====
 local YELLOW = Color3.fromRGB(255, 240, 170)
 local CREAM = Color3.fromRGB(255, 252, 230)
 local BROWN = Color3.fromRGB(130, 80, 50)
@@ -88,7 +80,6 @@ local DIR_IN = Enum.EasingDirection.In
 local DEV_USERS = { ["livyiilolly"] = true, ["narvstar"] = true, ["2lmost"] = true }
 local is_dev = DEV_USERS[LocalPlayer.Name:lower()] or false
 
--- ===== config =====
 local genv = getgenv and getgenv() or _G
 genv.SilentAim = genv.SilentAim or {
     Enabled = true, FOVRadius = 150, HitPart = "HumanoidRootPart", TeamCheck = false,
@@ -103,7 +94,6 @@ genv.SilentAim = genv.SilentAim or {
     CrosshairHue = 0, TracerHue = 330, FOVHue = 330,
     AutoPredictionEnabled = true, PredictionStrength = 0.15,
     TargetInfoEnabled = true,
-    BubblePopEnabled = true,
     TargetUsernames = {"", "", "", "", "", "", "", "", "", ""},
 }
 local cfg = genv.SilentAim
@@ -135,7 +125,6 @@ local function is_whitelisted(player)
     return false
 end
 
--- ===== shiftlock =====
 local shiftlock_conn = nil
 local saved_auto_rotate = true
 
@@ -186,57 +175,6 @@ local function disable_shiftlock()
     end
 end
 
--- ===== bubble pop =====
-local last_bubble_time = 0
-local bubble_folder = Instance.new("Folder")
-bubble_folder.Name = rand_name()
-bubble_folder.Parent = workspace
-protect(bubble_folder)
-
-local function spawn_bubble_pop(position)
-    if not cfg.BubblePopEnabled then return end
-    local now = tick()
-    if now - last_bubble_time < 0.12 then return end
-    last_bubble_time = now
-
-    local bubble_count = math.random(8, 12)
-    for i = 1, bubble_count do
-        local bubble = Instance.new("Part")
-        bubble.Shape = Enum.PartType.Ball
-        bubble.Size = Vector3.new(0.25, 0.25, 0.25)
-        bubble.Position = position + Vector3.new(
-            (math.random() - 0.5) * 1.2,
-            (math.random() - 0.5) * 1.2,
-            (math.random() - 0.5) * 1.2
-        )
-        bubble.Anchored = true
-        bubble.CanCollide = false
-        bubble.Material = Enum.Material.Glass
-        bubble.Color = (math.random() > 0.5) and YELLOW or PINK
-        bubble.Transparency = 0.15
-        bubble.Parent = bubble_folder
-
-        local float_dir = Vector3.new(
-            (math.random() - 0.5) * 2,
-            math.random(2, 4),
-            (math.random() - 0.5) * 2
-        )
-        local target_pos = bubble.Position + float_dir
-        local growth = 0.5 + math.random() * 0.6
-
-        TweenService:Create(bubble, TweenInfo.new(0.9, SOFT, DIR_OUT), {
-            Position = target_pos,
-            Size = Vector3.new(growth, growth, growth),
-            Transparency = 1,
-        }):Play()
-
-        task.delay(1, function()
-            if bubble and bubble.Parent then bubble:Destroy() end
-        end)
-    end
-end
-
--- ===== floating button =====
 local current_main_gui = nil
 
 do
@@ -303,7 +241,6 @@ do
     end)
 end
 
--- ===== platform picker =====
 local function show_platform_picker(callback)
     local plat_gui = Instance.new("ScreenGui")
     plat_gui.Name = rand_name()
@@ -410,7 +347,6 @@ local function show_platform_picker(callback)
     }):Play()
 end
 
--- ===== intro =====
 local function show_intro(platform, callback)
     local intro_gui = Instance.new("ScreenGui")
     intro_gui.Name = rand_name()
@@ -464,7 +400,6 @@ local function show_intro(platform, callback)
     end)
 end
 
--- ===== main ui =====
 local function load_main_ui(platform)
     clear_blurs()
 
@@ -1066,7 +1001,6 @@ local function load_main_ui(platform)
     make_toggle(visual_scroll, "🎯", "crosshair", function() return cfg.CrosshairEnabled end, function(v) cfg.CrosshairEnabled = v end)
     make_toggle(visual_scroll, "🔄", "crosshair rotation", function() return cfg.CrosshairRotationEnabled end, function(v) cfg.CrosshairRotationEnabled = v end)
     make_toggle(visual_scroll, "ℹ️", "target info", function() return cfg.TargetInfoEnabled end, function(v) cfg.TargetInfoEnabled = v end)
-    make_toggle(visual_scroll, "🫧", "bubble pop", function() return cfg.BubblePopEnabled end, function(v) cfg.BubblePopEnabled = v end)
     make_section(visual_scroll, "🌈", "colors")
     make_slider(visual_scroll, "🎯", "crosshair hue", 0, 360, function() return math.floor(cfg.CrosshairHue or 0) end, function(v) cfg.CrosshairHue = v end)
     make_slider(visual_scroll, "📍", "tracer hue", 0, 360, function() return math.floor(cfg.TracerHue or 0) end, function(v) cfg.TracerHue = v end)
@@ -1205,7 +1139,6 @@ local function load_main_ui(platform)
     notify("🍮 livyii.silent", "loaded for " .. platform .. " ✨", 4)
 end
 
--- ===== key system =====
 local WEEKLY_KEYS = {
     ["pompom"] = true, ["livyii"] = true, ["imjustlit"] = true,
     ["bestscript"] = true, ["bloxycola"] = true, ["supernatural"] = true,
@@ -1303,7 +1236,6 @@ local function show_key_ui()
     end)
 end
 
--- ===== start flow =====
 if is_dev then
     notify("🍮 livyii", "developer access granted ✨", 4)
     show_platform_picker(function(platform)
@@ -1313,10 +1245,8 @@ else
     show_key_ui()
 end
 
--- ===== silent aim core (with deferred hook) =====
 task.spawn(function()
     local ok, err = pcall(function()
-        -- ===== deferred hooking =====
         task.wait(2)
 
         local outline_lines = {}
@@ -1420,7 +1350,6 @@ task.spawn(function()
         end
 
         local current_target_plr = nil
-        local bubble_last_trigger = 0
 
         local function get_target()
             if not cfg.Enabled then return nil end
@@ -1582,12 +1511,7 @@ task.spawn(function()
                     if key == "Hit" then
                         local target = get_target()
                         if target then
-                            local aim_pos = get_aim_position(target)
-                            if cfg.BubblePopEnabled and tick() - bubble_last_trigger > 0.12 then
-                                bubble_last_trigger = tick()
-                                spawn_bubble_pop(aim_pos)
-                            end
-                            return CFrame.new(aim_pos)
+                            return CFrame.new(get_aim_position(target))
                         end
                     elseif key == "Target" then
                         local target = get_target()
@@ -1615,10 +1539,6 @@ task.spawn(function()
                             local target = get_target()
                             if target then
                                 local aim_pos = get_aim_position(target)
-                                if cfg.BubblePopEnabled and tick() - bubble_last_trigger > 0.12 then
-                                    bubble_last_trigger = tick()
-                                    spawn_bubble_pop(aim_pos)
-                                end
                                 return (aim_pos - origin).Unit, math.min((aim_pos - origin).Magnitude, max_dist or 200)
                             end
                             return old_get_aim(origin, max_dist)
