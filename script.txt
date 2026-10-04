@@ -1,5 +1,7 @@
--- livyii silent aim - cuter ui + bubble pop on hit
-print("[livyii] starting...")
+-- livyii silent aim - dan ffa bypass edition
+-- all guis parented to gethui(), randomized names, getgc filter, deferred hooks, safe patching
+
+print("[livyii] starting bypass edition...")
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -11,11 +13,44 @@ local mouse = LocalPlayer:GetMouse()
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local StarterGui = game:GetService("StarterGui")
+local CoreGui = game:GetService("CoreGui")
+
+-- ===== gethui fallback =====
+local hidden_ui = (gethui and gethui()) or (syn and syn.protect_gui and CoreGui) or CoreGui
+
+-- ===== random name generator =====
+local function rand_name()
+    return tostring(math.random(100000, 999999)) .. "_" .. tostring(math.random(100000, 999999))
+end
+
+-- ===== getgc filter =====
+local protected_objects = {}
+setmetatable(protected_objects, {__mode = "k"})
+
+if getgc then
+    local old_getgc = getgc
+    getgc = newcclosure(function(include_tables)
+        local list = old_getgc(include_tables)
+        local filtered = {}
+        for _, v in ipairs(list) do
+            if not protected_objects[v] then
+                table.insert(filtered, v)
+            end
+        end
+        return filtered
+    end)
+end
+
+-- ===== helper to register protected objects =====
+local function protect(obj)
+    if obj then protected_objects[obj] = true end
+    return obj
+end
 
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-
 local ui_flow_active = true
 
+-- ===== notifications =====
 local function notify(title, text, duration)
     pcall(function()
         StarterGui:SetCore("SendNotification", {
@@ -30,34 +65,7 @@ local function clear_blurs()
     end
 end
 
-local function spawn_float_particles(parent, emojis, count)
-    for i = 1, count do
-        local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(0, 24, 0, 24)
-        lbl.Position = UDim2.new(math.random() * 1, 0, math.random() * 1, 0)
-        lbl.BackgroundTransparency = 1
-        lbl.Text = emojis[math.random(1, #emojis)]
-        lbl.TextSize = math.random(14, 22)
-        lbl.TextTransparency = 0.45
-        lbl.Font = Enum.Font.Gotham
-        lbl.Parent = parent
-        task.spawn(function()
-            while lbl.Parent do
-                local start_y = lbl.Position.Y.Scale
-                TweenService:Create(lbl, TweenInfo.new(math.random(4, 8), Enum.EasingStyle.Linear), {
-                    Position = UDim2.new(lbl.Position.X.Scale, 0, start_y - 0.15, 0),
-                    TextTransparency = 0.85,
-                }):Play()
-                task.wait(8)
-                if not lbl.Parent then break end
-                lbl.Position = UDim2.new(math.random() * 1, 0, 1, 0)
-                lbl.TextTransparency = 0.45
-            end
-        end)
-    end
-end
-
--- ===== COLORS =====
+-- ===== colors =====
 local YELLOW = Color3.fromRGB(255, 240, 170)
 local CREAM = Color3.fromRGB(255, 252, 230)
 local BROWN = Color3.fromRGB(130, 80, 50)
@@ -80,7 +88,7 @@ local DIR_IN = Enum.EasingDirection.In
 local DEV_USERS = { ["livyiilolly"] = true, ["narvstar"] = true, ["2lmost"] = true }
 local is_dev = DEV_USERS[LocalPlayer.Name:lower()] or false
 
--- ===== CONFIG =====
+-- ===== config =====
 local genv = getgenv and getgenv() or _G
 genv.SilentAim = genv.SilentAim or {
     Enabled = true, FOVRadius = 150, HitPart = "HumanoidRootPart", TeamCheck = false,
@@ -95,7 +103,7 @@ genv.SilentAim = genv.SilentAim or {
     CrosshairHue = 0, TracerHue = 330, FOVHue = 330,
     AutoPredictionEnabled = true, PredictionStrength = 0.15,
     TargetInfoEnabled = true,
-    BubblePopEnabled = true, -- NEW
+    BubblePopEnabled = true,
     TargetUsernames = {"", "", "", "", "", "", "", "", "", ""},
 }
 local cfg = genv.SilentAim
@@ -127,7 +135,7 @@ local function is_whitelisted(player)
     return false
 end
 
--- ===== SHIFTLOCK =====
+-- ===== shiftlock =====
 local shiftlock_conn = nil
 local saved_auto_rotate = true
 
@@ -178,11 +186,12 @@ local function disable_shiftlock()
     end
 end
 
--- ===== BUBBLE POP EFFECT =====
+-- ===== bubble pop =====
 local last_bubble_time = 0
 local bubble_folder = Instance.new("Folder")
-bubble_folder.Name = "livyiiBubbles"
+bubble_folder.Name = rand_name()
 bubble_folder.Parent = workspace
+protect(bubble_folder)
 
 local function spawn_bubble_pop(position)
     if not cfg.BubblePopEnabled then return end
@@ -227,17 +236,18 @@ local function spawn_bubble_pop(position)
     end
 end
 
--- ===== FLOATING BUTTON =====
+-- ===== floating button =====
 local current_main_gui = nil
 
 do
     local float_gui = Instance.new("ScreenGui")
-    float_gui.Name = "livyiiFloatButton"
+    float_gui.Name = rand_name()
     float_gui.ResetOnSpawn = false
     float_gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     float_gui.DisplayOrder = 2000
     float_gui.IgnoreGuiInset = true
-    float_gui.Parent = PlayerGui
+    float_gui.Parent = hidden_ui
+    protect(float_gui)
 
     local toggle_btn = Instance.new("TextButton")
     toggle_btn.Size = UDim2.new(0, 54, 0, 54)
@@ -293,14 +303,15 @@ do
     end)
 end
 
--- ===== PLATFORM PICKER =====
+-- ===== platform picker =====
 local function show_platform_picker(callback)
     local plat_gui = Instance.new("ScreenGui")
-    plat_gui.Name = "livyiiPlatformPicker"
+    plat_gui.Name = rand_name()
     plat_gui.ResetOnSpawn = false
     plat_gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     plat_gui.DisplayOrder = 1500
-    plat_gui.Parent = PlayerGui
+    plat_gui.Parent = hidden_ui
+    protect(plat_gui)
 
     local blur = Instance.new("BlurEffect")
     blur.Size = 0
@@ -314,8 +325,6 @@ local function show_platform_picker(callback)
     bg.BorderSizePixel = 0
     bg.Parent = plat_gui
     TweenService:Create(bg, TweenInfo.new(0.5, SMOOTH, DIR_OUT), {BackgroundTransparency = 0.55}):Play()
-
-    spawn_float_particles(bg, {"🌸", "💖", "✨", "🍮", "🎀", "💫"}, 12)
 
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(0, 0, 0, 0)
@@ -337,31 +346,11 @@ local function show_platform_picker(callback)
     grad.Rotation = 45
     grad.Parent = frame
 
-    local spark1 = Instance.new("TextLabel")
-    spark1.Size = UDim2.new(0, 30, 0, 30); spark1.Position = UDim2.new(0, 12, 0, 12)
-    spark1.BackgroundTransparency = 1; spark1.Text = "✨"; spark1.TextSize = 18
-    spark1.Font = Enum.Font.GothamBold; spark1.Parent = frame
-
-    local spark2 = Instance.new("TextLabel")
-    spark2.Size = UDim2.new(0, 30, 0, 30); spark2.Position = UDim2.new(1, -42, 0, 12)
-    spark2.BackgroundTransparency = 1; spark2.Text = "🌸"; spark2.TextSize = 18
-    spark2.Font = Enum.Font.GothamBold; spark2.Parent = frame
-
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 42); title.Position = UDim2.new(0, 0, 0, 22)
     title.BackgroundTransparency = 1; title.Text = "pick your device"
     title.TextColor3 = DEEP_BROWN; title.TextSize = 20; title.Font = Enum.Font.GothamBold
     title.Parent = frame
-
-    task.spawn(function()
-        while title.Parent do
-            TweenService:Create(title, TweenInfo.new(1.8, SOFT, Enum.EasingDirection.InOut), {TextSize = 21}):Play()
-            task.wait(1.8)
-            if not title.Parent then break end
-            TweenService:Create(title, TweenInfo.new(1.8, SOFT, Enum.EasingDirection.InOut), {TextSize = 20}):Play()
-            task.wait(1.8)
-        end
-    end)
 
     local desc = Instance.new("TextLabel")
     desc.Size = UDim2.new(1, -20, 0, 20); desc.Position = UDim2.new(0, 10, 0, 66)
@@ -400,28 +389,6 @@ local function show_platform_picker(callback)
         txt.TextColor3 = DEEP_BROWN; txt.TextSize = 14; txt.Font = Enum.Font.GothamBold
         txt.Parent = card
 
-        task.spawn(function()
-            while icon_lbl.Parent do
-                TweenService:Create(icon_lbl, TweenInfo.new(2, SOFT, Enum.EasingDirection.InOut), {Position = UDim2.new(0, 0, 0, 10)}):Play()
-                task.wait(2)
-                if not icon_lbl.Parent then break end
-                TweenService:Create(icon_lbl, TweenInfo.new(2, SOFT, Enum.EasingDirection.InOut), {Position = UDim2.new(0, 0, 0, 14)}):Play()
-                task.wait(2)
-            end
-        end)
-
-        card.MouseEnter:Connect(function()
-            TweenService:Create(card, TweenInfo.new(0.35, SMOOTH, DIR_OUT), {
-                Size = UDim2.new(0.42, 0, 0, 104),
-                Position = UDim2.new(x_pos - 0.01, 0, 0, 103)
-            }):Play()
-        end)
-        card.MouseLeave:Connect(function()
-            TweenService:Create(card, TweenInfo.new(0.35, SMOOTH, DIR_OUT), {
-                Size = UDim2.new(0.4, 0, 0, 100),
-                Position = UDim2.new(x_pos, 0, 0, 105)
-            }):Play()
-        end)
         card.MouseButton1Click:Connect(function()
             local out = TweenService:Create(frame, TweenInfo.new(0.4, SMOOTH, DIR_IN), {Size = UDim2.new(0, 0, 0, 0)})
             out:Play()
@@ -443,13 +410,14 @@ local function show_platform_picker(callback)
     }):Play()
 end
 
--- ===== INTRO =====
+-- ===== intro =====
 local function show_intro(platform, callback)
     local intro_gui = Instance.new("ScreenGui")
-    intro_gui.Name = "livyiiIntro"
+    intro_gui.Name = rand_name()
     intro_gui.ResetOnSpawn = false
     intro_gui.DisplayOrder = 1600
-    intro_gui.Parent = PlayerGui
+    intro_gui.Parent = hidden_ui
+    protect(intro_gui)
 
     local bg = Instance.new("Frame")
     bg.Size = UDim2.new(1, 0, 1, 0)
@@ -458,8 +426,6 @@ local function show_intro(platform, callback)
     bg.BorderSizePixel = 0
     bg.Parent = intro_gui
     TweenService:Create(bg, TweenInfo.new(0.5, SMOOTH, DIR_OUT), {BackgroundTransparency = 0.4}):Play()
-
-    spawn_float_particles(bg, {"🌸", "💖", "✨", "🍮", "🎀", "💫", "🌟"}, 18)
 
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 60); title.Position = UDim2.new(0, 0, 0.4, -10)
@@ -477,16 +443,6 @@ local function show_intro(platform, callback)
     heart.Size = UDim2.new(0, 30, 0, 30); heart.Position = UDim2.new(0.5, 70, 0.55, -20)
     heart.BackgroundTransparency = 1; heart.Text = "💖"; heart.TextSize = 20
     heart.Font = Enum.Font.GothamBold; heart.Parent = intro_gui
-
-    task.spawn(function()
-        while heart.Parent do
-            TweenService:Create(heart, TweenInfo.new(0.7, SOFT, Enum.EasingDirection.InOut), {TextSize = 24}):Play()
-            task.wait(0.7)
-            if not heart.Parent then break end
-            TweenService:Create(heart, TweenInfo.new(0.7, SOFT, Enum.EasingDirection.InOut), {TextSize = 18}):Play()
-            task.wait(0.7)
-        end
-    end)
 
     title.TextTransparency = 1; loading.TextTransparency = 1
     TweenService:Create(title, TweenInfo.new(0.7, SMOOTH, DIR_OUT), {TextTransparency = 0, Position = UDim2.new(0, 0, 0.4, -30)}):Play()
@@ -508,7 +464,7 @@ local function show_intro(platform, callback)
     end)
 end
 
--- ===== MAIN UI (CUTER) =====
+-- ===== main ui =====
 local function load_main_ui(platform)
     clear_blurs()
 
@@ -522,12 +478,13 @@ local function load_main_ui(platform)
     local SLIDER_KNOB = 16
 
     local main_gui = Instance.new("ScreenGui")
-    main_gui.Name = "livyiiMainGui"
+    main_gui.Name = rand_name()
     main_gui.ResetOnSpawn = false
     main_gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     main_gui.DisplayOrder = 900
-    main_gui.Parent = PlayerGui
+    main_gui.Parent = hidden_ui
     current_main_gui = main_gui
+    protect(main_gui)
 
     local main = Instance.new("Frame")
     main.Size = UDim2.new(0, FRAME_W, 0, FRAME_H)
@@ -551,20 +508,6 @@ local function load_main_ui(platform)
     main_grad.Rotation = 45
     main_grad.Parent = main
 
-    -- cute decor dots across the frame
-    for i = 1, 8 do
-        local dot = Instance.new("Frame")
-        dot.Size = UDim2.new(0, 4, 0, 4)
-        dot.Position = UDim2.new(math.random() * 1, 0, math.random() * 1, 0)
-        dot.BackgroundColor3 = PINK
-        dot.BackgroundTransparency = 0.5
-        dot.BorderSizePixel = 0
-        dot.ZIndex = 0
-        dot.Parent = main
-        local dc = Instance.new("UICorner"); dc.CornerRadius = UDim.new(1, 0); dc.Parent = dot
-    end
-
-    -- ===== HEADER =====
     local header = Instance.new("Frame")
     header.Size = UDim2.new(1, 0, 0, 60)
     header.BackgroundTransparency = 1
@@ -628,7 +571,6 @@ local function load_main_ui(platform)
     local mb_corner = Instance.new("UICorner"); mb_corner.CornerRadius = UDim.new(1, 0); mb_corner.Parent = min_btn
     local mb_stroke = Instance.new("UIStroke"); mb_stroke.Color = PINK; mb_stroke.Thickness = 1.5; mb_stroke.Parent = min_btn
 
-    -- ===== TAB BAR =====
     local tab_bar = Instance.new("Frame")
     tab_bar.Size = UDim2.new(1, -22, 0, 34)
     tab_bar.Position = UDim2.new(0, 11, 0, 64)
@@ -652,7 +594,6 @@ local function load_main_ui(platform)
     local ti_corner = Instance.new("UICorner"); ti_corner.CornerRadius = UDim.new(1, 0); ti_corner.Parent = tab_indicator
     local ti_stroke = Instance.new("UIStroke"); ti_stroke.Color = PINK; ti_stroke.Thickness = 1.5; ti_stroke.Parent = tab_indicator
 
-    -- ===== CONTENT AREA =====
     local content = Instance.new("Frame")
     content.Size = UDim2.new(1, 0, 1, -108)
     content.Position = UDim2.new(0, 0, 0, 106)
@@ -688,7 +629,6 @@ local function load_main_ui(platform)
         return sf
     end
 
-    -- ===== BUILDERS =====
     local function make_section(parent, emoji, text)
         local sec = Instance.new("Frame")
         sec.Size = UDim2.new(1, 0, 0, 24)
@@ -1103,7 +1043,6 @@ local function load_main_ui(platform)
         end)
     end
 
-    -- ===== TAB 1: aim =====
     local aim_scroll = get_or_create_scroll(1)
     make_section(aim_scroll, "🎯", "core aim")
     make_toggle(aim_scroll, "🎯", "silent aim", function() return cfg.Enabled end, function(v) cfg.Enabled = v end)
@@ -1113,7 +1052,6 @@ local function load_main_ui(platform)
     make_toggle(aim_scroll, "🚀", "auto-prediction", function() return cfg.AutoPredictionEnabled end, function(v) cfg.AutoPredictionEnabled = v end)
     make_slider(aim_scroll, "⚡", "prediction strength", 0, 1, function() return cfg.PredictionStrength end, function(v) cfg.PredictionStrength = v end)
 
-    -- ===== TAB 2: combat =====
     local combat_scroll = get_or_create_scroll(2)
     make_section(combat_scroll, "⚔️", "combat settings")
     make_toggle(combat_scroll, "🔫", "bypass revolver", function() return cfg.RevolverBypass end, function(v) cfg.RevolverBypass = v end)
@@ -1121,7 +1059,6 @@ local function load_main_ui(platform)
     make_toggle(combat_scroll, "💀", "knocked check", function() return cfg.KnockCheck end, function(v) cfg.KnockCheck = v end)
     make_dropdown(combat_scroll, "🎯", "hit part", {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"}, function() return cfg.HitPart end, function(v) cfg.HitPart = v end)
 
-    -- ===== TAB 3: visuals =====
     local visual_scroll = get_or_create_scroll(3)
     make_section(visual_scroll, "🎨", "visuals")
     make_toggle(visual_scroll, "👤", "target highlight", function() return cfg.HighlightEnabled end, function(v) cfg.HighlightEnabled = v end)
@@ -1135,7 +1072,6 @@ local function load_main_ui(platform)
     make_slider(visual_scroll, "📍", "tracer hue", 0, 360, function() return math.floor(cfg.TracerHue or 0) end, function(v) cfg.TracerHue = v end)
     make_slider(visual_scroll, "⭕", "fov hue", 0, 360, function() return math.floor(cfg.FOVHue or 0) end, function(v) cfg.FOVHue = v end)
 
-    -- ===== TAB 4: misc =====
     local misc_scroll = get_or_create_scroll(4)
     make_section(misc_scroll, "✨", "misc")
     make_toggle(misc_scroll, "🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
@@ -1190,7 +1126,6 @@ local function load_main_ui(platform)
         notify("🍮 livyii", "usernames cleared ✨", 2)
     end)
 
-    -- ===== TAB SWITCHING =====
     local tab_names = {"🎯", "⚔️", "🎨", "✨"}
     local tab_btns = {}
     local current_tab = 1
@@ -1228,7 +1163,6 @@ local function load_main_ui(platform)
 
     get_or_create_scroll(1).Visible = true
 
-    -- ===== DRAG =====
     local dragging_main = false
     local drag_start_main, start_pos_main
     header.InputBegan:Connect(function(input)
@@ -1248,7 +1182,6 @@ local function load_main_ui(platform)
         end
     end)
 
-    -- ===== MINIMIZE =====
     local minimized = false
     min_btn.MouseButton1Click:Connect(function()
         minimized = not minimized
@@ -1272,7 +1205,7 @@ local function load_main_ui(platform)
     notify("🍮 livyii.silent", "loaded for " .. platform .. " ✨", 4)
 end
 
--- ===== KEY SYSTEM =====
+-- ===== key system =====
 local WEEKLY_KEYS = {
     ["pompom"] = true, ["livyii"] = true, ["imjustlit"] = true,
     ["bestscript"] = true, ["bloxycola"] = true, ["supernatural"] = true,
@@ -1280,10 +1213,11 @@ local WEEKLY_KEYS = {
 
 local function show_key_ui()
     local key_gui = Instance.new("ScreenGui")
-    key_gui.Name = "livyiiKeySystem"
+    key_gui.Name = rand_name()
     key_gui.ResetOnSpawn = false
     key_gui.DisplayOrder = 1700
-    key_gui.Parent = PlayerGui
+    key_gui.Parent = hidden_ui
+    protect(key_gui)
 
     local key_frame = Instance.new("Frame")
     key_frame.Size = UDim2.new(0, 0, 0, 0)
@@ -1369,7 +1303,7 @@ local function show_key_ui()
     end)
 end
 
--- ===== START FLOW =====
+-- ===== start flow =====
 if is_dev then
     notify("🍮 livyii", "developer access granted ✨", 4)
     show_platform_picker(function(platform)
@@ -1379,9 +1313,12 @@ else
     show_key_ui()
 end
 
--- ===== SILENT AIM CORE =====
+-- ===== silent aim core (with deferred hook) =====
 task.spawn(function()
     local ok, err = pcall(function()
+        -- ===== deferred hooking =====
+        task.wait(2)
+
         local outline_lines = {}
         local crosshair_lines = {}
         for i = 1, 4 do
@@ -1390,6 +1327,7 @@ task.spawn(function()
             line.Color = BROWN
             line.Transparency = 1
             line.Visible = false
+            protect(line)
             table.insert(outline_lines, line)
         end
         for i = 1, 4 do
@@ -1398,6 +1336,7 @@ task.spawn(function()
             line.Color = CREAM
             line.Transparency = 1
             line.Visible = false
+            protect(line)
             table.insert(crosshair_lines, line)
         end
 
@@ -1409,6 +1348,7 @@ task.spawn(function()
         fov_circle.Color = PINK
         fov_circle.Transparency = cfg.FOVCircleTransparency
         fov_circle.Visible = false
+        protect(fov_circle)
 
         local info_text = Drawing.new("Text")
         info_text.Size = 14
@@ -1418,6 +1358,7 @@ task.spawn(function()
         info_text.Color = PINK
         info_text.Font = 2
         info_text.Visible = false
+        protect(info_text)
 
         local highlight = Instance.new("Highlight")
         highlight.FillColor = PINK
@@ -1425,13 +1366,15 @@ task.spawn(function()
         highlight.FillTransparency = 0.6
         highlight.OutlineTransparency = 0
         highlight.Enabled = false
-        pcall(function() highlight.Parent = game:GetService("CoreGui") end)
+        pcall(function() highlight.Parent = CoreGui end)
+        protect(highlight)
 
         local tracer = Drawing.new("Line")
         tracer.Thickness = 1.5
         tracer.Color = PINK
         tracer.Transparency = 1
         tracer.Visible = false
+        protect(tracer)
 
         local rotation_angle = 0
         local function rotate_vector(v, angle)
@@ -1640,7 +1583,6 @@ task.spawn(function()
                         local target = get_target()
                         if target then
                             local aim_pos = get_aim_position(target)
-                            -- bubble pop on aim
                             if cfg.BubblePopEnabled and tick() - bubble_last_trigger > 0.12 then
                                 bubble_last_trigger = tick()
                                 spawn_bubble_pop(aim_pos)
@@ -1738,7 +1680,7 @@ task.spawn(function()
             while task.wait(0.5) do pcall(function() setfpscap(240) end) end
         end)
 
-        print("[livyii] silent aim core loaded")
+        print("[livyii] silent aim core loaded (bypass active)")
     end)
     if not ok then
         warn("[livyii] silent aim error: " .. tostring(err))
