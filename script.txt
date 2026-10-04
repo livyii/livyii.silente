@@ -405,7 +405,7 @@ local function load_main_ui(platform)
     main.Position = UDim2.new(0.5, -FRAME_W/2, 0.5, -FRAME_H/2)
     main.BackgroundColor3 = BG_COLOR
     main.BorderSizePixel = 0
-    main.ClipsDescendants = true
+    main.ClipsDescendants = false
     main.Active = true
     main.Visible = true
     main.Parent = main_gui
@@ -461,7 +461,7 @@ local function load_main_ui(platform)
     subtitle.Size = UDim2.new(1, -130, 0, 14)
     subtitle.Position = UDim2.new(0, 58, 0, 32)
     subtitle.BackgroundTransparency = 1
-    subtitle.Text = "optimized for " .. platform .. " ✨"
+    subtitle.Text = "optimized for " .. platform
     subtitle.TextColor3 = MUTED_TEXT
     subtitle.TextSize = 10
     subtitle.Font = Enum.Font.GothamMedium
@@ -486,8 +486,8 @@ local function load_main_ui(platform)
     local mbs = Instance.new("UIStroke"); mbs.Color = PINK; mbs.Thickness = 1.5; mbs.Parent = min_btn
 
     local tab_bar = Instance.new("Frame")
-    tab_bar.Size = UDim2.new(1, -22, 0, 34)
-    tab_bar.Position = UDim2.new(0, 11, 0, 64)
+    tab_bar.Size = UDim2.new(1, -22, 0, 36)
+    tab_bar.Position = UDim2.new(0, 11, 0, 66)
     tab_bar.BackgroundColor3 = Color3.fromRGB(252, 242, 232)
     tab_bar.BackgroundTransparency = 0.2
     tab_bar.BorderSizePixel = 0
@@ -498,7 +498,7 @@ local function load_main_ui(platform)
     local tbs = Instance.new("UIStroke"); tbs.Color = CARAMEL; tbs.Thickness = 1; tbs.Transparency = 0.4; tbs.Parent = tab_bar
 
     local tab_indicator = Instance.new("Frame")
-    tab_indicator.Size = UDim2.new(0.25, 0, 1, -6)
+    tab_indicator.Size = UDim2.new(0.25, -6, 1, -6)
     tab_indicator.Position = UDim2.new(0, 3, 0, 3)
     tab_indicator.BackgroundColor3 = YELLOW
     tab_indicator.BorderSizePixel = 0
@@ -508,39 +508,52 @@ local function load_main_ui(platform)
     local tic = Instance.new("UICorner"); tic.CornerRadius = UDim.new(1, 0); tic.Parent = tab_indicator
     local tis = Instance.new("UIStroke"); tis.Color = PINK; tis.Thickness = 1.5; tis.Parent = tab_indicator
 
-    local content = Instance.new("Frame")
-    content.Size = UDim2.new(1, 0, 1, -108)
-    content.Position = UDim2.new(0, 0, 0, 106)
-    content.BackgroundTransparency = 1
-    content.ClipsDescendants = true
-    content.ZIndex = 3
-    content.Parent = main
+    local tab_names = {"AIM", "COMBAT", "VISUAL", "MISC"}
+    local tab_btns = {}
+    local current_tab = 1
+
+    for i = 1, 4 do
+        local tb = Instance.new("TextButton")
+        tb.Size = UDim2.new(0.25, 0, 1, 0)
+        tb.Position = UDim2.new((i-1) * 0.25, 0, 0, 0)
+        tb.BackgroundTransparency = 1
+        tb.Text = tab_names[i]
+        tb.TextColor3 = i == 1 and DEEP_BROWN or BROWN
+        tb.TextSize = 11
+        tb.Font = Enum.Font.GothamBold
+        tb.AutoButtonColor = false
+        tb.ZIndex = 6
+        tb.Parent = tab_bar
+        table.insert(tab_btns, tb)
+    end
 
     local scroll_frames = {}
-
-    local function get_or_create_scroll(index)
-        if scroll_frames[index] then return scroll_frames[index] end
+    for i = 1, 4 do
         local sf = Instance.new("ScrollingFrame")
-        sf.Size = UDim2.new(1, -22, 1, 0)
-        sf.Position = UDim2.new(0, 11, 0, 0)
+        sf.Name = "Tab" .. i
+        sf.Size = UDim2.new(1, -22, 1, -110)
+        sf.Position = UDim2.new(0, 11, 0, 108)
         sf.BackgroundTransparency = 1
         sf.BorderSizePixel = 0
-        sf.CanvasSize = UDim2.new(0, 0, 0, 0)
+        sf.CanvasSize = UDim2.new(0, 0, 0, 3000)
         sf.ScrollBarThickness = 3
         sf.ScrollBarImageColor3 = PINK
-        sf.Visible = false
-        sf.ZIndex = 4
-        sf.Parent = content
+        sf.ScrollingEnabled = true
+        sf.Visible = (i == 1)
+        sf.ZIndex = 3
+        sf.Parent = main
 
         local lyt = Instance.new("UIListLayout")
         lyt.Padding = UDim.new(0, 6)
         lyt.SortOrder = Enum.SortOrder.LayoutOrder
         lyt.Parent = sf
-        lyt:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            sf.CanvasSize = UDim2.new(0, 0, 0, lyt.AbsoluteContentSize.Y + 30)
-        end)
-        scroll_frames[index] = sf
-        return sf
+
+        local pad = Instance.new("UIPadding")
+        pad.PaddingTop = UDim.new(0, 4)
+        pad.PaddingBottom = UDim.new(0, 20)
+        pad.Parent = sf
+
+        scroll_frames[i] = sf
     end
 
     local function make_section(parent, emoji, text)
@@ -643,13 +656,6 @@ local function load_main_ui(platform)
         local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(1, 0); kc.Parent = knob
         local ks = Instance.new("UIStroke"); ks.Color = PINK; ks.Thickness = 1; ks.Parent = knob
 
-        card.MouseEnter:Connect(function()
-            TweenService:Create(card, TweenInfo.new(0.25, SOFT, DIR_OUT), {BackgroundTransparency = 0}):Play()
-        end)
-        card.MouseLeave:Connect(function()
-            TweenService:Create(card, TweenInfo.new(0.25, SOFT, DIR_OUT), {BackgroundTransparency = 0.05}):Play()
-        end)
-
         pill.MouseButton1Click:Connect(function()
             local ns = not get_state()
             set_state(ns)
@@ -736,12 +742,6 @@ local function load_main_ui(platform)
         fill.Parent = track
 
         local fc = Instance.new("UICorner"); fc.CornerRadius = UDim.new(1, 0); fc.Parent = fill
-        local fg = Instance.new("UIGradient")
-        fg.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, YELLOW),
-            ColorSequenceKeypoint.new(1, PINK),
-        })
-        fg.Parent = fill
 
         local knob = Instance.new("TextButton")
         knob.Size = UDim2.new(0, SLIDER_KNOB, 0, SLIDER_KNOB)
@@ -755,13 +755,6 @@ local function load_main_ui(platform)
         local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(1, 0); kc.Parent = knob
         local ks = Instance.new("UIStroke"); ks.Color = PINK; ks.Thickness = 2; ks.Parent = knob
 
-        card.MouseEnter:Connect(function()
-            TweenService:Create(card, TweenInfo.new(0.25, SOFT, DIR_OUT), {BackgroundTransparency = 0}):Play()
-        end)
-        card.MouseLeave:Connect(function()
-            TweenService:Create(card, TweenInfo.new(0.25, SOFT, DIR_OUT), {BackgroundTransparency = 0.05}):Play()
-        end)
-
         local dragging = false
         local function update_from_x(x_pos)
             local pct = math.clamp((x_pos - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
@@ -774,14 +767,10 @@ local function load_main_ui(platform)
             knob.Position = UDim2.new(pct, -SLIDER_KNOB/2, 0.5, -SLIDER_KNOB/2)
         end
 
-        knob.MouseButton1Down:Connect(function()
-            dragging = true
-            TweenService:Create(knob, TweenInfo.new(0.25, SMOOTH, DIR_OUT), {Size = UDim2.new(0, SLIDER_KNOB+5, 0, SLIDER_KNOB+5)}):Play()
-        end)
+        knob.MouseButton1Down:Connect(function() dragging = true end)
         UIS.InputEnded:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 dragging = false
-                TweenService:Create(knob, TweenInfo.new(0.3, SMOOTH, DIR_OUT), {Size = UDim2.new(0, SLIDER_KNOB, 0, SLIDER_KNOB)}):Play()
             end
         end)
         UIS.InputChanged:Connect(function(input)
@@ -793,7 +782,6 @@ local function load_main_ui(platform)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 dragging = true
                 update_from_x(input.Position.X)
-                TweenService:Create(knob, TweenInfo.new(0.25, SMOOTH, DIR_OUT), {Size = UDim2.new(0, SLIDER_KNOB+5, 0, SLIDER_KNOB+5)}):Play()
             end
         end)
     end
@@ -878,12 +866,6 @@ local function load_main_ui(platform)
             ob.Font = Enum.Font.GothamMedium
             ob.AutoButtonColor = false
             ob.Parent = container
-            ob.MouseEnter:Connect(function()
-                TweenService:Create(ob, TweenInfo.new(0.2, SOFT, DIR_OUT), {BackgroundColor3 = SOFT_PINK}):Play()
-            end)
-            ob.MouseLeave:Connect(function()
-                TweenService:Create(ob, TweenInfo.new(0.2, SOFT, DIR_OUT), {BackgroundColor3 = Color3.fromRGB(255, 250, 240)}):Play()
-            end)
             ob.MouseButton1Click:Connect(function()
                 btn.Text = tostring(opt)
                 container.Visible = false
@@ -962,11 +944,10 @@ local function load_main_ui(platform)
         local function refresh_visuals()
             local on = cfg.TargetedPlayers[player] == true
             pill.BackgroundColor3 = on and YELLOW or Color3.fromRGB(228, 218, 210)
-            pill.UIStroke.Color = on and PINK or Color3.fromRGB(210, 200, 190)
+            ps.Color = on and PINK or Color3.fromRGB(210, 200, 190)
             knob.Position = on and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
             name_lbl.TextColor3 = on and BROWN or DEEP_BROWN
         end
-
         refresh_visuals()
 
         local function toggle_target()
@@ -995,17 +976,10 @@ local function load_main_ui(platform)
 
         tile.MouseButton1Click:Connect(toggle_target)
         pill.MouseButton1Click:Connect(toggle_target)
-
-        tile.MouseEnter:Connect(function()
-            TweenService:Create(tile, TweenInfo.new(0.25, SOFT, DIR_OUT), {BackgroundTransparency = 0}):Play()
-        end)
-        tile.MouseLeave:Connect(function()
-            TweenService:Create(tile, TweenInfo.new(0.25, SOFT, DIR_OUT), {BackgroundTransparency = 0.05}):Play()
-        end)
     end
 
-    -- ===== tabs =====
-    local aim_scroll = get_or_create_scroll(1)
+    -- ===== build tabs =====
+    local aim_scroll = scroll_frames[1]
     make_section(aim_scroll, "🎯", "core aim")
     make_toggle(aim_scroll, "🎯", "silent aim", function() return cfg.Enabled end, function(v) cfg.Enabled = v end)
     make_toggle(aim_scroll, "⭕", "show fov circle", function() return cfg.FOVCircleEnabled end, function(v) cfg.FOVCircleEnabled = v end)
@@ -1014,14 +988,14 @@ local function load_main_ui(platform)
     make_toggle(aim_scroll, "🚀", "auto-prediction", function() return cfg.AutoPredictionEnabled end, function(v) cfg.AutoPredictionEnabled = v end)
     make_slider(aim_scroll, "⚡", "prediction strength", 0, 1, function() return cfg.PredictionStrength end, function(v) cfg.PredictionStrength = v end)
 
-    local combat_scroll = get_or_create_scroll(2)
+    local combat_scroll = scroll_frames[2]
     make_section(combat_scroll, "⚔️", "combat settings")
     make_toggle(combat_scroll, "🔫", "bypass revolver", function() return cfg.RevolverBypass end, function(v) cfg.RevolverBypass = v end)
     make_toggle(combat_scroll, "🧱", "wall check", function() return cfg.WallCheck end, function(v) cfg.WallCheck = v end)
     make_toggle(combat_scroll, "💀", "knocked check", function() return cfg.KnockCheck end, function(v) cfg.KnockCheck = v end)
     make_dropdown(combat_scroll, "🎯", "hit part", {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"}, function() return cfg.HitPart end, function(v) cfg.HitPart = v end)
 
-    local visual_scroll = get_or_create_scroll(3)
+    local visual_scroll = scroll_frames[3]
     make_section(visual_scroll, "🎨", "visuals")
     make_toggle(visual_scroll, "👤", "target highlight", function() return cfg.HighlightEnabled end, function(v) cfg.HighlightEnabled = v end)
     make_toggle(visual_scroll, "📍", "tracer", function() return cfg.TracerEnabled end, function(v) cfg.TracerEnabled = v end)
@@ -1033,7 +1007,7 @@ local function load_main_ui(platform)
     make_slider(visual_scroll, "📍", "tracer hue", 0, 360, function() return math.floor(cfg.TracerHue or 0) end, function(v) cfg.TracerHue = v end)
     make_slider(visual_scroll, "⭕", "fov hue", 0, 360, function() return math.floor(cfg.FOVHue or 0) end, function(v) cfg.FOVHue = v end)
 
-    local misc_scroll = get_or_create_scroll(4)
+    local misc_scroll = scroll_frames[4]
     make_section(misc_scroll, "✨", "misc")
     make_toggle(misc_scroll, "🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
     make_toggle(misc_scroll, "🔒", "shiftlock", function() return cfg.ShiftlockEnabled end, function(v)
@@ -1088,7 +1062,6 @@ local function load_main_ui(platform)
             empty.Parent = player_list
         end
     end
-
     full_rebuild()
 
     Players.PlayerAdded:Connect(function()
@@ -1101,41 +1074,22 @@ local function load_main_ui(platform)
         full_rebuild()
     end)
 
-    local tab_names = {"🎯", "⚔️", "🎨", "✨"}
-    local tab_btns = {}
-    local current_tab = 1
-
     local function switch_tab(index)
         if current_tab == index then return end
-        if scroll_frames[current_tab] then scroll_frames[current_tab].Visible = false end
-        if not scroll_frames[index] then get_or_create_scroll(index) end
+        scroll_frames[current_tab].Visible = false
         scroll_frames[index].Visible = true
         current_tab = index
         local target_pos = UDim2.new((index - 1) * 0.25, 3, 0, 3)
-        TweenService:Create(tab_indicator, TweenInfo.new(0.45, SMOOTH, DIR_OUT), {Position = target_pos}):Play()
+        TweenService:Create(tab_indicator, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {Position = target_pos}):Play()
         for i, btn in ipairs(tab_btns) do
             local target_color = i == index and DEEP_BROWN or BROWN
-            TweenService:Create(btn, TweenInfo.new(0.35, SOFT, DIR_OUT), {TextColor3 = target_color}):Play()
+            TweenService:Create(btn, TweenInfo.new(0.3, SOFT, DIR_OUT), {TextColor3 = target_color}):Play()
         end
     end
 
     for i = 1, 4 do
-        local tb = Instance.new("TextButton")
-        tb.Size = UDim2.new(0.25, 0, 1, 0)
-        tb.Position = UDim2.new((i-1) * 0.25, 0, 0, 0)
-        tb.BackgroundTransparency = 1
-        tb.Text = tab_names[i]
-        tb.TextColor3 = i == 1 and DEEP_BROWN or BROWN
-        tb.TextSize = 14
-        tb.Font = Enum.Font.GothamBold
-        tb.AutoButtonColor = false
-        tb.ZIndex = 6
-        tb.Parent = tab_bar
-        tb.MouseButton1Click:Connect(function() switch_tab(i) end)
-        table.insert(tab_btns, tb)
+        tab_btns[i].MouseButton1Click:Connect(function() switch_tab(i) end)
     end
-
-    get_or_create_scroll(1).Visible = true
 
     local drag_main = false
     local ds_main, sp_main
@@ -1158,30 +1112,20 @@ local function load_main_ui(platform)
     min_btn.MouseButton1Click:Connect(function()
         min = not min
         if min then
-            content.Visible = false
+            for _, sf in pairs(scroll_frames) do sf.Visible = false end
             tab_bar.Visible = false
-            TweenService:Create(main, TweenInfo.new(0.45, SMOOTH, DIR_OUT), {Size = UDim2.new(0, FRAME_W, 0, 60)}):Play()
+            main.Size = UDim2.new(0, FRAME_W, 0, 60)
             min_btn.Text = "+"
         else
-            content.Visible = true
             tab_bar.Visible = true
-            TweenService:Create(main, TweenInfo.new(0.45, SMOOTH, DIR_OUT), {Size = UDim2.new(0, FRAME_W, 0, FRAME_H)}):Play()
+            scroll_frames[current_tab].Visible = true
+            main.Size = UDim2.new(0, FRAME_W, 0, FRAME_H)
             min_btn.Text = "−"
         end
     end)
 
-    -- force scroll canvases to compute AFTER everything is built
-    task.wait(0.25)
-    for _, sf in pairs(scroll_frames) do
-        local lyt = sf:FindFirstChildOfClass("UIListLayout")
-        if lyt then
-            sf.CanvasSize = UDim2.new(0, 0, 0, lyt.AbsoluteContentSize.Y + 30)
-        end
-    end
-    scroll_frames[1].Visible = true
-
     ui_flow_active = false
-    notify("🍮 livyii.silent", "loaded for " .. platform .. " ✨", 4)
+    notify("🍮 livyii.silent", "loaded for " .. platform, 4)
 end
 
 local WEEKLY_KEYS = {
