@@ -1,4 +1,4 @@
--- livyii silent aim - full script (ui render fix + natalie dev bypass + live player tiles)
+-- livyii silent aim - full script (ui render + input fix + natalie dev bypass + live player tiles)
 print("[livyii] starting...")
 
 local Players = game:GetService("Players")
@@ -176,6 +176,7 @@ do
     float_gui.ResetOnSpawn = false
     float_gui.DisplayOrder = 2000
     float_gui.IgnoreGuiInset = true
+    float_gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     float_gui.Parent = PlayerGui
 
     local toggle_btn = Instance.new("TextButton")
@@ -188,6 +189,7 @@ do
     toggle_btn.TextSize = 26
     toggle_btn.Font = Enum.Font.GothamBold
     toggle_btn.AutoButtonColor = false
+    toggle_btn.ZIndex = 5
     toggle_btn.Parent = float_gui
 
     local t_c = Instance.new("UICorner"); t_c.CornerRadius = UDim.new(1, 0); t_c.Parent = toggle_btn
@@ -230,6 +232,7 @@ local function show_platform_picker(callback)
     plat_gui.Name = "livyiiPlatformPicker"
     plat_gui.ResetOnSpawn = false
     plat_gui.DisplayOrder = 1500
+    plat_gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     plat_gui.Parent = PlayerGui
 
     local blur = Instance.new("BlurEffect")
@@ -254,6 +257,7 @@ local function show_platform_picker(callback)
     frame.BackgroundColor3 = CREAM
     frame.BorderSizePixel = 0
     frame.ClipsDescendants = true
+    frame.ZIndex = 2
     frame.Parent = plat_gui
 
     local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 28); cc.Parent = frame
@@ -271,12 +275,14 @@ local function show_platform_picker(callback)
     t.Size = UDim2.new(1, 0, 0, 42); t.Position = UDim2.new(0, 0, 0, 22)
     t.BackgroundTransparency = 1; t.Text = "pick your device"
     t.TextColor3 = DEEP_BROWN; t.TextSize = 20; t.Font = Enum.Font.GothamBold
+    t.ZIndex = 3
     t.Parent = frame
 
     local d = Instance.new("TextLabel")
     d.Size = UDim2.new(1, -20, 0, 20); d.Position = UDim2.new(0, 10, 0, 66)
     d.BackgroundTransparency = 1; d.Text = "we'll optimize everything for you"
     d.TextColor3 = MUTED_TEXT; d.TextSize = 12; d.Font = Enum.Font.GothamMedium
+    d.ZIndex = 3
     d.Parent = frame
 
     local function make_card(text, icon, x_pos, platform, theme_color)
@@ -287,6 +293,7 @@ local function show_platform_picker(callback)
         card.BorderSizePixel = 0
         card.Text = ""
         card.AutoButtonColor = false
+        card.ZIndex = 10
         card.Parent = frame
 
         local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, 18); c.Parent = card
@@ -302,12 +309,13 @@ local function show_platform_picker(callback)
         local il = Instance.new("TextLabel")
         il.Size = UDim2.new(1, 0, 0, 45); il.Position = UDim2.new(0, 0, 0, 14)
         il.BackgroundTransparency = 1; il.Text = icon; il.TextSize = 34
-        il.Font = Enum.Font.GothamBold; il.Parent = card
+        il.Font = Enum.Font.GothamBold; il.ZIndex = 11; il.Parent = card
 
         local tx = Instance.new("TextLabel")
         tx.Size = UDim2.new(1, 0, 0, 24); tx.Position = UDim2.new(0, 0, 0, 66)
         tx.BackgroundTransparency = 1; tx.Text = text
         tx.TextColor3 = DEEP_BROWN; tx.TextSize = 14; tx.Font = Enum.Font.GothamBold
+        tx.ZIndex = 11
         tx.Parent = card
 
         card.MouseButton1Click:Connect(function()
@@ -332,6 +340,7 @@ local function show_intro(platform, callback)
     intro_gui.Name = "livyiiIntro"
     intro_gui.ResetOnSpawn = false
     intro_gui.DisplayOrder = 1600
+    intro_gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     intro_gui.Parent = PlayerGui
 
     local bg = Instance.new("Frame")
@@ -339,6 +348,7 @@ local function show_intro(platform, callback)
     bg.BackgroundColor3 = Color3.fromRGB(255, 245, 215)
     bg.BackgroundTransparency = 1
     bg.BorderSizePixel = 0
+    bg.ZIndex = 1
     bg.Parent = intro_gui
     TweenService:Create(bg, TweenInfo.new(0.5, SMOOTH, DIR_OUT), {BackgroundTransparency = 0.4}):Play()
 
@@ -348,18 +358,20 @@ local function show_intro(platform, callback)
     title.Size = UDim2.new(1, 0, 0, 60); title.Position = UDim2.new(0, 0, 0.4, -10)
     title.BackgroundTransparency = 1; title.Text = "🍮 livyii.silent 🍮"
     title.TextColor3 = DEEP_BROWN; title.TextSize = 32; title.Font = Enum.Font.GothamBold
+    title.ZIndex = 5
     title.Parent = intro_gui
 
     local loading = Instance.new("TextLabel")
     loading.Size = UDim2.new(1, 0, 0, 40); loading.Position = UDim2.new(0, 0, 0.55, -20)
     loading.BackgroundTransparency = 1; loading.Text = "loading.."
     loading.TextColor3 = PINK; loading.TextSize = 20; loading.Font = Enum.Font.GothamBold
+    loading.ZIndex = 5
     loading.Parent = intro_gui
 
     local heart = Instance.new("TextLabel")
     heart.Size = UDim2.new(0, 30, 0, 30); heart.Position = UDim2.new(0.5, 70, 0.55, -20)
     heart.BackgroundTransparency = 1; heart.Text = "💖"; heart.TextSize = 20
-    heart.Font = Enum.Font.GothamBold; heart.Parent = intro_gui
+    heart.Font = Enum.Font.GothamBold; heart.ZIndex = 5; heart.Parent = intro_gui
 
     title.TextTransparency = 1; loading.TextTransparency = 1
     TweenService:Create(title, TweenInfo.new(0.7, SMOOTH, DIR_OUT), {TextTransparency = 0, Position = UDim2.new(0, 0, 0.4, -30)}):Play()
@@ -397,6 +409,7 @@ local function load_main_ui(platform)
     main_gui.Name = "livyiiMainGui"
     main_gui.ResetOnSpawn = false
     main_gui.DisplayOrder = 900
+    main_gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     main_gui.Parent = PlayerGui
     current_main_gui = main_gui
 
@@ -408,6 +421,7 @@ local function load_main_ui(platform)
     main.ClipsDescendants = false
     main.Active = true
     main.Visible = true
+    main.ZIndex = 1
     main.Parent = main_gui
 
     local mc = Instance.new("UICorner"); mc.CornerRadius = UDim.new(0, 24); mc.Parent = main
@@ -425,7 +439,7 @@ local function load_main_ui(platform)
     local header = Instance.new("Frame")
     header.Size = UDim2.new(1, 0, 0, 60)
     header.BackgroundTransparency = 1
-    header.ZIndex = 5
+    header.ZIndex = 20
     header.Parent = main
 
     local badge = Instance.new("Frame")
@@ -433,7 +447,7 @@ local function load_main_ui(platform)
     badge.Position = UDim2.new(0, 14, 0.5, -18)
     badge.BackgroundColor3 = YELLOW
     badge.BorderSizePixel = 0
-    badge.ZIndex = 6
+    badge.ZIndex = 21
     badge.Parent = header
 
     local bc = Instance.new("UICorner"); bc.CornerRadius = UDim.new(1, 0); bc.Parent = badge
@@ -442,7 +456,7 @@ local function load_main_ui(platform)
     local bi = Instance.new("TextLabel")
     bi.Size = UDim2.new(1, 0, 1, 0); bi.BackgroundTransparency = 1
     bi.Text = "🍮"; bi.TextSize = 18; bi.Font = Enum.Font.GothamBold
-    bi.ZIndex = 7
+    bi.ZIndex = 22
     bi.Parent = badge
 
     local title = Instance.new("TextLabel")
@@ -454,7 +468,7 @@ local function load_main_ui(platform)
     title.TextSize = 16
     title.Font = Enum.Font.GothamBold
     title.TextXAlignment = Enum.TextXAlignment.Left
-    title.ZIndex = 6
+    title.ZIndex = 21
     title.Parent = header
 
     local subtitle = Instance.new("TextLabel")
@@ -466,7 +480,7 @@ local function load_main_ui(platform)
     subtitle.TextSize = 10
     subtitle.Font = Enum.Font.GothamMedium
     subtitle.TextXAlignment = Enum.TextXAlignment.Left
-    subtitle.ZIndex = 6
+    subtitle.ZIndex = 21
     subtitle.Parent = header
 
     local min_btn = Instance.new("TextButton")
@@ -479,7 +493,7 @@ local function load_main_ui(platform)
     min_btn.TextSize = 16
     min_btn.Font = Enum.Font.GothamBold
     min_btn.AutoButtonColor = false
-    min_btn.ZIndex = 6
+    min_btn.ZIndex = 25
     min_btn.Parent = header
 
     local mbc = Instance.new("UICorner"); mbc.CornerRadius = UDim.new(1, 0); mbc.Parent = min_btn
@@ -491,7 +505,7 @@ local function load_main_ui(platform)
     tab_bar.BackgroundColor3 = Color3.fromRGB(252, 242, 232)
     tab_bar.BackgroundTransparency = 0.2
     tab_bar.BorderSizePixel = 0
-    tab_bar.ZIndex = 4
+    tab_bar.ZIndex = 15
     tab_bar.Parent = main
 
     local tbc = Instance.new("UICorner"); tbc.CornerRadius = UDim.new(1, 0); tbc.Parent = tab_bar
@@ -502,7 +516,7 @@ local function load_main_ui(platform)
     tab_indicator.Position = UDim2.new(0, 3, 0, 3)
     tab_indicator.BackgroundColor3 = YELLOW
     tab_indicator.BorderSizePixel = 0
-    tab_indicator.ZIndex = 5
+    tab_indicator.ZIndex = 16
     tab_indicator.Parent = tab_bar
 
     local tic = Instance.new("UICorner"); tic.CornerRadius = UDim.new(1, 0); tic.Parent = tab_indicator
@@ -522,7 +536,7 @@ local function load_main_ui(platform)
         tb.TextSize = 11
         tb.Font = Enum.Font.GothamBold
         tb.AutoButtonColor = false
-        tb.ZIndex = 6
+        tb.ZIndex = 18
         tb.Parent = tab_bar
         table.insert(tab_btns, tb)
     end
@@ -560,6 +574,7 @@ local function load_main_ui(platform)
         local sec = Instance.new("Frame")
         sec.Size = UDim2.new(1, 0, 0, 24)
         sec.BackgroundTransparency = 1
+        sec.ZIndex = 4
         sec.Parent = parent
 
         local b = Instance.new("Frame")
@@ -567,6 +582,7 @@ local function load_main_ui(platform)
         b.Position = UDim2.new(0, 0, 0.5, -9)
         b.BackgroundColor3 = SOFT_PINK
         b.BorderSizePixel = 0
+        b.ZIndex = 5
         b.Parent = sec
 
         local bcor = Instance.new("UICorner"); bcor.CornerRadius = UDim.new(1, 0); bcor.Parent = b
@@ -575,6 +591,7 @@ local function load_main_ui(platform)
         local el = Instance.new("TextLabel")
         el.Size = UDim2.new(1, 0, 1, 0); el.BackgroundTransparency = 1
         el.Text = emoji; el.TextSize = 11; el.Font = Enum.Font.GothamBold
+        el.ZIndex = 6
         el.Parent = b
 
         local lbl = Instance.new("TextLabel")
@@ -586,6 +603,7 @@ local function load_main_ui(platform)
         lbl.TextSize = 11
         lbl.Font = Enum.Font.GothamBold
         lbl.TextXAlignment = Enum.TextXAlignment.Left
+        lbl.ZIndex = 5
         lbl.Parent = sec
 
         local line = Instance.new("Frame")
@@ -594,6 +612,7 @@ local function load_main_ui(platform)
         line.BackgroundColor3 = PINK
         line.BackgroundTransparency = 0.6
         line.BorderSizePixel = 0
+        line.ZIndex = 5
         line.Parent = sec
     end
 
@@ -603,6 +622,7 @@ local function load_main_ui(platform)
         card.BackgroundColor3 = CARD_SOFT
         card.BackgroundTransparency = 0.05
         card.BorderSizePixel = 0
+        card.ZIndex = 5
         card.Parent = parent
 
         local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 14); cc.Parent = card
@@ -613,6 +633,7 @@ local function load_main_ui(platform)
         ib.Position = UDim2.new(0, 8, 0.5, -14)
         ib.BackgroundColor3 = SOFT_PINK
         ib.BorderSizePixel = 0
+        ib.ZIndex = 6
         ib.Parent = card
 
         local ibc = Instance.new("UICorner"); ibc.CornerRadius = UDim.new(1, 0); ibc.Parent = ib
@@ -621,6 +642,7 @@ local function load_main_ui(platform)
         local ibi = Instance.new("TextLabel")
         ibi.Size = UDim2.new(1, 0, 1, 0); ibi.BackgroundTransparency = 1
         ibi.Text = icon; ibi.TextSize = 14; ibi.Font = Enum.Font.GothamBold
+        ibi.ZIndex = 7
         ibi.Parent = ib
 
         local label = Instance.new("TextLabel")
@@ -632,6 +654,7 @@ local function load_main_ui(platform)
         label.TextSize = LABEL_SIZE
         label.Font = Enum.Font.GothamMedium
         label.TextXAlignment = Enum.TextXAlignment.Left
+        label.ZIndex = 6
         label.Parent = card
 
         local pill = Instance.new("TextButton")
@@ -641,6 +664,7 @@ local function load_main_ui(platform)
         pill.BorderSizePixel = 0
         pill.Text = ""
         pill.AutoButtonColor = false
+        pill.ZIndex = 10
         pill.Parent = card
 
         local pc = Instance.new("UICorner"); pc.CornerRadius = UDim.new(1, 0); pc.Parent = pill
@@ -651,6 +675,7 @@ local function load_main_ui(platform)
         knob.Position = get_state() and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
         knob.BackgroundColor3 = WHITE
         knob.BorderSizePixel = 0
+        knob.ZIndex = 11
         knob.Parent = pill
 
         local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(1, 0); kc.Parent = knob
@@ -677,6 +702,7 @@ local function load_main_ui(platform)
         card.BackgroundColor3 = CARD_SOFT
         card.BackgroundTransparency = 0.05
         card.BorderSizePixel = 0
+        card.ZIndex = 5
         card.Parent = parent
 
         local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 14); cc.Parent = card
@@ -687,6 +713,7 @@ local function load_main_ui(platform)
         ib.Position = UDim2.new(0, 8, 0, 6)
         ib.BackgroundColor3 = SOFT_PINK
         ib.BorderSizePixel = 0
+        ib.ZIndex = 6
         ib.Parent = card
 
         local ibc = Instance.new("UICorner"); ibc.CornerRadius = UDim.new(1, 0); ibc.Parent = ib
@@ -695,6 +722,7 @@ local function load_main_ui(platform)
         local ibi = Instance.new("TextLabel")
         ibi.Size = UDim2.new(1, 0, 1, 0); ibi.BackgroundTransparency = 1
         ibi.Text = icon; ibi.TextSize = 14; ibi.Font = Enum.Font.GothamBold
+        ibi.ZIndex = 7
         ibi.Parent = ib
 
         local label = Instance.new("TextLabel")
@@ -706,6 +734,7 @@ local function load_main_ui(platform)
         label.TextSize = LABEL_SIZE
         label.Font = Enum.Font.GothamMedium
         label.TextXAlignment = Enum.TextXAlignment.Left
+        label.ZIndex = 6
         label.Parent = card
 
         local badge = Instance.new("Frame")
@@ -713,6 +742,7 @@ local function load_main_ui(platform)
         badge.Position = UDim2.new(1, -60, 0, 8)
         badge.BackgroundColor3 = YELLOW
         badge.BorderSizePixel = 0
+        badge.ZIndex = 6
         badge.Parent = card
 
         local bdc = Instance.new("UICorner"); bdc.CornerRadius = UDim.new(1, 0); bdc.Parent = badge
@@ -724,6 +754,7 @@ local function load_main_ui(platform)
         val_lbl.TextColor3 = BROWN
         val_lbl.TextSize = 10
         val_lbl.Font = Enum.Font.GothamBold
+        val_lbl.ZIndex = 7
         val_lbl.Parent = badge
 
         local track = Instance.new("Frame")
@@ -731,6 +762,7 @@ local function load_main_ui(platform)
         track.Position = UDim2.new(0, 44, 0, SLIDER_H - 16)
         track.BackgroundColor3 = Color3.fromRGB(240, 230, 220)
         track.BorderSizePixel = 0
+        track.ZIndex = 6
         track.Parent = card
 
         local tcc = Instance.new("UICorner"); tcc.CornerRadius = UDim.new(1, 0); tcc.Parent = track
@@ -739,6 +771,7 @@ local function load_main_ui(platform)
         fill.Size = UDim2.new((get_value() - min) / (max - min), 0, 1, 0)
         fill.BackgroundColor3 = YELLOW
         fill.BorderSizePixel = 0
+        fill.ZIndex = 7
         fill.Parent = track
 
         local fc = Instance.new("UICorner"); fc.CornerRadius = UDim.new(1, 0); fc.Parent = fill
@@ -750,6 +783,7 @@ local function load_main_ui(platform)
         knob.BorderSizePixel = 0
         knob.Text = ""
         knob.AutoButtonColor = false
+        knob.ZIndex = 10
         knob.Parent = track
 
         local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(1, 0); kc.Parent = knob
@@ -792,6 +826,7 @@ local function load_main_ui(platform)
         card.BackgroundColor3 = CARD_SOFT
         card.BackgroundTransparency = 0.05
         card.BorderSizePixel = 0
+        card.ZIndex = 5
         card.Parent = parent
 
         local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 14); cc.Parent = card
@@ -802,6 +837,7 @@ local function load_main_ui(platform)
         ib.Position = UDim2.new(0, 8, 0.5, -14)
         ib.BackgroundColor3 = SOFT_PINK
         ib.BorderSizePixel = 0
+        ib.ZIndex = 6
         ib.Parent = card
 
         local ibc = Instance.new("UICorner"); ibc.CornerRadius = UDim.new(1, 0); ibc.Parent = ib
@@ -810,6 +846,7 @@ local function load_main_ui(platform)
         local ibi = Instance.new("TextLabel")
         ibi.Size = UDim2.new(1, 0, 1, 0); ibi.BackgroundTransparency = 1
         ibi.Text = icon; ibi.TextSize = 14; ibi.Font = Enum.Font.GothamBold
+        ibi.ZIndex = 7
         ibi.Parent = ib
 
         local label = Instance.new("TextLabel")
@@ -821,6 +858,7 @@ local function load_main_ui(platform)
         label.TextSize = LABEL_SIZE
         label.Font = Enum.Font.GothamMedium
         label.TextXAlignment = Enum.TextXAlignment.Left
+        label.ZIndex = 6
         label.Parent = card
 
         local btn = Instance.new("TextButton")
@@ -833,6 +871,7 @@ local function load_main_ui(platform)
         btn.TextSize = 11
         btn.Font = Enum.Font.GothamBold
         btn.AutoButtonColor = false
+        btn.ZIndex = 10
         btn.Parent = card
 
         local bcor = Instance.new("UICorner"); bcor.CornerRadius = UDim.new(1, 0); bcor.Parent = btn
@@ -844,7 +883,7 @@ local function load_main_ui(platform)
         container.BackgroundColor3 = WHITE
         container.BorderSizePixel = 0
         container.Visible = false
-        container.ZIndex = 20
+        container.ZIndex = 30
         container.Parent = card
 
         local ccor = Instance.new("UICorner"); ccor.CornerRadius = UDim.new(0, 10); ccor.Parent = container
@@ -865,6 +904,7 @@ local function load_main_ui(platform)
             ob.TextSize = 10
             ob.Font = Enum.Font.GothamMedium
             ob.AutoButtonColor = false
+            ob.ZIndex = 31
             ob.Parent = container
             ob.MouseButton1Click:Connect(function()
                 btn.Text = tostring(opt)
@@ -882,6 +922,7 @@ local function load_main_ui(platform)
         tile.BorderSizePixel = 0
         tile.Text = ""
         tile.AutoButtonColor = false
+        tile.ZIndex = 5
         tile.Parent = parent
 
         local tc = Instance.new("UICorner"); tc.CornerRadius = UDim.new(0, 12); tc.Parent = tile
@@ -893,6 +934,7 @@ local function load_main_ui(platform)
         avatar.BackgroundColor3 = SOFT_PINK
         avatar.BorderSizePixel = 0
         avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=48&h=48"
+        avatar.ZIndex = 6
         avatar.Parent = tile
 
         local ac = Instance.new("UICorner"); ac.CornerRadius = UDim.new(1, 0); ac.Parent = avatar
@@ -907,6 +949,7 @@ local function load_main_ui(platform)
         name_lbl.Font = Enum.Font.GothamBold
         name_lbl.TextXAlignment = Enum.TextXAlignment.Left
         name_lbl.TextTruncate = Enum.TextTruncate.AtEnd
+        name_lbl.ZIndex = 6
         name_lbl.Parent = tile
 
         local dn_lbl = Instance.new("TextLabel")
@@ -919,6 +962,7 @@ local function load_main_ui(platform)
         dn_lbl.Font = Enum.Font.GothamMedium
         dn_lbl.TextXAlignment = Enum.TextXAlignment.Left
         dn_lbl.TextTruncate = Enum.TextTruncate.AtEnd
+        dn_lbl.ZIndex = 6
         dn_lbl.Parent = tile
 
         local pill = Instance.new("TextButton")
@@ -927,6 +971,7 @@ local function load_main_ui(platform)
         pill.BorderSizePixel = 0
         pill.Text = ""
         pill.AutoButtonColor = false
+        pill.ZIndex = 10
         pill.Parent = tile
 
         local pc = Instance.new("UICorner"); pc.CornerRadius = UDim.new(1, 0); pc.Parent = pill
@@ -936,6 +981,7 @@ local function load_main_ui(platform)
         knob.Size = UDim2.new(0, TOGGLE_H - 6, 0, TOGGLE_H - 6)
         knob.BackgroundColor3 = WHITE
         knob.BorderSizePixel = 0
+        knob.ZIndex = 11
         knob.Parent = pill
 
         local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(1, 0); kc.Parent = knob
@@ -978,7 +1024,6 @@ local function load_main_ui(platform)
         pill.MouseButton1Click:Connect(toggle_target)
     end
 
-    -- ===== build tabs =====
     local aim_scroll = scroll_frames[1]
     make_section(aim_scroll, "🎯", "core aim")
     make_toggle(aim_scroll, "🎯", "silent aim", function() return cfg.Enabled end, function(v) cfg.Enabled = v end)
@@ -1025,6 +1070,7 @@ local function load_main_ui(platform)
     note.TextSize = 10
     note.Font = Enum.Font.GothamMedium
     note.TextXAlignment = Enum.TextXAlignment.Left
+    note.ZIndex = 5
     note.Parent = misc_scroll
 
     local player_list = Instance.new("Frame")
@@ -1032,6 +1078,7 @@ local function load_main_ui(platform)
     player_list.Size = UDim2.new(1, 0, 0, 0)
     player_list.AutomaticSize = Enum.AutomaticSize.Y
     player_list.BackgroundTransparency = 1
+    player_list.ZIndex = 5
     player_list.Parent = misc_scroll
 
     local pl_layout = Instance.new("UIListLayout")
@@ -1059,6 +1106,7 @@ local function load_main_ui(platform)
             empty.TextColor3 = MUTED_TEXT
             empty.TextSize = 11
             empty.Font = Enum.Font.GothamMedium
+            empty.ZIndex = 5
             empty.Parent = player_list
         end
     end
@@ -1138,6 +1186,7 @@ local function show_key_ui()
     key_gui.Name = "livyiiKeySystem"
     key_gui.ResetOnSpawn = false
     key_gui.DisplayOrder = 1700
+    key_gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     key_gui.Parent = PlayerGui
 
     local key_frame = Instance.new("Frame")
@@ -1147,6 +1196,7 @@ local function show_key_ui()
     key_frame.BackgroundColor3 = BG_COLOR
     key_frame.BorderSizePixel = 0
     key_frame.ClipsDescendants = true
+    key_frame.ZIndex = 2
     key_frame.Parent = key_gui
 
     local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(0, 22); kc.Parent = key_frame
@@ -1164,12 +1214,14 @@ local function show_key_ui()
     kt.Size = UDim2.new(1, 0, 0, 40); kt.Position = UDim2.new(0, 0, 0, 16)
     kt.BackgroundTransparency = 1; kt.Text = "🎀 livyii key 🎀"
     kt.TextColor3 = DEEP_BROWN; kt.TextSize = 18; kt.Font = Enum.Font.GothamBold
+    kt.ZIndex = 3
     kt.Parent = key_frame
 
     local ksub = Instance.new("TextLabel")
     ksub.Size = UDim2.new(1, -20, 0, 18); ksub.Position = UDim2.new(0, 10, 0, 56)
     ksub.BackgroundTransparency = 1; ksub.Text = "get key in dc server 💖"
     ksub.TextColor3 = MUTED_TEXT; ksub.TextSize = 11; ksub.Font = Enum.Font.GothamMedium
+    ksub.ZIndex = 3
     ksub.Parent = key_frame
 
     local kbox = Instance.new("TextBox")
@@ -1177,7 +1229,7 @@ local function show_key_ui()
     kbox.BackgroundColor3 = WHITE; kbox.BorderSizePixel = 0
     kbox.Text = ""; kbox.PlaceholderText = "key..."; kbox.TextColor3 = DEEP_BROWN
     kbox.PlaceholderColor3 = MUTED_TEXT; kbox.TextSize = 13
-    kbox.Font = Enum.Font.GothamMedium; kbox.ClearTextOnFocus = false; kbox.Parent = key_frame
+    kbox.Font = Enum.Font.GothamMedium; kbox.ClearTextOnFocus = false; kbox.ZIndex = 10; kbox.Parent = key_frame
     local kbc = Instance.new("UICorner"); kbc.CornerRadius = UDim.new(0, 12); kbc.Parent = kbox
     local kbs = Instance.new("UIStroke"); kbs.Color = PINK; kbs.Thickness = 1.5; kbs.Parent = kbox
 
@@ -1186,6 +1238,7 @@ local function show_key_ui()
     ksubmit.BackgroundColor3 = YELLOW; ksubmit.BorderSizePixel = 0; ksubmit.Text = "unlock ✨"
     ksubmit.TextColor3 = BROWN; ksubmit.TextSize = 13; ksubmit.Font = Enum.Font.GothamBold
     ksubmit.AutoButtonColor = false
+    ksubmit.ZIndex = 10
     ksubmit.Parent = key_frame
     local ksc = Instance.new("UICorner"); ksc.CornerRadius = UDim.new(0, 12); ksc.Parent = ksubmit
     local kss = Instance.new("UIStroke"); kss.Color = PINK; kss.Thickness = 1.5; kss.Parent = ksubmit
@@ -1194,7 +1247,7 @@ local function show_key_ui()
     kstatus.Size = UDim2.new(1, -20, 0, 18); kstatus.Position = UDim2.new(0, 10, 0, 184)
     kstatus.BackgroundTransparency = 1; kstatus.Text = ""
     kstatus.TextColor3 = Color3.fromRGB(200, 50, 50); kstatus.TextSize = 11
-    kstatus.Font = Enum.Font.GothamBold; kstatus.TextTransparency = 1; kstatus.Parent = key_frame
+    kstatus.Font = Enum.Font.GothamBold; kstatus.TextTransparency = 1; kstatus.ZIndex = 3; kstatus.Parent = key_frame
 
     TweenService:Create(key_frame, TweenInfo.new(0.6, SMOOTH, DIR_OUT), {
         Size = UDim2.new(0, 280, 0, 230)
