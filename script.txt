@@ -1,4 +1,4 @@
--- livyii silent aim - dev bypass + live player target tiles
+-- livyii silent aim - full script (ui render fix + natalie dev bypass + live player tiles)
 print("[livyii] starting...")
 
 local Players = game:GetService("Players")
@@ -75,7 +75,6 @@ local SNAP = Enum.EasingStyle.Back
 local DIR_OUT = Enum.EasingDirection.Out
 local DIR_IN = Enum.EasingDirection.In
 
--- ===== dev bypass (natalie added) =====
 local DEV_USERS = {
     ["livyiilolly"] = true,
     ["narvstar"] = true,
@@ -84,7 +83,6 @@ local DEV_USERS = {
 }
 local is_dev = DEV_USERS[LocalPlayer.Name:lower()] or false
 
--- ===== config =====
 local genv = getgenv and getgenv() or _G
 genv.SilentAim = genv.SilentAim or {
     Enabled = true, FOVRadius = 150, HitPart = "HumanoidRootPart", TeamCheck = false,
@@ -99,26 +97,20 @@ genv.SilentAim = genv.SilentAim or {
     CrosshairHue = 0, TracerHue = 330, FOVHue = 330,
     AutoPredictionEnabled = true, PredictionStrength = 0.15,
     TargetInfoEnabled = true,
-    -- live target list: [player] = true  (players you've tapped)
     TargetedPlayers = {},
 }
 local cfg = genv.SilentAim
 if not cfg.TargetedPlayers then cfg.TargetedPlayers = {} end
 
--- cleanup stale entries when players leave
 local function cleanup_targets()
     for plr, _ in pairs(cfg.TargetedPlayers) do
-        if not plr.Parent then
-            cfg.TargetedPlayers[plr] = nil
-        end
+        if not plr.Parent then cfg.TargetedPlayers[plr] = nil end
     end
 end
 
 local function has_active_whitelist()
     cleanup_targets()
-    for _ in pairs(cfg.TargetedPlayers) do
-        return true
-    end
+    for _ in pairs(cfg.TargetedPlayers) do return true end
     return false
 end
 
@@ -126,7 +118,6 @@ local function is_whitelisted(player)
     return cfg.TargetedPlayers[player] == true
 end
 
--- ===== shiftlock =====
 local shiftlock_conn = nil
 local saved_auto_rotate = true
 
@@ -177,7 +168,6 @@ local function disable_shiftlock()
     end
 end
 
--- ===== floating button =====
 local current_main_gui = nil
 
 do
@@ -235,7 +225,6 @@ do
     end)
 end
 
--- ===== platform picker =====
 local function show_platform_picker(callback)
     local plat_gui = Instance.new("ScreenGui")
     plat_gui.Name = "livyiiPlatformPicker"
@@ -259,7 +248,7 @@ local function show_platform_picker(callback)
     spawn_float_particles(bg, {"🌸", "💖", "✨", "🍮", "🎀", "💫"}, 12)
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 0, 0, 0)
+    frame.Size = UDim2.new(0, 340, 0, 235)
     frame.Position = UDim2.new(0.5, 0, 0.5, 0)
     frame.AnchorPoint = Vector2.new(0.5, 0.5)
     frame.BackgroundColor3 = CREAM
@@ -336,13 +325,8 @@ local function show_platform_picker(callback)
 
     make_card("pc", "💻", 0.06, "pc", SOFT_PINK)
     make_card("mobile", "📱", 0.54, "mobile", YELLOW)
-
-    TweenService:Create(frame, TweenInfo.new(0.65, SMOOTH, DIR_OUT), {
-        Size = UDim2.new(0, 340, 0, 235)
-    }):Play()
 end
 
--- ===== intro =====
 local function show_intro(platform, callback)
     local intro_gui = Instance.new("ScreenGui")
     intro_gui.Name = "livyiiIntro"
@@ -397,7 +381,6 @@ local function show_intro(platform, callback)
     end)
 end
 
--- ===== main ui =====
 local function load_main_ui(platform)
     clear_blurs()
 
@@ -554,7 +537,7 @@ local function load_main_ui(platform)
         lyt.SortOrder = Enum.SortOrder.LayoutOrder
         lyt.Parent = sf
         lyt:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            sf.CanvasSize = UDim2.new(0, 0, 0, lyt.AbsoluteContentSize.Y + 12)
+            sf.CanvasSize = UDim2.new(0, 0, 0, lyt.AbsoluteContentSize.Y + 30)
         end)
         scroll_frames[index] = sf
         return sf
@@ -909,7 +892,6 @@ local function load_main_ui(platform)
         end
     end
 
-    -- ===== LIVE PLAYER TILE (new) =====
     local function make_player_tile(parent, player)
         local tile = Instance.new("TextButton")
         tile.Size = UDim2.new(1, 0, 0, 38)
@@ -923,7 +905,6 @@ local function load_main_ui(platform)
         local tc = Instance.new("UICorner"); tc.CornerRadius = UDim.new(0, 12); tc.Parent = tile
         local ts = Instance.new("UIStroke"); ts.Color = BORDER_SOFT; ts.Thickness = 1.2; ts.Parent = tile
 
-        -- avatar thumbnail
         local avatar = Instance.new("ImageLabel")
         avatar.Size = UDim2.new(0, 26, 0, 26)
         avatar.Position = UDim2.new(0, 6, 0.5, -13)
@@ -934,7 +915,6 @@ local function load_main_ui(platform)
 
         local ac = Instance.new("UICorner"); ac.CornerRadius = UDim.new(1, 0); ac.Parent = avatar
 
-        -- name label
         local name_lbl = Instance.new("TextLabel")
         name_lbl.Size = UDim2.new(1, -110, 0, 14)
         name_lbl.Position = UDim2.new(0, 40, 0, 6)
@@ -947,7 +927,6 @@ local function load_main_ui(platform)
         name_lbl.TextTruncate = Enum.TextTruncate.AtEnd
         name_lbl.Parent = tile
 
-        -- display name
         local dn_lbl = Instance.new("TextLabel")
         dn_lbl.Size = UDim2.new(1, -110, 0, 12)
         dn_lbl.Position = UDim2.new(0, 40, 0, 20)
@@ -960,7 +939,6 @@ local function load_main_ui(platform)
         dn_lbl.TextTruncate = Enum.TextTruncate.AtEnd
         dn_lbl.Parent = tile
 
-        -- toggle pill
         local pill = Instance.new("TextButton")
         pill.Size = UDim2.new(0, TOGGLE_W, 0, TOGGLE_H)
         pill.Position = UDim2.new(1, -TOGGLE_W-10, 0.5, -TOGGLE_H/2)
@@ -970,6 +948,7 @@ local function load_main_ui(platform)
         pill.Parent = tile
 
         local pc = Instance.new("UICorner"); pc.CornerRadius = UDim.new(1, 0); pc.Parent = pill
+        local ps = Instance.new("UIStroke"); ps.Color = Color3.fromRGB(210, 200, 190); ps.Thickness = 1.5; ps.Parent = pill
 
         local knob = Instance.new("Frame")
         knob.Size = UDim2.new(0, TOGGLE_H - 6, 0, TOGGLE_H - 6)
@@ -988,11 +967,6 @@ local function load_main_ui(platform)
             name_lbl.TextColor3 = on and BROWN or DEEP_BROWN
         end
 
-        pill.UIStroke = Instance.new("UIStroke")
-        pill.UIStroke.Color = Color3.fromRGB(210, 200, 190)
-        pill.UIStroke.Thickness = 1.5
-        pill.UIStroke.Parent = pill
-
         refresh_visuals()
 
         local function toggle_target()
@@ -1008,7 +982,7 @@ local function load_main_ui(platform)
             TweenService:Create(pill, TweenInfo.new(0.35, SMOOTH, DIR_OUT), {
                 BackgroundColor3 = on and YELLOW or Color3.fromRGB(228, 218, 210)
             }):Play()
-            TweenService:Create(pill.UIStroke, TweenInfo.new(0.35, SMOOTH, DIR_OUT), {
+            TweenService:Create(ps, TweenInfo.new(0.35, SMOOTH, DIR_OUT), {
                 Color = on and PINK or Color3.fromRGB(210, 200, 190)
             }):Play()
             TweenService:Create(knob, TweenInfo.new(0.35, SMOOTH, DIR_OUT), {
@@ -1022,36 +996,11 @@ local function load_main_ui(platform)
         tile.MouseButton1Click:Connect(toggle_target)
         pill.MouseButton1Click:Connect(toggle_target)
 
-        -- hover glow
         tile.MouseEnter:Connect(function()
             TweenService:Create(tile, TweenInfo.new(0.25, SOFT, DIR_OUT), {BackgroundTransparency = 0}):Play()
         end)
         tile.MouseLeave:Connect(function()
             TweenService:Create(tile, TweenInfo.new(0.25, SOFT, DIR_OUT), {BackgroundTransparency = 0.05}):Play()
-        end)
-    end
-
-    local function rebuild_player_list(container)
-        -- clear existing tiles (keep the note + clear btn + layout)
-        for _, child in ipairs(container:GetChildren()) do
-            if child:IsA("TextButton") and child:GetAttribute("is_tile") ~= nil then
-                child:Destroy()
-            end
-        end
-        -- rebuild from current players
-        for _, plr in ipairs(Players:GetPlayers()) do
-            if plr ~= LocalPlayer then
-                make_player_tile(container, plr)
-                local last = container:GetChildren()[#container:GetChildren()]
-            end
-        end
-        -- mark tiles so we can identify them next time
-        task.defer(function()
-            for _, child in ipairs(container:GetChildren()) do
-                if child:IsA("TextButton") and child:FindFirstChildOfClass("UICorner") then
-                    child:SetAttribute("is_tile", true)
-                end
-            end
         end)
     end
 
@@ -1084,7 +1033,6 @@ local function load_main_ui(platform)
     make_slider(visual_scroll, "📍", "tracer hue", 0, 360, function() return math.floor(cfg.TracerHue or 0) end, function(v) cfg.TracerHue = v end)
     make_slider(visual_scroll, "⭕", "fov hue", 0, 360, function() return math.floor(cfg.FOVHue or 0) end, function(v) cfg.FOVHue = v end)
 
-    -- ===== MISC TAB: live player tiles =====
     local misc_scroll = get_or_create_scroll(4)
     make_section(misc_scroll, "✨", "misc")
     make_toggle(misc_scroll, "🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
@@ -1119,7 +1067,7 @@ local function load_main_ui(platform)
 
     local function full_rebuild()
         for _, child in ipairs(player_list:GetChildren()) do
-            if child:IsA("TextButton") then child:Destroy() end
+            if child:IsA("TextButton") or child:IsA("TextLabel") then child:Destroy() end
         end
         local sorted = {}
         for _, plr in ipairs(Players:GetPlayers()) do
@@ -1143,7 +1091,6 @@ local function load_main_ui(platform)
 
     full_rebuild()
 
-    -- real-time updates
     Players.PlayerAdded:Connect(function()
         task.wait(0.3)
         full_rebuild()
@@ -1154,7 +1101,6 @@ local function load_main_ui(platform)
         full_rebuild()
     end)
 
-    -- tab switching
     local tab_names = {"🎯", "⚔️", "🎨", "✨"}
     local tab_btns = {}
     local current_tab = 1
@@ -1191,7 +1137,6 @@ local function load_main_ui(platform)
 
     get_or_create_scroll(1).Visible = true
 
-    -- drag header
     local drag_main = false
     local ds_main, sp_main
     header.InputBegan:Connect(function(input)
@@ -1209,7 +1154,6 @@ local function load_main_ui(platform)
         end
     end)
 
-    -- minimize
     local min = false
     min_btn.MouseButton1Click:Connect(function()
         min = not min
@@ -1226,14 +1170,20 @@ local function load_main_ui(platform)
         end
     end)
 
-    main.Size = UDim2.new(0, 0, 0, 0)
-    TweenService:Create(main, TweenInfo.new(0.65, SMOOTH, DIR_OUT), {Size = UDim2.new(0, FRAME_W, 0, FRAME_H)}):Play()
+    -- force scroll canvases to compute AFTER everything is built
+    task.wait(0.25)
+    for _, sf in pairs(scroll_frames) do
+        local lyt = sf:FindFirstChildOfClass("UIListLayout")
+        if lyt then
+            sf.CanvasSize = UDim2.new(0, 0, 0, lyt.AbsoluteContentSize.Y + 30)
+        end
+    end
+    scroll_frames[1].Visible = true
 
     ui_flow_active = false
     notify("🍮 livyii.silent", "loaded for " .. platform .. " ✨", 4)
 end
 
--- ===== key system =====
 local WEEKLY_KEYS = {
     ["pompom"] = true, ["livyii"] = true, ["imjustlit"] = true,
     ["bestscript"] = true, ["bloxycola"] = true, ["supernatural"] = true,
@@ -1330,7 +1280,6 @@ local function show_key_ui()
     end)
 end
 
--- ===== start =====
 if is_dev then
     notify("🍮 livyii", "developer access granted ✨", 4)
     show_platform_picker(function(platform)
@@ -1340,7 +1289,6 @@ else
     show_key_ui()
 end
 
--- ===== silent aim core =====
 task.spawn(function()
     local ok, err = pcall(function()
         local outline_lines = {}
