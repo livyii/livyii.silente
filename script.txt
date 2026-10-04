@@ -1,4 +1,4 @@
--- livyii silent aim - full script (ui render + input fix + natalie dev bypass + live player tiles)
+-- livyii silent aim - full script (touch guard fix)
 print("[livyii] starting...")
 
 local Players = game:GetService("Players")
@@ -169,6 +169,16 @@ local function disable_shiftlock()
 end
 
 local current_main_gui = nil
+local ui_main_frame = nil
+
+local function is_touch_on_ui(pos)
+    if not ui_main_frame or not ui_main_frame.Visible then return false end
+    if not current_main_gui or not current_main_gui.Enabled then return false end
+    local ap = ui_main_frame.AbsolutePosition
+    local as = ui_main_frame.AbsoluteSize
+    return pos.X >= ap.X and pos.X <= ap.X + as.X
+       and pos.Y >= ap.Y and pos.Y <= ap.Y + as.Y
+end
 
 do
     local float_gui = Instance.new("ScreenGui")
@@ -423,6 +433,7 @@ local function load_main_ui(platform)
     main.Visible = true
     main.ZIndex = 1
     main.Parent = main_gui
+    ui_main_frame = main
 
     local mc = Instance.new("UICorner"); mc.CornerRadius = UDim.new(0, 24); mc.Parent = main
     local ms = Instance.new("UIStroke"); ms.Color = CARAMEL; ms.Thickness = 2.2; ms.Parent = main
@@ -1583,6 +1594,7 @@ task.spawn(function()
         local drag_offset = Vector2.new(0, 0)
         UIS.TouchBegan:Connect(function(touch)
             if ui_flow_active then return end
+            if is_touch_on_ui(touch.Position) then return end
             if cfg.FollowTarget and get_target() then return end
             if cfg.UseCursorAim then return end
             local pos = touch.Position
@@ -1599,6 +1611,9 @@ task.spawn(function()
         UIS.InputBegan:Connect(function(input, gp)
             if gp then return end
             if ui_flow_active then return end
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                if is_touch_on_ui(Vector2.new(input.Position.X, input.Position.Y)) then return end
+            end
             if cfg.FollowTarget and get_target() then return end
             if cfg.UseCursorAim then return end
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -1621,6 +1636,7 @@ task.spawn(function()
 
         UIS.InputBegan:Connect(function(input, gp)
             if gp then return end
+            if ui_flow_active then return end
             if input.KeyCode == cfg.ToggleKey then
                 cfg.Enabled = not cfg.Enabled
                 notify("🍮 silent aim", cfg.Enabled and "enabled ✨" or "disabled 🌸", 2)
@@ -1638,4 +1654,4 @@ task.spawn(function()
     end
 end)
 
-print("[livyii] script fully loaded ✨")
+print("[livyii] script fully loaded ✨") 
