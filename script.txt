@@ -32,11 +32,11 @@ end
 local function spawn_float_particles(parent, emojis, count)
     for i = 1, count do
         local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(0, 24, 0, 24)
+        lbl.Size = UDim2.new(0, 20, 0, 20)
         lbl.Position = UDim2.new(math.random() * 1, 0, math.random() * 1, 0)
         lbl.BackgroundTransparency = 1
         lbl.Text = emojis[math.random(1, #emojis)]
-        lbl.TextSize = math.random(14, 22)
+        lbl.TextSize = math.random(12, 18)
         lbl.TextTransparency = 0.45
         lbl.Font = Enum.Font.Gotham
         lbl.Parent = parent
@@ -190,20 +190,20 @@ do
     float_gui.Parent = PlayerGui
 
     local toggle_btn = Instance.new("TextButton")
-    toggle_btn.Size = UDim2.new(0, 54, 0, 54)
-    toggle_btn.Position = UDim2.new(1, -68, 0, 72)
+    toggle_btn.Size = UDim2.new(0, 42, 0, 42)
+    toggle_btn.Position = UDim2.new(1, -54, 0, 60)
     toggle_btn.BackgroundColor3 = CREAM
     toggle_btn.BorderSizePixel = 0
     toggle_btn.Text = "🍮"
     toggle_btn.TextColor3 = BROWN
-    toggle_btn.TextSize = 26
+    toggle_btn.TextSize = 20
     toggle_btn.Font = Enum.Font.GothamBold
     toggle_btn.AutoButtonColor = false
     toggle_btn.ZIndex = 5
     toggle_btn.Parent = float_gui
 
     local t_c = Instance.new("UICorner"); t_c.CornerRadius = UDim.new(1, 0); t_c.Parent = toggle_btn
-    local t_s = Instance.new("UIStroke"); t_s.Color = PINK; t_s.Thickness = 2.5; t_s.Parent = toggle_btn
+    local t_s = Instance.new("UIStroke"); t_s.Color = PINK; t_s.Thickness = 2; t_s.Parent = toggle_btn
     local t_g = Instance.new("UIGradient")
     t_g.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, YELLOW),
@@ -261,7 +261,7 @@ local function show_platform_picker(callback)
     spawn_float_particles(bg, {"🌸", "💖", "✨", "🍮", "🎀", "💫"}, 12)
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 340, 0, 235)
+    frame.Size = UDim2.new(0, 260, 0, 185)
     frame.Position = UDim2.new(0.5, 0, 0.5, 0)
     frame.AnchorPoint = Vector2.new(0.5, 0.5)
     frame.BackgroundColor3 = CREAM
@@ -270,8 +270,8 @@ local function show_platform_picker(callback)
     frame.ZIndex = 2
     frame.Parent = plat_gui
 
-    local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 28); cc.Parent = frame
-    local cs = Instance.new("UIStroke"); cs.Color = PINK; cs.Thickness = 2.5; cs.Parent = frame
+    local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 22); cc.Parent = frame
+    local cs = Instance.new("UIStroke"); cs.Color = PINK; cs.Thickness = 2.2; cs.Parent = frame
     local cg = Instance.new("UIGradient")
     cg.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, CREAM),
@@ -282,23 +282,23 @@ local function show_platform_picker(callback)
     cg.Parent = frame
 
     local t = Instance.new("TextLabel")
-    t.Size = UDim2.new(1, 0, 0, 42); t.Position = UDim2.new(0, 0, 0, 22)
+    t.Size = UDim2.new(1, 0, 0, 34); t.Position = UDim2.new(0, 0, 0, 16)
     t.BackgroundTransparency = 1; t.Text = "pick your device"
-    t.TextColor3 = DEEP_BROWN; t.TextSize = 20; t.Font = Enum.Font.GothamBold
+    t.TextColor3 = DEEP_BROWN; t.TextSize = 16; t.Font = Enum.Font.GothamBold
     t.ZIndex = 3
     t.Parent = frame
 
     local d = Instance.new("TextLabel")
-    d.Size = UDim2.new(1, -20, 0, 20); d.Position = UDim2.new(0, 10, 0, 66)
+    d.Size = UDim2.new(1, -16, 0, 16); d.Position = UDim2.new(0, 8, 0, 50)
     d.BackgroundTransparency = 1; d.Text = "we'll optimize everything for you"
-    d.TextColor3 = MUTED_TEXT; d.TextSize = 12; d.Font = Enum.Font.GothamMedium
+    d.TextColor3 = MUTED_TEXT; d.TextSize = 10; d.Font = Enum.Font.GothamMedium
     d.ZIndex = 3
     d.Parent = frame
 
     local function make_card(text, icon, x_pos, platform, theme_color)
         local card = Instance.new("TextButton")
-        card.Size = UDim2.new(0.4, 0, 0, 100)
-        card.Position = UDim2.new(x_pos, 0, 0, 105)
+        card.Size = UDim2.new(0.4, 0, 0, 84)
+        card.Position = UDim2.new(x_pos, 0, 0, 82)
         card.BackgroundColor3 = WHITE
         card.BorderSizePixel = 0
         card.Text = ""
@@ -306,8 +306,8 @@ local function show_platform_picker(callback)
         card.ZIndex = 10
         card.Parent = frame
 
-        local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, 18); c.Parent = card
-        local s = Instance.new("UIStroke"); s.Color = theme_color; s.Thickness = 2.2; s.Parent = card
+        local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, 14); c.Parent = card
+        local s = Instance.new("UIStroke"); s.Color = theme_color; s.Thickness = 1.8; s.Parent = card
         local g = Instance.new("UIGradient")
         g.Color = ColorSequence.new({
             ColorSequenceKeypoint.new(0, WHITE),
@@ -317,14 +317,14 @@ local function show_platform_picker(callback)
         g.Parent = card
 
         local il = Instance.new("TextLabel")
-        il.Size = UDim2.new(1, 0, 0, 45); il.Position = UDim2.new(0, 0, 0, 14)
-        il.BackgroundTransparency = 1; il.Text = icon; il.TextSize = 34
+        il.Size = UDim2.new(1, 0, 0, 38); il.Position = UDim2.new(0, 0, 0, 10)
+        il.BackgroundTransparency = 1; il.Text = icon; il.TextSize = 28
         il.Font = Enum.Font.GothamBold; il.ZIndex = 11; il.Parent = card
 
         local tx = Instance.new("TextLabel")
-        tx.Size = UDim2.new(1, 0, 0, 24); tx.Position = UDim2.new(0, 0, 0, 66)
+        tx.Size = UDim2.new(1, 0, 0, 20); tx.Position = UDim2.new(0, 0, 0, 54)
         tx.BackgroundTransparency = 1; tx.Text = text
-        tx.TextColor3 = DEEP_BROWN; tx.TextSize = 14; tx.Font = Enum.Font.GothamBold
+        tx.TextColor3 = DEEP_BROWN; tx.TextSize = 12; tx.Font = Enum.Font.GothamBold
         tx.ZIndex = 11
         tx.Parent = card
 
@@ -365,26 +365,26 @@ local function show_intro(platform, callback)
     spawn_float_particles(bg, {"🌸", "💖", "✨", "🍮", "🎀", "💫", "🌟"}, 18)
 
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 60); title.Position = UDim2.new(0, 0, 0.4, -10)
+    title.Size = UDim2.new(1, 0, 0, 48); title.Position = UDim2.new(0, 0, 0.4, -8)
     title.BackgroundTransparency = 1; title.Text = "🍮 livyii.silent 🍮"
-    title.TextColor3 = DEEP_BROWN; title.TextSize = 32; title.Font = Enum.Font.GothamBold
+    title.TextColor3 = DEEP_BROWN; title.TextSize = 26; title.Font = Enum.Font.GothamBold
     title.ZIndex = 5
     title.Parent = intro_gui
 
     local loading = Instance.new("TextLabel")
-    loading.Size = UDim2.new(1, 0, 0, 40); loading.Position = UDim2.new(0, 0, 0.55, -20)
+    loading.Size = UDim2.new(1, 0, 0, 32); loading.Position = UDim2.new(0, 0, 0.55, -16)
     loading.BackgroundTransparency = 1; loading.Text = "loading.."
-    loading.TextColor3 = PINK; loading.TextSize = 20; loading.Font = Enum.Font.GothamBold
+    loading.TextColor3 = PINK; loading.TextSize = 16; loading.Font = Enum.Font.GothamBold
     loading.ZIndex = 5
     loading.Parent = intro_gui
 
     local heart = Instance.new("TextLabel")
-    heart.Size = UDim2.new(0, 30, 0, 30); heart.Position = UDim2.new(0.5, 70, 0.55, -20)
-    heart.BackgroundTransparency = 1; heart.Text = "💖"; heart.TextSize = 20
+    heart.Size = UDim2.new(0, 24, 0, 24); heart.Position = UDim2.new(0.5, 58, 0.55, -16)
+    heart.BackgroundTransparency = 1; heart.Text = "💖"; heart.TextSize = 16
     heart.Font = Enum.Font.GothamBold; heart.ZIndex = 5; heart.Parent = intro_gui
 
     title.TextTransparency = 1; loading.TextTransparency = 1
-    TweenService:Create(title, TweenInfo.new(0.7, SMOOTH, DIR_OUT), {TextTransparency = 0, Position = UDim2.new(0, 0, 0.4, -30)}):Play()
+    TweenService:Create(title, TweenInfo.new(0.7, SMOOTH, DIR_OUT), {TextTransparency = 0, Position = UDim2.new(0, 0, 0.4, -24)}):Play()
     TweenService:Create(loading, TweenInfo.new(0.6, SMOOTH, DIR_OUT), {TextTransparency = 0}):Play()
 
     task.wait(1.5)
@@ -406,14 +406,14 @@ end
 local function load_main_ui(platform)
     clear_blurs()
 
-    local FRAME_W = 300
-    local FRAME_H = 430
-    local CARD_H = 42
-    local TOGGLE_W = 46
-    local TOGGLE_H = 24
-    local LABEL_SIZE = 11
-    local SLIDER_H = 52
-    local SLIDER_KNOB = 16
+    local FRAME_W = 240
+    local FRAME_H = 340
+    local CARD_H = 34
+    local TOGGLE_W = 38
+    local TOGGLE_H = 20
+    local LABEL_SIZE = 9
+    local SLIDER_H = 42
+    local SLIDER_KNOB = 13
 
     local main_gui = Instance.new("ScreenGui")
     main_gui.Name = "livyiiMainGui"
@@ -435,8 +435,8 @@ local function load_main_ui(platform)
     main.Parent = main_gui
     ui_main_frame = main
 
-    local mc = Instance.new("UICorner"); mc.CornerRadius = UDim.new(0, 24); mc.Parent = main
-    local ms = Instance.new("UIStroke"); ms.Color = CARAMEL; ms.Thickness = 2.2; ms.Parent = main
+    local mc = Instance.new("UICorner"); mc.CornerRadius = UDim.new(0, 18); mc.Parent = main
+    local ms = Instance.new("UIStroke"); ms.Color = CARAMEL; ms.Thickness = 1.8; ms.Parent = main
     local mg = Instance.new("UIGradient")
     mg.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, YELLOW),
@@ -448,71 +448,71 @@ local function load_main_ui(platform)
     mg.Parent = main
 
     local header = Instance.new("Frame")
-    header.Size = UDim2.new(1, 0, 0, 60)
+    header.Size = UDim2.new(1, 0, 0, 48)
     header.BackgroundTransparency = 1
     header.ZIndex = 20
     header.Parent = main
 
     local badge = Instance.new("Frame")
-    badge.Size = UDim2.new(0, 36, 0, 36)
-    badge.Position = UDim2.new(0, 14, 0.5, -18)
+    badge.Size = UDim2.new(0, 28, 0, 28)
+    badge.Position = UDim2.new(0, 10, 0.5, -14)
     badge.BackgroundColor3 = YELLOW
     badge.BorderSizePixel = 0
     badge.ZIndex = 21
     badge.Parent = header
 
     local bc = Instance.new("UICorner"); bc.CornerRadius = UDim.new(1, 0); bc.Parent = badge
-    local bs = Instance.new("UIStroke"); bs.Color = PINK; bs.Thickness = 1.8; bs.Parent = badge
+    local bs = Instance.new("UIStroke"); bs.Color = PINK; bs.Thickness = 1.5; bs.Parent = badge
 
     local bi = Instance.new("TextLabel")
     bi.Size = UDim2.new(1, 0, 1, 0); bi.BackgroundTransparency = 1
-    bi.Text = "🍮"; bi.TextSize = 18; bi.Font = Enum.Font.GothamBold
+    bi.Text = "🍮"; bi.TextSize = 14; bi.Font = Enum.Font.GothamBold
     bi.ZIndex = 22
     bi.Parent = badge
 
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, -130, 0, 20)
-    title.Position = UDim2.new(0, 58, 0, 12)
+    title.Size = UDim2.new(1, -110, 0, 16)
+    title.Position = UDim2.new(0, 44, 0, 9)
     title.BackgroundTransparency = 1
     title.Text = "livyii.silent"
     title.TextColor3 = DEEP_BROWN
-    title.TextSize = 16
+    title.TextSize = 13
     title.Font = Enum.Font.GothamBold
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.ZIndex = 21
     title.Parent = header
 
     local subtitle = Instance.new("TextLabel")
-    subtitle.Size = UDim2.new(1, -130, 0, 14)
-    subtitle.Position = UDim2.new(0, 58, 0, 32)
+    subtitle.Size = UDim2.new(1, -110, 0, 12)
+    subtitle.Position = UDim2.new(0, 44, 0, 26)
     subtitle.BackgroundTransparency = 1
     subtitle.Text = "optimized for " .. platform
     subtitle.TextColor3 = MUTED_TEXT
-    subtitle.TextSize = 10
+    subtitle.TextSize = 9
     subtitle.Font = Enum.Font.GothamMedium
     subtitle.TextXAlignment = Enum.TextXAlignment.Left
     subtitle.ZIndex = 21
     subtitle.Parent = header
 
     local min_btn = Instance.new("TextButton")
-    min_btn.Size = UDim2.new(0, 26, 0, 26)
-    min_btn.Position = UDim2.new(1, -34, 0.5, -13)
+    min_btn.Size = UDim2.new(0, 22, 0, 22)
+    min_btn.Position = UDim2.new(1, -28, 0.5, -11)
     min_btn.BackgroundColor3 = YELLOW
     min_btn.BorderSizePixel = 0
     min_btn.Text = "−"
     min_btn.TextColor3 = BROWN
-    min_btn.TextSize = 16
+    min_btn.TextSize = 13
     min_btn.Font = Enum.Font.GothamBold
     min_btn.AutoButtonColor = false
     min_btn.ZIndex = 25
     min_btn.Parent = header
 
     local mbc = Instance.new("UICorner"); mbc.CornerRadius = UDim.new(1, 0); mbc.Parent = min_btn
-    local mbs = Instance.new("UIStroke"); mbs.Color = PINK; mbs.Thickness = 1.5; mbs.Parent = min_btn
+    local mbs = Instance.new("UIStroke"); mbs.Color = PINK; mbs.Thickness = 1.3; mbs.Parent = min_btn
 
     local tab_bar = Instance.new("Frame")
-    tab_bar.Size = UDim2.new(1, -22, 0, 36)
-    tab_bar.Position = UDim2.new(0, 11, 0, 66)
+    tab_bar.Size = UDim2.new(1, -18, 0, 30)
+    tab_bar.Position = UDim2.new(0, 9, 0, 52)
     tab_bar.BackgroundColor3 = Color3.fromRGB(252, 242, 232)
     tab_bar.BackgroundTransparency = 0.2
     tab_bar.BorderSizePixel = 0
@@ -531,7 +531,7 @@ local function load_main_ui(platform)
     tab_indicator.Parent = tab_bar
 
     local tic = Instance.new("UICorner"); tic.CornerRadius = UDim.new(1, 0); tic.Parent = tab_indicator
-    local tis = Instance.new("UIStroke"); tis.Color = PINK; tis.Thickness = 1.5; tis.Parent = tab_indicator
+    local tis = Instance.new("UIStroke"); tis.Color = PINK; tis.Thickness = 1.3; tis.Parent = tab_indicator
 
     local tab_names = {"AIM", "COMBAT", "VISUAL", "MISC"}
     local tab_btns = {}
@@ -544,7 +544,7 @@ local function load_main_ui(platform)
         tb.BackgroundTransparency = 1
         tb.Text = tab_names[i]
         tb.TextColor3 = i == 1 and DEEP_BROWN or BROWN
-        tb.TextSize = 11
+        tb.TextSize = 9
         tb.Font = Enum.Font.GothamBold
         tb.AutoButtonColor = false
         tb.ZIndex = 18
@@ -556,8 +556,8 @@ local function load_main_ui(platform)
     for i = 1, 4 do
         local sf = Instance.new("ScrollingFrame")
         sf.Name = "Tab" .. i
-        sf.Size = UDim2.new(1, -22, 1, -110)
-        sf.Position = UDim2.new(0, 11, 0, 108)
+        sf.Size = UDim2.new(1, -18, 1, -88)
+        sf.Position = UDim2.new(0, 9, 0, 88)
         sf.BackgroundTransparency = 1
         sf.BorderSizePixel = 0
         sf.CanvasSize = UDim2.new(0, 0, 0, 3000)
@@ -569,13 +569,13 @@ local function load_main_ui(platform)
         sf.Parent = main
 
         local lyt = Instance.new("UIListLayout")
-        lyt.Padding = UDim.new(0, 6)
+        lyt.Padding = UDim.new(0, 5)
         lyt.SortOrder = Enum.SortOrder.LayoutOrder
         lyt.Parent = sf
 
         local pad = Instance.new("UIPadding")
         pad.PaddingTop = UDim.new(0, 4)
-        pad.PaddingBottom = UDim.new(0, 20)
+        pad.PaddingBottom = UDim.new(0, 16)
         pad.Parent = sf
 
         scroll_frames[i] = sf
@@ -583,14 +583,14 @@ local function load_main_ui(platform)
 
     local function make_section(parent, emoji, text)
         local sec = Instance.new("Frame")
-        sec.Size = UDim2.new(1, 0, 0, 24)
+        sec.Size = UDim2.new(1, 0, 0, 20)
         sec.BackgroundTransparency = 1
         sec.ZIndex = 4
         sec.Parent = parent
 
         local b = Instance.new("Frame")
-        b.Size = UDim2.new(0, 18, 0, 18)
-        b.Position = UDim2.new(0, 0, 0.5, -9)
+        b.Size = UDim2.new(0, 15, 0, 15)
+        b.Position = UDim2.new(0, 0, 0.5, -7)
         b.BackgroundColor3 = SOFT_PINK
         b.BorderSizePixel = 0
         b.ZIndex = 5
@@ -601,17 +601,17 @@ local function load_main_ui(platform)
 
         local el = Instance.new("TextLabel")
         el.Size = UDim2.new(1, 0, 1, 0); el.BackgroundTransparency = 1
-        el.Text = emoji; el.TextSize = 11; el.Font = Enum.Font.GothamBold
+        el.Text = emoji; el.TextSize = 9; el.Font = Enum.Font.GothamBold
         el.ZIndex = 6
         el.Parent = b
 
         local lbl = Instance.new("TextLabel")
-        lbl.Size = UDim2.new(1, -30, 1, 0)
-        lbl.Position = UDim2.new(0, 26, 0, 0)
+        lbl.Size = UDim2.new(1, -24, 1, 0)
+        lbl.Position = UDim2.new(0, 22, 0, 0)
         lbl.BackgroundTransparency = 1
         lbl.Text = text
         lbl.TextColor3 = BROWN
-        lbl.TextSize = 11
+        lbl.TextSize = 9
         lbl.Font = Enum.Font.GothamBold
         lbl.TextXAlignment = Enum.TextXAlignment.Left
         lbl.ZIndex = 5
@@ -636,12 +636,12 @@ local function load_main_ui(platform)
         card.ZIndex = 5
         card.Parent = parent
 
-        local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 14); cc.Parent = card
-        local cs = Instance.new("UIStroke"); cs.Color = BORDER_SOFT; cs.Thickness = 1.2; cs.Parent = card
+        local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 11); cc.Parent = card
+        local cs = Instance.new("UIStroke"); cs.Color = BORDER_SOFT; cs.Thickness = 1; cs.Parent = card
 
         local ib = Instance.new("Frame")
-        ib.Size = UDim2.new(0, 28, 0, 28)
-        ib.Position = UDim2.new(0, 8, 0.5, -14)
+        ib.Size = UDim2.new(0, 22, 0, 22)
+        ib.Position = UDim2.new(0, 6, 0.5, -11)
         ib.BackgroundColor3 = SOFT_PINK
         ib.BorderSizePixel = 0
         ib.ZIndex = 6
@@ -652,13 +652,13 @@ local function load_main_ui(platform)
 
         local ibi = Instance.new("TextLabel")
         ibi.Size = UDim2.new(1, 0, 1, 0); ibi.BackgroundTransparency = 1
-        ibi.Text = icon; ibi.TextSize = 14; ibi.Font = Enum.Font.GothamBold
+        ibi.Text = icon; ibi.TextSize = 11; ibi.Font = Enum.Font.GothamBold
         ibi.ZIndex = 7
         ibi.Parent = ib
 
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -110, 1, 0)
-        label.Position = UDim2.new(0, 44, 0, 0)
+        label.Size = UDim2.new(1, -90, 1, 0)
+        label.Position = UDim2.new(0, 34, 0, 0)
         label.BackgroundTransparency = 1
         label.Text = text
         label.TextColor3 = DEEP_BROWN
@@ -670,7 +670,7 @@ local function load_main_ui(platform)
 
         local pill = Instance.new("TextButton")
         pill.Size = UDim2.new(0, TOGGLE_W, 0, TOGGLE_H)
-        pill.Position = UDim2.new(1, -TOGGLE_W-10, 0.5, -TOGGLE_H/2)
+        pill.Position = UDim2.new(1, -TOGGLE_W-8, 0.5, -TOGGLE_H/2)
         pill.BackgroundColor3 = get_state() and YELLOW or Color3.fromRGB(228, 218, 210)
         pill.BorderSizePixel = 0
         pill.Text = ""
@@ -679,7 +679,7 @@ local function load_main_ui(platform)
         pill.Parent = card
 
         local pc = Instance.new("UICorner"); pc.CornerRadius = UDim.new(1, 0); pc.Parent = pill
-        local ps = Instance.new("UIStroke"); ps.Color = get_state() and PINK or Color3.fromRGB(210, 200, 190); ps.Thickness = 1.5; ps.Parent = pill
+        local ps = Instance.new("UIStroke"); ps.Color = get_state() and PINK or Color3.fromRGB(210, 200, 190); ps.Thickness = 1.3; ps.Parent = pill
 
         local knob = Instance.new("Frame")
         knob.Size = UDim2.new(0, TOGGLE_H - 6, 0, TOGGLE_H - 6)
@@ -716,12 +716,12 @@ local function load_main_ui(platform)
         card.ZIndex = 5
         card.Parent = parent
 
-        local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 14); cc.Parent = card
-        local cs = Instance.new("UIStroke"); cs.Color = BORDER_SOFT; cs.Thickness = 1.2; cs.Parent = card
+        local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 11); cc.Parent = card
+        local cs = Instance.new("UIStroke"); cs.Color = BORDER_SOFT; cs.Thickness = 1; cs.Parent = card
 
         local ib = Instance.new("Frame")
-        ib.Size = UDim2.new(0, 28, 0, 28)
-        ib.Position = UDim2.new(0, 8, 0, 6)
+        ib.Size = UDim2.new(0, 22, 0, 22)
+        ib.Position = UDim2.new(0, 6, 0, 5)
         ib.BackgroundColor3 = SOFT_PINK
         ib.BorderSizePixel = 0
         ib.ZIndex = 6
@@ -732,13 +732,13 @@ local function load_main_ui(platform)
 
         local ibi = Instance.new("TextLabel")
         ibi.Size = UDim2.new(1, 0, 1, 0); ibi.BackgroundTransparency = 1
-        ibi.Text = icon; ibi.TextSize = 14; ibi.Font = Enum.Font.GothamBold
+        ibi.Text = icon; ibi.TextSize = 11; ibi.Font = Enum.Font.GothamBold
         ibi.ZIndex = 7
         ibi.Parent = ib
 
         local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(1, -110, 0, 20)
-        label.Position = UDim2.new(0, 44, 0, 8)
+        label.Size = UDim2.new(1, -90, 0, 16)
+        label.Position = UDim2.new(0, 34, 0, 6)
         label.BackgroundTransparency = 1
         label.Text = text
         label.TextColor3 = DEEP_BROWN
@@ -749,8 +749,8 @@ local function load_main_ui(platform)
         label.Parent = card
 
         local badge = Instance.new("Frame")
-        badge.Size = UDim2.new(0, 50, 0, 22)
-        badge.Position = UDim2.new(1, -60, 0, 8)
+        badge.Size = UDim2.new(0, 40, 0, 18)
+        badge.Position = UDim2.new(1, -46, 0, 6)
         badge.BackgroundColor3 = YELLOW
         badge.BorderSizePixel = 0
         badge.ZIndex = 6
@@ -763,14 +763,14 @@ local function load_main_ui(platform)
         val_lbl.Size = UDim2.new(1, 0, 1, 0); val_lbl.BackgroundTransparency = 1
         val_lbl.Text = tostring(get_value())
         val_lbl.TextColor3 = BROWN
-        val_lbl.TextSize = 10
+        val_lbl.TextSize = 9
         val_lbl.Font = Enum.Font.GothamBold
         val_lbl.ZIndex = 7
         val_lbl.Parent = badge
 
         local track = Instance.new("Frame")
-        track.Size = UDim2.new(1, -60, 0, 6)
-        track.Position = UDim2.new(0, 44, 0, SLIDER_H - 16)
+        track.Size = UDim2.new(1, -52, 0, 5)
+        track.Position = UDim2.new(0, 34, 0, SLIDER_H - 13)
         track.BackgroundColor3 = Color3.fromRGB(240, 230, 220)
         track.BorderSizePixel = 0
         track.ZIndex = 6
@@ -798,7 +798,7 @@ local function load_main_ui(platform)
         knob.Parent = track
 
         local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(1, 0); kc.Parent = knob
-        local ks = Instance.new("UIStroke"); ks.Color = PINK; ks.Thickness = 2; ks.Parent = knob
+        local ks = Instance.new("UIStroke"); ks.Color = PINK; ks.Thickness = 1.5; ks.Parent = knob
 
         local dragging = false
         local function update_from_x(x_pos)
@@ -840,12 +840,12 @@ local function load_main_ui(platform)
         card.ZIndex = 5
         card.Parent = parent
 
-        local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 14); cc.Parent = card
-        local cs = Instance.new("UIStroke"); cs.Color = BORDER_SOFT; cs.Thickness = 1.2; cs.Parent = card
+        local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 11); cc.Parent = card
+        local cs = Instance.new("UIStroke"); cs.Color = BORDER_SOFT; cs.Thickness = 1; cs.Parent = card
 
         local ib = Instance.new("Frame")
-        ib.Size = UDim2.new(0, 28, 0, 28)
-        ib.Position = UDim2.new(0, 8, 0.5, -14)
+        ib.Size = UDim2.new(0, 22, 0, 22)
+        ib.Position = UDim2.new(0, 6, 0.5, -11)
         ib.BackgroundColor3 = SOFT_PINK
         ib.BorderSizePixel = 0
         ib.ZIndex = 6
@@ -856,13 +856,13 @@ local function load_main_ui(platform)
 
         local ibi = Instance.new("TextLabel")
         ibi.Size = UDim2.new(1, 0, 1, 0); ibi.BackgroundTransparency = 1
-        ibi.Text = icon; ibi.TextSize = 14; ibi.Font = Enum.Font.GothamBold
+        ibi.Text = icon; ibi.TextSize = 11; ibi.Font = Enum.Font.GothamBold
         ibi.ZIndex = 7
         ibi.Parent = ib
 
         local label = Instance.new("TextLabel")
         label.Size = UDim2.new(0.45, 0, 1, 0)
-        label.Position = UDim2.new(0, 44, 0, 0)
+        label.Position = UDim2.new(0, 34, 0, 0)
         label.BackgroundTransparency = 1
         label.Text = text
         label.TextColor3 = DEEP_BROWN
@@ -873,23 +873,23 @@ local function load_main_ui(platform)
         label.Parent = card
 
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0.4, 0, 0, CARD_H - 16)
-        btn.Position = UDim2.new(0.58, 0, 0.5, -(CARD_H - 16)/2)
+        btn.Size = UDim2.new(0.4, 0, 0, CARD_H - 12)
+        btn.Position = UDim2.new(0.58, 0, 0.5, -(CARD_H - 12)/2)
         btn.BackgroundColor3 = YELLOW
         btn.BorderSizePixel = 0
         btn.Text = tostring(get_value())
         btn.TextColor3 = BROWN
-        btn.TextSize = 11
+        btn.TextSize = 9
         btn.Font = Enum.Font.GothamBold
         btn.AutoButtonColor = false
         btn.ZIndex = 10
         btn.Parent = card
 
         local bcor = Instance.new("UICorner"); bcor.CornerRadius = UDim.new(1, 0); bcor.Parent = btn
-        local bstr = Instance.new("UIStroke"); bstr.Color = PINK; bstr.Thickness = 1.2; bstr.Parent = btn
+        local bstr = Instance.new("UIStroke"); bstr.Color = PINK; bstr.Thickness = 1.1; bstr.Parent = btn
 
         local container = Instance.new("Frame")
-        container.Size = UDim2.new(0.4, 0, 0, #options * 24)
+        container.Size = UDim2.new(0.4, 0, 0, #options * 20)
         container.Position = UDim2.new(0.58, 0, 0, CARD_H)
         container.BackgroundColor3 = WHITE
         container.BorderSizePixel = 0
@@ -897,8 +897,8 @@ local function load_main_ui(platform)
         container.ZIndex = 30
         container.Parent = card
 
-        local ccor = Instance.new("UICorner"); ccor.CornerRadius = UDim.new(0, 10); ccor.Parent = container
-        local cstr = Instance.new("UIStroke"); cstr.Color = PINK; cstr.Thickness = 1.5; cstr.Parent = container
+        local ccor = Instance.new("UICorner"); ccor.CornerRadius = UDim.new(0, 8); ccor.Parent = container
+        local cstr = Instance.new("UIStroke"); cstr.Color = PINK; cstr.Thickness = 1.3; cstr.Parent = container
         local list = Instance.new("UIListLayout"); list.Padding = UDim.new(0, 2); list.Parent = container
 
         btn.MouseButton1Click:Connect(function()
@@ -907,12 +907,12 @@ local function load_main_ui(platform)
 
         for _, opt in ipairs(options) do
             local ob = Instance.new("TextButton")
-            ob.Size = UDim2.new(1, 0, 0, 22)
+            ob.Size = UDim2.new(1, 0, 0, 18)
             ob.BackgroundColor3 = Color3.fromRGB(255, 250, 240)
             ob.BorderSizePixel = 0
             ob.Text = tostring(opt)
             ob.TextColor3 = DEEP_BROWN
-            ob.TextSize = 10
+            ob.TextSize = 9
             ob.Font = Enum.Font.GothamMedium
             ob.AutoButtonColor = false
             ob.ZIndex = 31
@@ -927,7 +927,7 @@ local function load_main_ui(platform)
 
     local function make_player_tile(parent, player)
         local tile = Instance.new("TextButton")
-        tile.Size = UDim2.new(1, 0, 0, 38)
+        tile.Size = UDim2.new(1, 0, 0, 32)
         tile.BackgroundColor3 = CARD_SOFT
         tile.BackgroundTransparency = 0.05
         tile.BorderSizePixel = 0
@@ -936,12 +936,12 @@ local function load_main_ui(platform)
         tile.ZIndex = 5
         tile.Parent = parent
 
-        local tc = Instance.new("UICorner"); tc.CornerRadius = UDim.new(0, 12); tc.Parent = tile
-        local ts = Instance.new("UIStroke"); ts.Color = BORDER_SOFT; ts.Thickness = 1.2; ts.Parent = tile
+        local tc = Instance.new("UICorner"); tc.CornerRadius = UDim.new(0, 10); tc.Parent = tile
+        local ts = Instance.new("UIStroke"); ts.Color = BORDER_SOFT; ts.Thickness = 1; ts.Parent = tile
 
         local avatar = Instance.new("ImageLabel")
-        avatar.Size = UDim2.new(0, 26, 0, 26)
-        avatar.Position = UDim2.new(0, 6, 0.5, -13)
+        avatar.Size = UDim2.new(0, 22, 0, 22)
+        avatar.Position = UDim2.new(0, 5, 0.5, -11)
         avatar.BackgroundColor3 = SOFT_PINK
         avatar.BorderSizePixel = 0
         avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=48&h=48"
@@ -951,12 +951,12 @@ local function load_main_ui(platform)
         local ac = Instance.new("UICorner"); ac.CornerRadius = UDim.new(1, 0); ac.Parent = avatar
 
         local name_lbl = Instance.new("TextLabel")
-        name_lbl.Size = UDim2.new(1, -110, 0, 14)
-        name_lbl.Position = UDim2.new(0, 40, 0, 6)
+        name_lbl.Size = UDim2.new(1, -90, 0, 12)
+        name_lbl.Position = UDim2.new(0, 33, 0, 5)
         name_lbl.BackgroundTransparency = 1
         name_lbl.Text = player.Name
         name_lbl.TextColor3 = DEEP_BROWN
-        name_lbl.TextSize = 11
+        name_lbl.TextSize = 9
         name_lbl.Font = Enum.Font.GothamBold
         name_lbl.TextXAlignment = Enum.TextXAlignment.Left
         name_lbl.TextTruncate = Enum.TextTruncate.AtEnd
@@ -964,12 +964,12 @@ local function load_main_ui(platform)
         name_lbl.Parent = tile
 
         local dn_lbl = Instance.new("TextLabel")
-        dn_lbl.Size = UDim2.new(1, -110, 0, 12)
-        dn_lbl.Position = UDim2.new(0, 40, 0, 20)
+        dn_lbl.Size = UDim2.new(1, -90, 0, 10)
+        dn_lbl.Position = UDim2.new(0, 33, 0, 17)
         dn_lbl.BackgroundTransparency = 1
         dn_lbl.Text = "@" .. player.DisplayName
         dn_lbl.TextColor3 = MUTED_TEXT
-        dn_lbl.TextSize = 9
+        dn_lbl.TextSize = 8
         dn_lbl.Font = Enum.Font.GothamMedium
         dn_lbl.TextXAlignment = Enum.TextXAlignment.Left
         dn_lbl.TextTruncate = Enum.TextTruncate.AtEnd
@@ -978,7 +978,7 @@ local function load_main_ui(platform)
 
         local pill = Instance.new("TextButton")
         pill.Size = UDim2.new(0, TOGGLE_W, 0, TOGGLE_H)
-        pill.Position = UDim2.new(1, -TOGGLE_W-10, 0.5, -TOGGLE_H/2)
+        pill.Position = UDim2.new(1, -TOGGLE_W-8, 0.5, -TOGGLE_H/2)
         pill.BorderSizePixel = 0
         pill.Text = ""
         pill.AutoButtonColor = false
@@ -986,7 +986,7 @@ local function load_main_ui(platform)
         pill.Parent = tile
 
         local pc = Instance.new("UICorner"); pc.CornerRadius = UDim.new(1, 0); pc.Parent = pill
-        local ps = Instance.new("UIStroke"); ps.Color = Color3.fromRGB(210, 200, 190); ps.Thickness = 1.5; ps.Parent = pill
+        local ps = Instance.new("UIStroke"); ps.Color = Color3.fromRGB(210, 200, 190); ps.Thickness = 1.3; ps.Parent = pill
 
         local knob = Instance.new("Frame")
         knob.Size = UDim2.new(0, TOGGLE_H - 6, 0, TOGGLE_H - 6)
@@ -1074,11 +1074,11 @@ local function load_main_ui(platform)
     make_section(misc_scroll, "👥", "live targets")
 
     local note = Instance.new("TextLabel")
-    note.Size = UDim2.new(1, 0, 0, 16)
+    note.Size = UDim2.new(1, 0, 0, 14)
     note.BackgroundTransparency = 1
     note.Text = "tap a player to target only them"
     note.TextColor3 = MUTED_TEXT
-    note.TextSize = 10
+    note.TextSize = 9
     note.Font = Enum.Font.GothamMedium
     note.TextXAlignment = Enum.TextXAlignment.Left
     note.ZIndex = 5
@@ -1093,7 +1093,7 @@ local function load_main_ui(platform)
     player_list.Parent = misc_scroll
 
     local pl_layout = Instance.new("UIListLayout")
-    pl_layout.Padding = UDim.new(0, 6)
+    pl_layout.Padding = UDim.new(0, 5)
     pl_layout.SortOrder = Enum.SortOrder.LayoutOrder
     pl_layout.Parent = player_list
 
@@ -1111,11 +1111,11 @@ local function load_main_ui(platform)
         end
         if #sorted == 0 then
             local empty = Instance.new("TextLabel")
-            empty.Size = UDim2.new(1, 0, 0, 30)
+            empty.Size = UDim2.new(1, 0, 0, 26)
             empty.BackgroundTransparency = 1
             empty.Text = "no other players yet 🌸"
             empty.TextColor3 = MUTED_TEXT
-            empty.TextSize = 11
+            empty.TextSize = 9
             empty.Font = Enum.Font.GothamMedium
             empty.ZIndex = 5
             empty.Parent = player_list
@@ -1173,7 +1173,7 @@ local function load_main_ui(platform)
         if min then
             for _, sf in pairs(scroll_frames) do sf.Visible = false end
             tab_bar.Visible = false
-            main.Size = UDim2.new(0, FRAME_W, 0, 60)
+            main.Size = UDim2.new(0, FRAME_W, 0, 48)
             min_btn.Text = "+"
         else
             tab_bar.Visible = true
@@ -1210,8 +1210,8 @@ local function show_key_ui()
     key_frame.ZIndex = 2
     key_frame.Parent = key_gui
 
-    local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(0, 22); kc.Parent = key_frame
-    local ks = Instance.new("UIStroke"); ks.Color = PINK; ks.Thickness = 2.2; ks.Parent = key_frame
+    local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(0, 18); kc.Parent = key_frame
+    local ks = Instance.new("UIStroke"); ks.Color = PINK; ks.Thickness = 1.8; ks.Parent = key_frame
     local kg = Instance.new("UIGradient")
     kg.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, YELLOW),
@@ -1222,46 +1222,46 @@ local function show_key_ui()
     kg.Parent = key_frame
 
     local kt = Instance.new("TextLabel")
-    kt.Size = UDim2.new(1, 0, 0, 40); kt.Position = UDim2.new(0, 0, 0, 16)
+    kt.Size = UDim2.new(1, 0, 0, 34); kt.Position = UDim2.new(0, 0, 0, 12)
     kt.BackgroundTransparency = 1; kt.Text = "🎀 livyii key 🎀"
-    kt.TextColor3 = DEEP_BROWN; kt.TextSize = 18; kt.Font = Enum.Font.GothamBold
+    kt.TextColor3 = DEEP_BROWN; kt.TextSize = 15; kt.Font = Enum.Font.GothamBold
     kt.ZIndex = 3
     kt.Parent = key_frame
 
     local ksub = Instance.new("TextLabel")
-    ksub.Size = UDim2.new(1, -20, 0, 18); ksub.Position = UDim2.new(0, 10, 0, 56)
+    ksub.Size = UDim2.new(1, -16, 0, 14); ksub.Position = UDim2.new(0, 8, 0, 44)
     ksub.BackgroundTransparency = 1; ksub.Text = "get key in dc server 💖"
-    ksub.TextColor3 = MUTED_TEXT; ksub.TextSize = 11; ksub.Font = Enum.Font.GothamMedium
+    ksub.TextColor3 = MUTED_TEXT; ksub.TextSize = 9; ksub.Font = Enum.Font.GothamMedium
     ksub.ZIndex = 3
     ksub.Parent = key_frame
 
     local kbox = Instance.new("TextBox")
-    kbox.Size = UDim2.new(0.8, 0, 0, 38); kbox.Position = UDim2.new(0.1, 0, 0, 86)
+    kbox.Size = UDim2.new(0.8, 0, 0, 32); kbox.Position = UDim2.new(0.1, 0, 0, 68)
     kbox.BackgroundColor3 = WHITE; kbox.BorderSizePixel = 0
     kbox.Text = ""; kbox.PlaceholderText = "key..."; kbox.TextColor3 = DEEP_BROWN
-    kbox.PlaceholderColor3 = MUTED_TEXT; kbox.TextSize = 13
+    kbox.PlaceholderColor3 = MUTED_TEXT; kbox.TextSize = 11
     kbox.Font = Enum.Font.GothamMedium; kbox.ClearTextOnFocus = false; kbox.ZIndex = 10; kbox.Parent = key_frame
-    local kbc = Instance.new("UICorner"); kbc.CornerRadius = UDim.new(0, 12); kbc.Parent = kbox
-    local kbs = Instance.new("UIStroke"); kbs.Color = PINK; kbs.Thickness = 1.5; kbs.Parent = kbox
+    local kbc = Instance.new("UICorner"); kbc.CornerRadius = UDim.new(0, 10); kbc.Parent = kbox
+    local kbs = Instance.new("UIStroke"); kbs.Color = PINK; kbs.Thickness = 1.3; kbs.Parent = kbox
 
     local ksubmit = Instance.new("TextButton")
-    ksubmit.Size = UDim2.new(0.5, 0, 0, 38); ksubmit.Position = UDim2.new(0.25, 0, 0, 138)
+    ksubmit.Size = UDim2.new(0.5, 0, 0, 32); ksubmit.Position = UDim2.new(0.25, 0, 0, 110)
     ksubmit.BackgroundColor3 = YELLOW; ksubmit.BorderSizePixel = 0; ksubmit.Text = "unlock ✨"
-    ksubmit.TextColor3 = BROWN; ksubmit.TextSize = 13; ksubmit.Font = Enum.Font.GothamBold
+    ksubmit.TextColor3 = BROWN; ksubmit.TextSize = 11; ksubmit.Font = Enum.Font.GothamBold
     ksubmit.AutoButtonColor = false
     ksubmit.ZIndex = 10
     ksubmit.Parent = key_frame
-    local ksc = Instance.new("UICorner"); ksc.CornerRadius = UDim.new(0, 12); ksc.Parent = ksubmit
-    local kss = Instance.new("UIStroke"); kss.Color = PINK; kss.Thickness = 1.5; kss.Parent = ksubmit
+    local ksc = Instance.new("UICorner"); ksc.CornerRadius = UDim.new(0, 10); ksc.Parent = ksubmit
+    local kss = Instance.new("UIStroke"); kss.Color = PINK; kss.Thickness = 1.3; kss.Parent = ksubmit
 
     local kstatus = Instance.new("TextLabel")
-    kstatus.Size = UDim2.new(1, -20, 0, 18); kstatus.Position = UDim2.new(0, 10, 0, 184)
+    kstatus.Size = UDim2.new(1, -16, 0, 14); kstatus.Position = UDim2.new(0, 8, 0, 148)
     kstatus.BackgroundTransparency = 1; kstatus.Text = ""
-    kstatus.TextColor3 = Color3.fromRGB(200, 50, 50); kstatus.TextSize = 11
+    kstatus.TextColor3 = Color3.fromRGB(200, 50, 50); kstatus.TextSize = 9
     kstatus.Font = Enum.Font.GothamBold; kstatus.TextTransparency = 1; kstatus.ZIndex = 3; kstatus.Parent = key_frame
 
     TweenService:Create(key_frame, TweenInfo.new(0.6, SMOOTH, DIR_OUT), {
-        Size = UDim2.new(0, 280, 0, 230)
+        Size = UDim2.new(0, 220, 0, 190)
     }):Play()
 
     ksubmit.MouseButton1Click:Connect(function()
