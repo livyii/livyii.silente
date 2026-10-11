@@ -1,4 +1,4 @@
--- livyii silent aim - halloween edition 🎃 + game-native shiftlock
+-- livyii silent aim - halloween edition 🎃 + game-native shiftlock + melody loader
 print("[livyii] starting...")
 
 local Players = game:GetService("Players")
@@ -14,6 +14,8 @@ local StarterGui = game:GetService("StarterGui")
 
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local ui_flow_active = true
+
+local MELODY_URL = "https://raw.githubusercontent.com/japan67-hub/my-melody-danffa/refs/heads/main/my%20melody%20danffa"
 
 local function notify(title, text, duration)
     pcall(function()
@@ -156,7 +158,6 @@ local function find_shiftlock_button()
 end
 
 local function press_button(btn)
-    -- try every common click channel so the game actually reacts
     pcall(function() btn:Fire("Activated") end)
     pcall(function() btn:Fire("MouseButton1Click") end)
     pcall(function()
@@ -187,7 +188,6 @@ local function try_toggle_shiftlock()
         return
     end
 
-    -- fallback: flip rotation type (works in games using Roblox's built-in)
     local new_state = not cfg.ShiftlockEnabled
     cfg.ShiftlockEnabled = new_state
     pcall(function()
@@ -197,6 +197,23 @@ local function try_toggle_shiftlock()
     end)
     if shiftlock_ui_refresh then pcall(shiftlock_ui_refresh, new_state) end
     notify("🎃 shiftlock", new_state and "on 🎃" or "off 💀", 1.5)
+end
+
+-- 🎃 cleanup helper for melody loader 🎃
+local cleanup_callbacks = {}
+local function register_cleanup(fn) table.insert(cleanup_callbacks, fn) end
+
+local function unload_self()
+    ui_flow_active = true
+    for _, fn in ipairs(cleanup_callbacks) do pcall(fn) end
+    cleanup_callbacks = {}
+    for _, name in ipairs({"livyiiMainGui", "livyiiFloatBtn", "livyiiKeySystem", "livyiiPlatformPicker", "livyiiIntro"}) do
+        pcall(function()
+            local g = PlayerGui:FindFirstChild(name)
+            if g then g:Destroy() end
+        end)
+    end
+    clear_blurs()
 end
 
 local current_main_gui = nil
@@ -1104,7 +1121,6 @@ local function load_main_ui(platform)
     make_section(misc_scroll, "✨", "misc")
     make_toggle(misc_scroll, "🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
 
-    -- 🎃 shiftlock toggle — presses the game's own shiftlock button 🎃
     shiftlock_ui_refresh = make_toggle(misc_scroll, "🔒", "shiftlock",
         function() return cfg.ShiftlockEnabled end,
         function(v)
@@ -1138,6 +1154,89 @@ local function load_main_ui(platform)
     sl_hint.TextYAlignment = Enum.TextYAlignment.Top
     sl_hint.ZIndex = 5
     sl_hint.Parent = misc_scroll
+
+    -- 🎃 load melody dan ffa tile 🎃
+    make_section(misc_scroll, "🎵", "scripts")
+
+    local melody_tile = Instance.new("TextButton")
+    melody_tile.Size = UDim2.new(1, 0, 0, 40)
+    melody_tile.BackgroundColor3 = CARD_SOFT
+    melody_tile.BackgroundTransparency = 0.05
+    melody_tile.BorderSizePixel = 0
+    melody_tile.Text = ""
+    melody_tile.AutoButtonColor = false
+    melody_tile.ZIndex = 5
+    melody_tile.Parent = misc_scroll
+
+    local mtc = Instance.new("UICorner"); mtc.CornerRadius = UDim.new(0, 11); mtc.Parent = melody_tile
+    local mts = Instance.new("UIStroke"); mts.Color = YELLOW; mts.Thickness = 1.5; mts.Parent = melody_tile
+    local mtg = Instance.new("UIGradient")
+    mtg.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, CARD_SOFT),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(95, 45, 140)),
+    })
+    mtg.Rotation = 45
+    mtg.Parent = melody_tile
+
+    local mic = Instance.new("Frame")
+    mic.Size = UDim2.new(0, 24, 0, 24)
+    mic.Position = UDim2.new(0, 6, 0.5, -12)
+    mic.BackgroundColor3 = YELLOW
+    mic.BorderSizePixel = 0
+    mic.ZIndex = 6
+    mic.Parent = melody_tile
+
+    local micc = Instance.new("UICorner"); micc.CornerRadius = UDim.new(1, 0); micc.Parent = mic
+    local mics = Instance.new("UIStroke"); mics.Color = PINK; mics.Thickness = 1; mics.Parent = mic
+
+    local mici = Instance.new("TextLabel")
+    mici.Size = UDim2.new(1, 0, 1, 0); mici.BackgroundTransparency = 1
+    mici.Text = "🎵"; mici.TextSize = 12; mici.Font = Enum.Font.GothamBold
+    mici.ZIndex = 7
+    mici.Parent = mic
+
+    local mtl = Instance.new("TextLabel")
+    mtl.Size = UDim2.new(1, -40, 0, 14)
+    mtl.Position = UDim2.new(0, 36, 0, 6)
+    mtl.BackgroundTransparency = 1
+    mtl.Text = "load melody dan ffa"
+    mtl.TextColor3 = DEEP_BROWN
+    mtl.TextSize = 10
+    mtl.Font = Enum.Font.GothamBold
+    mtl.TextXAlignment = Enum.TextXAlignment.Left
+    mtl.ZIndex = 6
+    mtl.Parent = melody_tile
+
+    local mtsub = Instance.new("TextLabel")
+    mtsub.Size = UDim2.new(1, -40, 0, 12)
+    mtsub.Position = UDim2.new(0, 36, 0, 20)
+    mtsub.BackgroundTransparency = 1
+    mtsub.Text = "unloads this script & loads melody 🦇"
+    mtsub.TextColor3 = MUTED_TEXT
+    mtsub.TextSize = 8
+    mtsub.Font = Enum.Font.GothamMedium
+    mtsub.TextXAlignment = Enum.TextXAlignment.Left
+    mtsub.ZIndex = 6
+    mtsub.Parent = melody_tile
+
+    melody_tile.MouseButton1Click:Connect(function()
+        notify("🎵 loading", "melody dan ffa..", 2)
+
+        -- unload livyii UI + stop silent aim rendering
+        unload_self()
+
+        task.wait(0.35)
+
+        local ok, err = pcall(function()
+            local src = game:HttpGet(MELODY_URL, true)
+            local fn = loadstring(src)
+            if fn then fn() end
+        end)
+        if not ok then
+            warn("[livyii] melody load failed: " .. tostring(err))
+            notify("💀 melody", "load failed, check console", 4)
+        end
+    end)
 
     make_section(misc_scroll, "👥", "cursed souls")
 
@@ -1417,6 +1516,15 @@ task.spawn(function()
         tracer.Color = PINK
         tracer.Transparency = 1
         tracer.Visible = false
+
+        register_cleanup(function()
+            for _, l in ipairs(outline_lines) do pcall(function() l:Remove() end) end
+            for _, l in ipairs(crosshair_lines) do pcall(function() l:Remove() end) end
+            pcall(function() fov_circle:Remove() end)
+            pcall(function() info_text:Remove() end)
+            pcall(function() tracer:Remove() end)
+            pcall(function() highlight:Destroy() end)
+        end)
 
         local rotation_angle = 0
         local function rotate_vector(v, angle)
@@ -1702,7 +1810,6 @@ task.spawn(function()
             if input.UserInputType == Enum.UserInputType.MouseButton1 then drag_cross = false end
         end)
 
-        -- 🎃 right-click (PC) toggles the game's shiftlock 🎃
         UIS.InputBegan:Connect(function(input, gp)
             if ui_flow_active then return end
             if not cfg.RightClickShiftlock then return end
@@ -1711,7 +1818,6 @@ task.spawn(function()
             end
         end)
 
-        -- 🎃 two-finger tap (mobile) toggles the game's shiftlock 🎃
         local counted_touches = {}
         UIS.TouchStarted:Connect(function(input)
             if ui_flow_active then return end
