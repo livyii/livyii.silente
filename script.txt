@@ -1,4 +1,4 @@
--- livyii silent aim - halloween edition 🎃 + game-native shiftlock + melody loader
+-- livyii silent aim - halloween edition 🎃 + game-native shiftlock + melodihhh loader
 print("[livyii] starting...")
 
 local Players = game:GetService("Players")
@@ -15,7 +15,15 @@ local StarterGui = game:GetService("StarterGui")
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local ui_flow_active = true
 
-local MELODY_URL = "https://raw.githubusercontent.com/japan67-hub/my-melody-danffa/refs/heads/main/my%20melody%20danffa"
+-- 🎵 melodihhh script URL 🎵
+local MELODIHHH_URL = "https://raw.githubusercontent.com/japan67-hub/meloy4everdanffa/refs/heads/main/highmcdel"
+
+-- 🎵 melodihhh keys 🎵
+local MELODIHHH_KEYS = {
+    ["rabbit"] = true, ["pink"] = true, ["hood"] = true, ["mariland"] = true,
+    ["flat"] = true, ["kuromi"] = true, ["sanrio"] = true, ["1975"] = true,
+    ["sweet"] = true, ["baking"] = true,
+}
 
 local function notify(title, text, duration)
     pcall(function()
@@ -71,6 +79,8 @@ local DEEP_BROWN = Color3.fromRGB(255, 215, 170)
 local CARD_SOFT = Color3.fromRGB(48, 28, 72)
 local MUTED_TEXT = Color3.fromRGB(165, 135, 200)
 local CARAMEL = Color3.fromRGB(255, 100, 25)
+local SUCCESS = Color3.fromRGB(150, 230, 100)
+local ERROR = Color3.fromRGB(200, 50, 50)
 
 local SMOOTH = Enum.EasingStyle.Quint
 local SOFT = Enum.EasingStyle.Cubic
@@ -199,7 +209,7 @@ local function try_toggle_shiftlock()
     notify("🎃 shiftlock", new_state and "on 🎃" or "off 💀", 1.5)
 end
 
--- 🎃 cleanup helper for melody loader 🎃
+-- 🎃 cleanup helper for melodihhh loader 🎃
 local cleanup_callbacks = {}
 local function register_cleanup(fn) table.insert(cleanup_callbacks, fn) end
 
@@ -1155,36 +1165,34 @@ local function load_main_ui(platform)
     sl_hint.ZIndex = 5
     sl_hint.Parent = misc_scroll
 
-    -- 🎃 load melody dan ffa tile 🎃
+    -- 🎵 load melodihhh tile with key 🎵
     make_section(misc_scroll, "🎵", "scripts")
 
-    local melody_tile = Instance.new("TextButton")
-    melody_tile.Size = UDim2.new(1, 0, 0, 40)
-    melody_tile.BackgroundColor3 = CARD_SOFT
-    melody_tile.BackgroundTransparency = 0.05
-    melody_tile.BorderSizePixel = 0
-    melody_tile.Text = ""
-    melody_tile.AutoButtonColor = false
-    melody_tile.ZIndex = 5
-    melody_tile.Parent = misc_scroll
+    local melodihhh_tile = Instance.new("Frame")
+    melodihhh_tile.Size = UDim2.new(1, 0, 0, 86)
+    melodihhh_tile.BackgroundColor3 = CARD_SOFT
+    melodihhh_tile.BackgroundTransparency = 0.05
+    melodihhh_tile.BorderSizePixel = 0
+    melodihhh_tile.ZIndex = 5
+    melodihhh_tile.Parent = misc_scroll
 
-    local mtc = Instance.new("UICorner"); mtc.CornerRadius = UDim.new(0, 11); mtc.Parent = melody_tile
-    local mts = Instance.new("UIStroke"); mts.Color = YELLOW; mts.Thickness = 1.5; mts.Parent = melody_tile
+    local mtc = Instance.new("UICorner"); mtc.CornerRadius = UDim.new(0, 11); mtc.Parent = melodihhh_tile
+    local mts = Instance.new("UIStroke"); mts.Color = YELLOW; mts.Thickness = 1.5; mts.Parent = melodihhh_tile
     local mtg = Instance.new("UIGradient")
     mtg.Color = ColorSequence.new({
         ColorSequenceKeypoint.new(0, CARD_SOFT),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(95, 45, 140)),
     })
     mtg.Rotation = 45
-    mtg.Parent = melody_tile
+    mtg.Parent = melodihhh_tile
 
     local mic = Instance.new("Frame")
     mic.Size = UDim2.new(0, 24, 0, 24)
-    mic.Position = UDim2.new(0, 6, 0.5, -12)
+    mic.Position = UDim2.new(0, 6, 0, 8)
     mic.BackgroundColor3 = YELLOW
     mic.BorderSizePixel = 0
     mic.ZIndex = 6
-    mic.Parent = melody_tile
+    mic.Parent = melodihhh_tile
 
     local micc = Instance.new("UICorner"); micc.CornerRadius = UDim.new(1, 0); micc.Parent = mic
     local mics = Instance.new("UIStroke"); mics.Color = PINK; mics.Thickness = 1; mics.Parent = mic
@@ -1197,44 +1205,88 @@ local function load_main_ui(platform)
 
     local mtl = Instance.new("TextLabel")
     mtl.Size = UDim2.new(1, -40, 0, 14)
-    mtl.Position = UDim2.new(0, 36, 0, 6)
+    mtl.Position = UDim2.new(0, 36, 0, 8)
     mtl.BackgroundTransparency = 1
-    mtl.Text = "load melody dan ffa"
+    mtl.Text = "load melodihhh"
     mtl.TextColor3 = DEEP_BROWN
     mtl.TextSize = 10
     mtl.Font = Enum.Font.GothamBold
     mtl.TextXAlignment = Enum.TextXAlignment.Left
     mtl.ZIndex = 6
-    mtl.Parent = melody_tile
+    mtl.Parent = melodihhh_tile
 
     local mtsub = Instance.new("TextLabel")
     mtsub.Size = UDim2.new(1, -40, 0, 12)
-    mtsub.Position = UDim2.new(0, 36, 0, 20)
+    mtsub.Position = UDim2.new(0, 36, 0, 22)
     mtsub.BackgroundTransparency = 1
-    mtsub.Text = "unloads this script & loads melody 🦇"
+    mtsub.Text = "type key on this textbox!"
     mtsub.TextColor3 = MUTED_TEXT
     mtsub.TextSize = 8
     mtsub.Font = Enum.Font.GothamMedium
     mtsub.TextXAlignment = Enum.TextXAlignment.Left
     mtsub.ZIndex = 6
-    mtsub.Parent = melody_tile
+    mtsub.Parent = melodihhh_tile
 
-    melody_tile.MouseButton1Click:Connect(function()
-        notify("🎵 loading", "melody dan ffa..", 2)
+    local mkey = Instance.new("TextBox")
+    mkey.Size = UDim2.new(1, -16, 0, 26)
+    mkey.Position = UDim2.new(0, 8, 0, 52)
+    mkey.BackgroundColor3 = Color3.fromRGB(55, 32, 82)
+    mkey.BorderSizePixel = 0
+    mkey.Text = ""
+    mkey.PlaceholderText = "key..."
+    mkey.TextColor3 = DEEP_BROWN
+    mkey.PlaceholderColor3 = MUTED_TEXT
+    mkey.TextSize = 10
+    mkey.Font = Enum.Font.GothamMedium
+    mkey.ClearTextOnFocus = false
+    mkey.ZIndex = 10
+    mkey.Parent = melodihhh_tile
 
-        -- unload livyii UI + stop silent aim rendering
-        unload_self()
+    local mkey_c = Instance.new("UICorner"); mkey_c.CornerRadius = UDim.new(0, 8); mkey_c.Parent = mkey
+    local mkey_s = Instance.new("UIStroke"); mkey_s.Color = PINK; mkey_s.Thickness = 1.2; mkey_s.Parent = mkey
 
-        task.wait(0.35)
+    local mstatus = Instance.new("TextLabel")
+    mstatus.Size = UDim2.new(1, -16, 0, 14)
+    mstatus.Position = UDim2.new(0, 8, 0, 80)
+    mstatus.BackgroundTransparency = 1
+    mstatus.Text = ""
+    mstatus.TextColor3 = ERROR
+    mstatus.TextSize = 8
+    mstatus.Font = Enum.Font.GothamBold
+    mstatus.TextTransparency = 1
+    mstatus.ZIndex = 6
+    mstatus.Parent = melodihhh_tile
 
-        local ok, err = pcall(function()
-            local src = game:HttpGet(MELODY_URL, true)
-            local fn = loadstring(src)
-            if fn then fn() end
-        end)
-        if not ok then
-            warn("[livyii] melody load failed: " .. tostring(err))
-            notify("💀 melody", "load failed, check console", 4)
+    mkey.FocusLost:Connect(function(enter_pressed)
+        if enter_pressed then
+            local entered = mkey.Text:lower():gsub("%s+", "")
+            if MELODIHHH_KEYS[entered] then
+                mstatus.Text = "unlocked! 🎵"
+                mstatus.TextColor3 = SUCCESS
+                TweenService:Create(mstatus, TweenInfo.new(0.3, SOFT, DIR_OUT), {TextTransparency = 0}):Play()
+                notify("🎵 melodihhh", "unlocked! loading..", 2)
+
+                task.wait(0.4)
+
+                unload_self()
+
+                task.wait(0.35)
+
+                local ok, err = pcall(function()
+                    local src = game:HttpGet(MELODIHHH_URL, true)
+                    local fn = loadstring(src)
+                    if fn then fn() end
+                end)
+                if not ok then
+                    warn("[livyii] melodihhh load failed: " .. tostring(err))
+                    notify("💀 melodihhh", "load failed, check console", 4)
+                end
+            else
+                mstatus.Text = "invalid key 💔"
+                mstatus.TextColor3 = ERROR
+                TweenService:Create(mstatus, TweenInfo.new(0.3, SOFT, DIR_OUT), {TextTransparency = 0}):Play()
+                mkey.Text = ""
+            end
         end
     end)
 
@@ -1424,7 +1476,7 @@ local function show_key_ui()
     local kstatus = Instance.new("TextLabel")
     kstatus.Size = UDim2.new(1, -16, 0, 14); kstatus.Position = UDim2.new(0, 8, 0, 148)
     kstatus.BackgroundTransparency = 1; kstatus.Text = ""
-    kstatus.TextColor3 = Color3.fromRGB(200, 50, 50); kstatus.TextSize = 9
+    kstatus.TextColor3 = ERROR; kstatus.TextSize = 9
     kstatus.Font = Enum.Font.GothamBold; kstatus.TextTransparency = 1; kstatus.ZIndex = 3; kstatus.Parent = key_frame
 
     TweenService:Create(key_frame, TweenInfo.new(0.6, SMOOTH, DIR_OUT), {
@@ -1435,7 +1487,7 @@ local function show_key_ui()
         local entered = kbox.Text:lower():gsub("%s+", "")
         if WEEKLY_KEYS[entered] then
             kstatus.Text = "unlocked! 🎃"
-            kstatus.TextColor3 = Color3.fromRGB(150, 230, 100)
+            kstatus.TextColor3 = SUCCESS
             TweenService:Create(kstatus, TweenInfo.new(0.35, SOFT, DIR_OUT), {TextTransparency = 0}):Play()
             task.wait(0.6)
             key_gui:Destroy()
@@ -1444,7 +1496,7 @@ local function show_key_ui()
             end)
         else
             kstatus.Text = "invalid spell 💔"
-            kstatus.TextColor3 = Color3.fromRGB(200, 50, 50)
+            kstatus.TextColor3 = ERROR
             TweenService:Create(kstatus, TweenInfo.new(0.35, SOFT, DIR_OUT), {TextTransparency = 0}):Play()
             kbox.Text = ""
         end
