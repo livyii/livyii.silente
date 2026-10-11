@@ -1,4 +1,4 @@
--- livyii silent aim - halloween edition 🎃 + right-click shiftlock
+-- livyii silent aim - halloween edition 🎃 + native shiftlock toggle
 print("[livyii] starting...")
 
 local Players = game:GetService("Players")
@@ -11,6 +11,7 @@ local mouse = LocalPlayer:GetMouse()
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local StarterGui = game:GetService("StarterGui")
+local UserGameSettings = UserSettings():GetService("UserGameSettings")
 
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local ui_flow_active = true
@@ -121,63 +122,26 @@ local function is_whitelisted(player)
     return cfg.TargetedPlayers[player] == true
 end
 
-local shiftlock_conn = nil
-local saved_auto_rotate = true
-
-local function enable_shiftlock()
-    if shiftlock_conn then return end
-    local char = LocalPlayer.Character
-    if not char then return end
-    local hum = char:FindFirstChildOfClass("Humanoid")
-    local root = char:FindFirstChild("HumanoidRootPart")
-    if not hum or not root then return end
-    saved_auto_rotate = hum.AutoRotate
-    hum.AutoRotate = false
-    UIS.MouseBehavior = Enum.MouseBehavior.LockCenter
-    UIS.MouseIconEnabled = false
-    shiftlock_conn = RunService.RenderStepped:Connect(function(dt)
-        local c = LocalPlayer.Character
-        if not c then return end
-        local h2 = c:FindFirstChildOfClass("Humanoid")
-        local r2 = c:FindFirstChild("HumanoidRootPart")
-        if not h2 or not r2 then return end
-        if h2.Health <= 0 then return end
-        local look = cam.CFrame.LookVector
-        local flat = Vector3.new(look.X, 0, look.Z)
-        if flat.Magnitude < 0.01 then return end
-        flat = flat.Unit
-        local c_yaw = math.atan2(-r2.CFrame.LookVector.X, -r2.CFrame.LookVector.Z)
-        local t_yaw = math.atan2(-flat.X, -flat.Z)
-        local diff = math.atan2(math.sin(t_yaw - c_yaw), math.cos(t_yaw - c_yaw))
-        local n_yaw = c_yaw + diff * math.min(dt * 15, 1)
-        r2.CFrame = CFrame.new(r2.Position) * CFrame.Angles(0, n_yaw, 0)
-        if UIS.MouseBehavior ~= Enum.MouseBehavior.LockCenter then
-            UIS.MouseBehavior = Enum.MouseBehavior.LockCenter
-        end
-    end)
+-- 🎃 native shiftlock via UserGameSettings.RotationType 🎃
+local function is_native_shiftlock_on()
+    return UserGameSettings.RotationType == Enum.RotationType.MovementRelative
 end
 
-local function disable_shiftlock()
-    if shiftlock_conn then
-        shiftlock_conn:Disconnect()
-        shiftlock_conn = nil
-    end
-    UIS.MouseBehavior = Enum.MouseBehavior.Default
-    UIS.MouseIconEnabled = true
-    local char = LocalPlayer.Character
-    if char then
-        local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum then hum.AutoRotate = saved_auto_rotate end
+local function set_native_shiftlock(on)
+    if on then
+        UserGameSettings.RotationType = Enum.RotationType.MovementRelative
+    else
+        UserGameSettings.RotationType = Enum.RotationType.CameraRelative
     end
 end
 
--- 🎃 shared shiftlock state helpers (used by UI toggle + right-click / 2-finger shortcuts)
+-- 🎃 shared shiftlock state helpers
 local shiftlock_ui_refresh = nil
 local last_shiftlock_toggle = 0
 
 local function set_shiftlock_state(new_state, silent)
     cfg.ShiftlockEnabled = new_state
-    if new_state then enable_shiftlock() else disable_shiftlock() end
+    set_native_shiftlock(new_state)
     if shiftlock_ui_refresh then pcall(shiftlock_ui_refresh, new_state) end
     if not silent then
         notify("🎃 shiftlock", new_state and "enabled 🔒" or "disabled 🔓", 1.5)
@@ -189,7 +153,7 @@ local function try_toggle_shiftlock()
     local now = tick()
     if now - last_shiftlock_toggle < 0.25 then return end
     last_shiftlock_toggle = now
-    set_shiftlock_state(not cfg.ShiftlockEnabled)
+    set_shiftlock_state(not is_native_shiftlock_on())
 end
 
 local current_main_gui = nil
@@ -716,7 +680,6 @@ local function load_main_ui(platform)
         local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(1, 0); kc.Parent = knob
         local ks = Instance.new("UIStroke"); ks.Color = PINK; ks.Thickness = 1; ks.Parent = knob
 
-        -- 🎃 apply_visual lets external code (right-click / 2-finger) sync the pill w/o re-firing set_state
         local function apply_visual(state)
             TweenService:Create(pill, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {
                 BackgroundColor3 = state and YELLOW or Color3.fromRGB(70, 45, 100)
@@ -1098,25 +1061,22 @@ local function load_main_ui(platform)
     make_section(misc_scroll, "✨", "misc")
     make_toggle(misc_scroll, "🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
 
-    -- 🎃 shiftlock toggle (keeps its visual refresh fn so right-click / 2-finger tap can sync it)
-    shiftlock_ui_refresh = make_toggle(misc_scroll, "🔒", "shiftlock", 
-        function() return cfg.ShiftlockEnabled end, 
-        function(v)
-            cfg.ShiftlockEnabled = v
-            if v then enable_shiftlock() else disable_shiftlock() end
-        end
+    -- 🎃 native shiftlock toggle (reads live state from UserGameSettings)
+    shiftlock_ui_refresh = make_toggle(misc_scroll, "🔒", "shiftlock",
+        function() return is_native_shiftlock_on() end,
+        function(v) set_native_shiftlock(v); cfg.ShiftlockEnabled = v end
     )
 
-    -- 🎃 right-click / 2-finger enable toggle
-    make_toggle(misc_scroll, "🖱️", "rc/2-finger shiftlock", 
-        function() return cfg.RightClickShiftlock end, 
+    -- 🎃 right-click / 2-finger shortcut toggle
+    make_toggle(misc_scroll, "🖱️", "rc/2-finger shiftlock",
+        function() return cfg.RightClickShiftlock end,
         function(v) cfg.RightClickShiftlock = v end
     )
 
     local sl_hint = Instance.new("TextLabel")
     sl_hint.Size = UDim2.new(1, 0, 0, 22)
     sl_hint.BackgroundTransparency = 1
-    sl_hint.Text = "right-click (pc) · 2-finger tap (mobile)\ntoggles shiftlock 🕸️"
+    sl_hint.Text = "right-click (pc) · 2-finger tap (mobile)\ntoggles the game's shiftlock 🕸️"
     sl_hint.TextColor3 = MUTED_TEXT
     sl_hint.TextSize = 9
     sl_hint.Font = Enum.Font.GothamMedium
@@ -1688,7 +1648,7 @@ task.spawn(function()
             if input.UserInputType == Enum.UserInputType.MouseButton1 then drag_cross = false end
         end)
 
-        -- 🎃 right-click (PC) toggles shiftlock
+        -- 🎃 right-click (PC) toggles native shiftlock
         UIS.InputBegan:Connect(function(input, gp)
             if ui_flow_active then return end
             if not cfg.RightClickShiftlock then return end
@@ -1697,12 +1657,11 @@ task.spawn(function()
             end
         end)
 
-        -- 🎃 two-finger tap (mobile) toggles shiftlock
+        -- 🎃 two-finger tap (mobile) toggles native shiftlock
         local counted_touches = {}
         UIS.TouchStarted:Connect(function(input)
             if ui_flow_active then return end
             if not cfg.RightClickShiftlock then return end
-            -- ignore touches on the UI so toggles don't accidentally trigger it
             if is_touch_on_ui(input.Position) then return end
             counted_touches[input] = true
             local count = 0
@@ -1736,4 +1695,4 @@ task.spawn(function()
     end
 end)
 
-print("[livyii] script fully loaded 🎃")
+print("[livyii] script fully loaded 🎃") 
