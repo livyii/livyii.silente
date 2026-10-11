@@ -1,4 +1,4 @@
--- livyii silent aim - full script (touch guard fix)
+-- livyii silent aim - halloween edition 🎃
 print("[livyii] starting...")
 
 local Players = game:GetService("Players")
@@ -37,7 +37,7 @@ local function spawn_float_particles(parent, emojis, count)
         lbl.BackgroundTransparency = 1
         lbl.Text = emojis[math.random(1, #emojis)]
         lbl.TextSize = math.random(12, 18)
-        lbl.TextTransparency = 0.45
+        lbl.TextTransparency = 0.35
         lbl.Font = Enum.Font.Gotham
         lbl.Parent = parent
         task.spawn(function()
@@ -50,24 +50,25 @@ local function spawn_float_particles(parent, emojis, count)
                 task.wait(8)
                 if not lbl.Parent then break end
                 lbl.Position = UDim2.new(math.random() * 1, 0, 1, 0)
-                lbl.TextTransparency = 0.45
+                lbl.TextTransparency = 0.35
             end
         end)
     end
 end
 
-local YELLOW = Color3.fromRGB(255, 240, 170)
-local CREAM = Color3.fromRGB(255, 252, 230)
-local BROWN = Color3.fromRGB(130, 80, 50)
-local PINK = Color3.fromRGB(255, 190, 210)
+-- 🎃 halloween palette 🎃
+local YELLOW = Color3.fromRGB(255, 130, 30)          -- pumpkin orange
+local CREAM = Color3.fromRGB(45, 25, 65)              -- dark night purple
+local BROWN = Color3.fromRGB(65, 30, 95)              -- deep purple (on-orange text)
+local PINK = Color3.fromRGB(165, 90, 220)             -- witch purple
 local WHITE = Color3.fromRGB(255, 255, 255)
-local SOFT_PINK = Color3.fromRGB(255, 225, 235)
-local BG_COLOR = Color3.fromRGB(255, 250, 235)
-local BORDER_SOFT = Color3.fromRGB(240, 220, 200)
-local DEEP_BROWN = Color3.fromRGB(90, 55, 35)
-local CARD_SOFT = Color3.fromRGB(255, 253, 245)
-local MUTED_TEXT = Color3.fromRGB(160, 120, 95)
-local CARAMEL = Color3.fromRGB(220, 170, 120)
+local SOFT_PINK = Color3.fromRGB(195, 155, 235)       -- pale lavender
+local BG_COLOR = Color3.fromRGB(22, 12, 35)           -- deep night background
+local BORDER_SOFT = Color3.fromRGB(85, 50, 120)       -- purple border
+local DEEP_BROWN = Color3.fromRGB(255, 215, 170)      -- pale pumpkin text
+local CARD_SOFT = Color3.fromRGB(48, 28, 72)          -- card background
+local MUTED_TEXT = Color3.fromRGB(165, 135, 200)      -- muted purple text
+local CARAMEL = Color3.fromRGB(255, 100, 25)          -- deep orange border
 
 local SMOOTH = Enum.EasingStyle.Quint
 local SOFT = Enum.EasingStyle.Cubic
@@ -94,7 +95,7 @@ genv.SilentAim = genv.SilentAim or {
     CrosshairOutlineEnabled = true, CrosshairOutlineThickness = 2.5,
     CrosshairRotationEnabled = true, CrosshairRotationSpeed = 1.5, FollowTarget = true,
     FOVCircleEnabled = true, FOVCircleThickness = 1.5, FOVCircleTransparency = 0.5,
-    CrosshairHue = 0, TracerHue = 330, FOVHue = 330,
+    CrosshairHue = 25, TracerHue = 280, FOVHue = 280,
     AutoPredictionEnabled = true, PredictionStrength = 0.15,
     TargetInfoEnabled = true,
     TargetedPlayers = {},
@@ -194,9 +195,9 @@ do
     toggle_btn.Position = UDim2.new(1, -54, 0, 60)
     toggle_btn.BackgroundColor3 = CREAM
     toggle_btn.BorderSizePixel = 0
-    toggle_btn.Text = "🍮"
-    toggle_btn.TextColor3 = BROWN
-    toggle_btn.TextSize = 20
+    toggle_btn.Text = "🎃"
+    toggle_btn.TextColor3 = DEEP_BROWN
+    toggle_btn.TextSize = 22
     toggle_btn.Font = Enum.Font.GothamBold
     toggle_btn.AutoButtonColor = false
     toggle_btn.ZIndex = 5
@@ -206,9 +207,9 @@ do
     local t_s = Instance.new("UIStroke"); t_s.Color = PINK; t_s.Thickness = 2; t_s.Parent = toggle_btn
     local t_g = Instance.new("UIGradient")
     t_g.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, YELLOW),
-        ColorSequenceKeypoint.new(0.5, CREAM),
-        ColorSequenceKeypoint.new(1, SOFT_PINK),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 140, 30)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(90, 50, 130)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(45, 25, 65)),
     })
     t_g.Rotation = 45
     t_g.Parent = toggle_btn
@@ -252,13 +253,13 @@ local function show_platform_picker(callback)
 
     local bg = Instance.new("Frame")
     bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Color3.fromRGB(255, 240, 210)
+    bg.BackgroundColor3 = Color3.fromRGB(30, 15, 45)
     bg.BackgroundTransparency = 1
     bg.BorderSizePixel = 0
     bg.Parent = plat_gui
-    TweenService:Create(bg, TweenInfo.new(0.5, SMOOTH, DIR_OUT), {BackgroundTransparency = 0.55}):Play()
+    TweenService:Create(bg, TweenInfo.new(0.5, SMOOTH, DIR_OUT), {BackgroundTransparency = 0.4}):Play()
 
-    spawn_float_particles(bg, {"🌸", "💖", "✨", "🍮", "🎀", "💫"}, 12)
+    spawn_float_particles(bg, {"🎃", "👻", "🕷️", "🕸️", "🦇", "💀"}, 12)
 
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(0, 260, 0, 185)
@@ -274,23 +275,23 @@ local function show_platform_picker(callback)
     local cs = Instance.new("UIStroke"); cs.Color = PINK; cs.Thickness = 2.2; cs.Parent = frame
     local cg = Instance.new("UIGradient")
     cg.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, CREAM),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 245, 220)),
-        ColorSequenceKeypoint.new(1, SOFT_PINK),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 35, 100)),
+        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(45, 25, 70)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(95, 50, 135)),
     })
     cg.Rotation = 45
     cg.Parent = frame
 
     local t = Instance.new("TextLabel")
     t.Size = UDim2.new(1, 0, 0, 34); t.Position = UDim2.new(0, 0, 0, 16)
-    t.BackgroundTransparency = 1; t.Text = "pick your device"
+    t.BackgroundTransparency = 1; t.Text = "choose your fate"
     t.TextColor3 = DEEP_BROWN; t.TextSize = 16; t.Font = Enum.Font.GothamBold
     t.ZIndex = 3
     t.Parent = frame
 
     local d = Instance.new("TextLabel")
     d.Size = UDim2.new(1, -16, 0, 16); d.Position = UDim2.new(0, 8, 0, 50)
-    d.BackgroundTransparency = 1; d.Text = "we'll optimize everything for you"
+    d.BackgroundTransparency = 1; d.Text = "spooky things await you 🦇"
     d.TextColor3 = MUTED_TEXT; d.TextSize = 10; d.Font = Enum.Font.GothamMedium
     d.ZIndex = 3
     d.Parent = frame
@@ -299,7 +300,7 @@ local function show_platform_picker(callback)
         local card = Instance.new("TextButton")
         card.Size = UDim2.new(0.4, 0, 0, 84)
         card.Position = UDim2.new(x_pos, 0, 0, 82)
-        card.BackgroundColor3 = WHITE
+        card.BackgroundColor3 = CARD_SOFT
         card.BorderSizePixel = 0
         card.Text = ""
         card.AutoButtonColor = false
@@ -310,7 +311,7 @@ local function show_platform_picker(callback)
         local s = Instance.new("UIStroke"); s.Color = theme_color; s.Thickness = 1.8; s.Parent = card
         local g = Instance.new("UIGradient")
         g.Color = ColorSequence.new({
-            ColorSequenceKeypoint.new(0, WHITE),
+            ColorSequenceKeypoint.new(0, CARD_SOFT),
             ColorSequenceKeypoint.new(1, theme_color),
         })
         g.Rotation = 45
@@ -355,32 +356,32 @@ local function show_intro(platform, callback)
 
     local bg = Instance.new("Frame")
     bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Color3.fromRGB(255, 245, 215)
+    bg.BackgroundColor3 = Color3.fromRGB(25, 12, 40)
     bg.BackgroundTransparency = 1
     bg.BorderSizePixel = 0
     bg.ZIndex = 1
     bg.Parent = intro_gui
-    TweenService:Create(bg, TweenInfo.new(0.5, SMOOTH, DIR_OUT), {BackgroundTransparency = 0.4}):Play()
+    TweenService:Create(bg, TweenInfo.new(0.5, SMOOTH, DIR_OUT), {BackgroundTransparency = 0.3}):Play()
 
-    spawn_float_particles(bg, {"🌸", "💖", "✨", "🍮", "🎀", "💫", "🌟"}, 18)
+    spawn_float_particles(bg, {"🎃", "👻", "🕷️", "🕸️", "🦇", "💀", "🌙"}, 18)
 
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 48); title.Position = UDim2.new(0, 0, 0.4, -8)
-    title.BackgroundTransparency = 1; title.Text = "🍮 livyii.silent 🍮"
+    title.BackgroundTransparency = 1; title.Text = "🎃 livyii.silent 🎃"
     title.TextColor3 = DEEP_BROWN; title.TextSize = 26; title.Font = Enum.Font.GothamBold
     title.ZIndex = 5
     title.Parent = intro_gui
 
     local loading = Instance.new("TextLabel")
     loading.Size = UDim2.new(1, 0, 0, 32); loading.Position = UDim2.new(0, 0, 0.55, -16)
-    loading.BackgroundTransparency = 1; loading.Text = "loading.."
+    loading.BackgroundTransparency = 1; loading.Text = "summoning.."
     loading.TextColor3 = PINK; loading.TextSize = 16; loading.Font = Enum.Font.GothamBold
     loading.ZIndex = 5
     loading.Parent = intro_gui
 
     local heart = Instance.new("TextLabel")
     heart.Size = UDim2.new(0, 24, 0, 24); heart.Position = UDim2.new(0.5, 58, 0.55, -16)
-    heart.BackgroundTransparency = 1; heart.Text = "💖"; heart.TextSize = 16
+    heart.BackgroundTransparency = 1; heart.Text = "👻"; heart.TextSize = 16
     heart.Font = Enum.Font.GothamBold; heart.ZIndex = 5; heart.Parent = intro_gui
 
     title.TextTransparency = 1; loading.TextTransparency = 1
@@ -388,7 +389,7 @@ local function show_intro(platform, callback)
     TweenService:Create(loading, TweenInfo.new(0.6, SMOOTH, DIR_OUT), {TextTransparency = 0}):Play()
 
     task.wait(1.5)
-    loading.Text = "loaded! ✨"
+    loading.Text = "loaded! 🎃"
     task.wait(1.5)
 
     local fade = TweenService:Create(bg, TweenInfo.new(0.55, SMOOTH, DIR_IN), {BackgroundTransparency = 1})
@@ -439,10 +440,10 @@ local function load_main_ui(platform)
     local ms = Instance.new("UIStroke"); ms.Color = CARAMEL; ms.Thickness = 1.8; ms.Parent = main
     local mg = Instance.new("UIGradient")
     mg.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, YELLOW),
-        ColorSequenceKeypoint.new(0.35, CREAM),
-        ColorSequenceKeypoint.new(0.7, CARD_SOFT),
-        ColorSequenceKeypoint.new(1, SOFT_PINK),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 30, 90)),
+        ColorSequenceKeypoint.new(0.35, Color3.fromRGB(40, 20, 60)),
+        ColorSequenceKeypoint.new(0.7, Color3.fromRGB(48, 28, 72)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(80, 40, 120)),
     })
     mg.Rotation = 45
     mg.Parent = main
@@ -466,7 +467,7 @@ local function load_main_ui(platform)
 
     local bi = Instance.new("TextLabel")
     bi.Size = UDim2.new(1, 0, 1, 0); bi.BackgroundTransparency = 1
-    bi.Text = "🍮"; bi.TextSize = 14; bi.Font = Enum.Font.GothamBold
+    bi.Text = "🎃"; bi.TextSize = 14; bi.Font = Enum.Font.GothamBold
     bi.ZIndex = 22
     bi.Parent = badge
 
@@ -486,7 +487,7 @@ local function load_main_ui(platform)
     subtitle.Size = UDim2.new(1, -110, 0, 12)
     subtitle.Position = UDim2.new(0, 44, 0, 26)
     subtitle.BackgroundTransparency = 1
-    subtitle.Text = "optimized for " .. platform
+    subtitle.Text = "cursed for " .. platform .. " 🦇"
     subtitle.TextColor3 = MUTED_TEXT
     subtitle.TextSize = 9
     subtitle.Font = Enum.Font.GothamMedium
@@ -513,8 +514,8 @@ local function load_main_ui(platform)
     local tab_bar = Instance.new("Frame")
     tab_bar.Size = UDim2.new(1, -18, 0, 30)
     tab_bar.Position = UDim2.new(0, 9, 0, 52)
-    tab_bar.BackgroundColor3 = Color3.fromRGB(252, 242, 232)
-    tab_bar.BackgroundTransparency = 0.2
+    tab_bar.BackgroundColor3 = Color3.fromRGB(38, 20, 58)
+    tab_bar.BackgroundTransparency = 0.1
     tab_bar.BorderSizePixel = 0
     tab_bar.ZIndex = 15
     tab_bar.Parent = main
@@ -543,7 +544,7 @@ local function load_main_ui(platform)
         tb.Position = UDim2.new((i-1) * 0.25, 0, 0, 0)
         tb.BackgroundTransparency = 1
         tb.Text = tab_names[i]
-        tb.TextColor3 = i == 1 and DEEP_BROWN or BROWN
+        tb.TextColor3 = i == 1 and YELLOW or MUTED_TEXT
         tb.TextSize = 9
         tb.Font = Enum.Font.GothamBold
         tb.AutoButtonColor = false
@@ -610,7 +611,7 @@ local function load_main_ui(platform)
         lbl.Position = UDim2.new(0, 22, 0, 0)
         lbl.BackgroundTransparency = 1
         lbl.Text = text
-        lbl.TextColor3 = BROWN
+        lbl.TextColor3 = DEEP_BROWN
         lbl.TextSize = 9
         lbl.Font = Enum.Font.GothamBold
         lbl.TextXAlignment = Enum.TextXAlignment.Left
@@ -621,7 +622,7 @@ local function load_main_ui(platform)
         line.Size = UDim2.new(1, 0, 0, 1)
         line.Position = UDim2.new(0, 0, 1, -1)
         line.BackgroundColor3 = PINK
-        line.BackgroundTransparency = 0.6
+        line.BackgroundTransparency = 0.5
         line.BorderSizePixel = 0
         line.ZIndex = 5
         line.Parent = sec
@@ -671,7 +672,7 @@ local function load_main_ui(platform)
         local pill = Instance.new("TextButton")
         pill.Size = UDim2.new(0, TOGGLE_W, 0, TOGGLE_H)
         pill.Position = UDim2.new(1, -TOGGLE_W-8, 0.5, -TOGGLE_H/2)
-        pill.BackgroundColor3 = get_state() and YELLOW or Color3.fromRGB(228, 218, 210)
+        pill.BackgroundColor3 = get_state() and YELLOW or Color3.fromRGB(70, 45, 100)
         pill.BorderSizePixel = 0
         pill.Text = ""
         pill.AutoButtonColor = false
@@ -679,7 +680,7 @@ local function load_main_ui(platform)
         pill.Parent = card
 
         local pc = Instance.new("UICorner"); pc.CornerRadius = UDim.new(1, 0); pc.Parent = pill
-        local ps = Instance.new("UIStroke"); ps.Color = get_state() and PINK or Color3.fromRGB(210, 200, 190); ps.Thickness = 1.3; ps.Parent = pill
+        local ps = Instance.new("UIStroke"); ps.Color = get_state() and PINK or Color3.fromRGB(95, 65, 130); ps.Thickness = 1.3; ps.Parent = pill
 
         local knob = Instance.new("Frame")
         knob.Size = UDim2.new(0, TOGGLE_H - 6, 0, TOGGLE_H - 6)
@@ -696,10 +697,10 @@ local function load_main_ui(platform)
             local ns = not get_state()
             set_state(ns)
             TweenService:Create(pill, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {
-                BackgroundColor3 = ns and YELLOW or Color3.fromRGB(228, 218, 210)
+                BackgroundColor3 = ns and YELLOW or Color3.fromRGB(70, 45, 100)
             }):Play()
             TweenService:Create(ps, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {
-                Color = ns and PINK or Color3.fromRGB(210, 200, 190)
+                Color = ns and PINK or Color3.fromRGB(95, 65, 130)
             }):Play()
             TweenService:Create(knob, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {
                 Position = ns and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
@@ -771,7 +772,7 @@ local function load_main_ui(platform)
         local track = Instance.new("Frame")
         track.Size = UDim2.new(1, -52, 0, 5)
         track.Position = UDim2.new(0, 34, 0, SLIDER_H - 13)
-        track.BackgroundColor3 = Color3.fromRGB(240, 230, 220)
+        track.BackgroundColor3 = Color3.fromRGB(60, 35, 85)
         track.BorderSizePixel = 0
         track.ZIndex = 6
         track.Parent = card
@@ -891,7 +892,7 @@ local function load_main_ui(platform)
         local container = Instance.new("Frame")
         container.Size = UDim2.new(0.4, 0, 0, #options * 20)
         container.Position = UDim2.new(0.58, 0, 0, CARD_H)
-        container.BackgroundColor3 = WHITE
+        container.BackgroundColor3 = Color3.fromRGB(55, 32, 82)
         container.BorderSizePixel = 0
         container.Visible = false
         container.ZIndex = 30
@@ -908,7 +909,7 @@ local function load_main_ui(platform)
         for _, opt in ipairs(options) do
             local ob = Instance.new("TextButton")
             ob.Size = UDim2.new(1, 0, 0, 18)
-            ob.BackgroundColor3 = Color3.fromRGB(255, 250, 240)
+            ob.BackgroundColor3 = Color3.fromRGB(48, 28, 72)
             ob.BorderSizePixel = 0
             ob.Text = tostring(opt)
             ob.TextColor3 = DEEP_BROWN
@@ -986,7 +987,7 @@ local function load_main_ui(platform)
         pill.Parent = tile
 
         local pc = Instance.new("UICorner"); pc.CornerRadius = UDim.new(1, 0); pc.Parent = pill
-        local ps = Instance.new("UIStroke"); ps.Color = Color3.fromRGB(210, 200, 190); ps.Thickness = 1.3; ps.Parent = pill
+        local ps = Instance.new("UIStroke"); ps.Color = Color3.fromRGB(95, 65, 130); ps.Thickness = 1.3; ps.Parent = pill
 
         local knob = Instance.new("Frame")
         knob.Size = UDim2.new(0, TOGGLE_H - 6, 0, TOGGLE_H - 6)
@@ -1000,10 +1001,10 @@ local function load_main_ui(platform)
 
         local function refresh_visuals()
             local on = cfg.TargetedPlayers[player] == true
-            pill.BackgroundColor3 = on and YELLOW or Color3.fromRGB(228, 218, 210)
-            ps.Color = on and PINK or Color3.fromRGB(210, 200, 190)
+            pill.BackgroundColor3 = on and YELLOW or Color3.fromRGB(70, 45, 100)
+            ps.Color = on and PINK or Color3.fromRGB(95, 65, 130)
             knob.Position = on and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
-            name_lbl.TextColor3 = on and BROWN or DEEP_BROWN
+            name_lbl.TextColor3 = on and YELLOW or DEEP_BROWN
         end
         refresh_visuals()
 
@@ -1011,23 +1012,23 @@ local function load_main_ui(platform)
             local new_state = not (cfg.TargetedPlayers[player] == true)
             if new_state then
                 cfg.TargetedPlayers[player] = true
-                notify("targeting " .. player.Name .. " 🎯", 1.5)
+                notify("🎃 cursed " .. player.Name, 1.5)
             else
                 cfg.TargetedPlayers[player] = nil
-                notify("untargeted " .. player.Name .. " 💤", 1.5)
+                notify("💀 released " .. player.Name, 1.5)
             end
             local on = new_state
             TweenService:Create(pill, TweenInfo.new(0.35, SMOOTH, DIR_OUT), {
-                BackgroundColor3 = on and YELLOW or Color3.fromRGB(228, 218, 210)
+                BackgroundColor3 = on and YELLOW or Color3.fromRGB(70, 45, 100)
             }):Play()
             TweenService:Create(ps, TweenInfo.new(0.35, SMOOTH, DIR_OUT), {
-                Color = on and PINK or Color3.fromRGB(210, 200, 190)
+                Color = on and PINK or Color3.fromRGB(95, 65, 130)
             }):Play()
             TweenService:Create(knob, TweenInfo.new(0.35, SMOOTH, DIR_OUT), {
                 Position = on and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
             }):Play()
             TweenService:Create(name_lbl, TweenInfo.new(0.35, SMOOTH, DIR_OUT), {
-                TextColor3 = on and BROWN or DEEP_BROWN
+                TextColor3 = on and YELLOW or DEEP_BROWN
             }):Play()
         end
 
@@ -1071,12 +1072,12 @@ local function load_main_ui(platform)
         if v then enable_shiftlock() else disable_shiftlock() end
     end)
 
-    make_section(misc_scroll, "👥", "live targets")
+    make_section(misc_scroll, "👥", "cursed souls")
 
     local note = Instance.new("TextLabel")
     note.Size = UDim2.new(1, 0, 0, 14)
     note.BackgroundTransparency = 1
-    note.Text = "tap a player to target only them"
+    note.Text = "tap a soul to curse only them"
     note.TextColor3 = MUTED_TEXT
     note.TextSize = 9
     note.Font = Enum.Font.GothamMedium
@@ -1113,7 +1114,7 @@ local function load_main_ui(platform)
             local empty = Instance.new("TextLabel")
             empty.Size = UDim2.new(1, 0, 0, 26)
             empty.BackgroundTransparency = 1
-            empty.Text = "no other players yet 🌸"
+            empty.Text = "no other souls yet 🕸️"
             empty.TextColor3 = MUTED_TEXT
             empty.TextSize = 9
             empty.Font = Enum.Font.GothamMedium
@@ -1141,7 +1142,7 @@ local function load_main_ui(platform)
         local target_pos = UDim2.new((index - 1) * 0.25, 3, 0, 3)
         TweenService:Create(tab_indicator, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {Position = target_pos}):Play()
         for i, btn in ipairs(tab_btns) do
-            local target_color = i == index and DEEP_BROWN or BROWN
+            local target_color = i == index and YELLOW or MUTED_TEXT
             TweenService:Create(btn, TweenInfo.new(0.3, SOFT, DIR_OUT), {TextColor3 = target_color}):Play()
         end
     end
@@ -1184,7 +1185,7 @@ local function load_main_ui(platform)
     end)
 
     ui_flow_active = false
-    notify("🍮 livyii.silent", "loaded for " .. platform, 4)
+    notify("🎃 livyii.silent", "summoned for " .. platform, 4)
 end
 
 local WEEKLY_KEYS = {
@@ -1214,31 +1215,31 @@ local function show_key_ui()
     local ks = Instance.new("UIStroke"); ks.Color = PINK; ks.Thickness = 1.8; ks.Parent = key_frame
     local kg = Instance.new("UIGradient")
     kg.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, YELLOW),
-        ColorSequenceKeypoint.new(0.4, CREAM),
-        ColorSequenceKeypoint.new(1, SOFT_PINK),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 130, 30)),
+        ColorSequenceKeypoint.new(0.4, Color3.fromRGB(60, 30, 90)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(45, 25, 70)),
     })
     kg.Rotation = 45
     kg.Parent = key_frame
 
     local kt = Instance.new("TextLabel")
     kt.Size = UDim2.new(1, 0, 0, 34); kt.Position = UDim2.new(0, 0, 0, 12)
-    kt.BackgroundTransparency = 1; kt.Text = "🎀 livyii key 🎀"
+    kt.BackgroundTransparency = 1; kt.Text = "🕸️ livyii key 🕸️"
     kt.TextColor3 = DEEP_BROWN; kt.TextSize = 15; kt.Font = Enum.Font.GothamBold
     kt.ZIndex = 3
     kt.Parent = key_frame
 
     local ksub = Instance.new("TextLabel")
     ksub.Size = UDim2.new(1, -16, 0, 14); ksub.Position = UDim2.new(0, 8, 0, 44)
-    ksub.BackgroundTransparency = 1; ksub.Text = "get key in dc server 💖"
+    ksub.BackgroundTransparency = 1; ksub.Text = "whisper to the dc server 🧡"
     ksub.TextColor3 = MUTED_TEXT; ksub.TextSize = 9; ksub.Font = Enum.Font.GothamMedium
     ksub.ZIndex = 3
     ksub.Parent = key_frame
 
     local kbox = Instance.new("TextBox")
     kbox.Size = UDim2.new(0.8, 0, 0, 32); kbox.Position = UDim2.new(0.1, 0, 0, 68)
-    kbox.BackgroundColor3 = WHITE; kbox.BorderSizePixel = 0
-    kbox.Text = ""; kbox.PlaceholderText = "key..."; kbox.TextColor3 = DEEP_BROWN
+    kbox.BackgroundColor3 = Color3.fromRGB(55, 32, 82); kbox.BorderSizePixel = 0
+    kbox.Text = ""; kbox.PlaceholderText = "incantation..."; kbox.TextColor3 = DEEP_BROWN
     kbox.PlaceholderColor3 = MUTED_TEXT; kbox.TextSize = 11
     kbox.Font = Enum.Font.GothamMedium; kbox.ClearTextOnFocus = false; kbox.ZIndex = 10; kbox.Parent = key_frame
     local kbc = Instance.new("UICorner"); kbc.CornerRadius = UDim.new(0, 10); kbc.Parent = kbox
@@ -1246,7 +1247,7 @@ local function show_key_ui()
 
     local ksubmit = Instance.new("TextButton")
     ksubmit.Size = UDim2.new(0.5, 0, 0, 32); ksubmit.Position = UDim2.new(0.25, 0, 0, 110)
-    ksubmit.BackgroundColor3 = YELLOW; ksubmit.BorderSizePixel = 0; ksubmit.Text = "unlock ✨"
+    ksubmit.BackgroundColor3 = YELLOW; ksubmit.BorderSizePixel = 0; ksubmit.Text = "unlock 🔮"
     ksubmit.TextColor3 = BROWN; ksubmit.TextSize = 11; ksubmit.Font = Enum.Font.GothamBold
     ksubmit.AutoButtonColor = false
     ksubmit.ZIndex = 10
@@ -1267,8 +1268,8 @@ local function show_key_ui()
     ksubmit.MouseButton1Click:Connect(function()
         local entered = kbox.Text:lower():gsub("%s+", "")
         if WEEKLY_KEYS[entered] then
-            kstatus.Text = "unlocked! ✨"
-            kstatus.TextColor3 = Color3.fromRGB(50, 180, 50)
+            kstatus.Text = "unlocked! 🎃"
+            kstatus.TextColor3 = Color3.fromRGB(150, 230, 100)
             TweenService:Create(kstatus, TweenInfo.new(0.35, SOFT, DIR_OUT), {TextTransparency = 0}):Play()
             task.wait(0.6)
             key_gui:Destroy()
@@ -1276,7 +1277,7 @@ local function show_key_ui()
                 show_intro(platform, load_main_ui)
             end)
         else
-            kstatus.Text = "invalid key 💔"
+            kstatus.Text = "invalid spell 💔"
             kstatus.TextColor3 = Color3.fromRGB(200, 50, 50)
             TweenService:Create(kstatus, TweenInfo.new(0.35, SOFT, DIR_OUT), {TextTransparency = 0}):Play()
             kbox.Text = ""
@@ -1289,7 +1290,7 @@ local function show_key_ui()
 end
 
 if is_dev then
-    notify("🍮 livyii", "developer access granted ✨", 4)
+    notify("🎃 livyii", "developer access granted 🕸️", 4)
     show_platform_picker(function(platform)
         show_intro(platform, load_main_ui)
     end)
@@ -1304,7 +1305,7 @@ task.spawn(function()
         for i = 1, 4 do
             local line = Drawing.new("Line")
             line.Thickness = cfg.CrosshairOutlineThickness
-            line.Color = BROWN
+            line.Color = Color3.fromRGB(20, 10, 30)
             line.Transparency = 1
             line.Visible = false
             table.insert(outline_lines, line)
@@ -1312,7 +1313,7 @@ task.spawn(function()
         for i = 1, 4 do
             local line = Drawing.new("Line")
             line.Thickness = cfg.CrosshairThickness
-            line.Color = CREAM
+            line.Color = Color3.fromRGB(255, 130, 30)
             line.Transparency = 1
             line.Visible = false
             table.insert(crosshair_lines, line)
@@ -1332,13 +1333,13 @@ task.spawn(function()
         info_text.Center = true
         info_text.Outline = true
         info_text.OutlineColor = Color3.new(0, 0, 0)
-        info_text.Color = PINK
+        info_text.Color = Color3.fromRGB(255, 130, 30)
         info_text.Font = 2
         info_text.Visible = false
 
         local highlight = Instance.new("Highlight")
-        highlight.FillColor = PINK
-        highlight.OutlineColor = PINK
+        highlight.FillColor = Color3.fromRGB(255, 130, 30)
+        highlight.OutlineColor = Color3.fromRGB(165, 90, 220)
         highlight.FillTransparency = 0.6
         highlight.OutlineTransparency = 0
         highlight.Enabled = false
@@ -1462,7 +1463,7 @@ task.spawn(function()
                 outline_lines[3].From = pos + lS; outline_lines[3].To = pos + lE
                 outline_lines[4].From = pos + rS; outline_lines[4].To = pos + rE
                 for _, l in ipairs(outline_lines) do
-                    l.Color = BROWN
+                    l.Color = Color3.fromRGB(20, 10, 30)
                     l.Thickness = cfg.CrosshairOutlineThickness
                     l.Visible = true
                 end
@@ -1531,9 +1532,9 @@ task.spawn(function()
                     local my_root = my_char and my_char:FindFirstChild("HumanoidRootPart")
                     if my_root then
                         local dist = math.floor((my_root.Position - target_part.Position).Magnitude)
-                        info_text.Text = current_target_plr.Name .. " • " .. dist .. "m"
+                        info_text.Text = "🎃 " .. current_target_plr.Name .. " • " .. dist .. "m"
                         info_text.Position = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2 - 50)
-                        info_text.Color = PINK
+                        info_text.Color = Color3.fromRGB(255, 130, 30)
                         info_text.Visible = true
                     else
                         info_text.Visible = false
@@ -1639,7 +1640,7 @@ task.spawn(function()
             if ui_flow_active then return end
             if input.KeyCode == cfg.ToggleKey then
                 cfg.Enabled = not cfg.Enabled
-                notify("🍮 silent aim", cfg.Enabled and "enabled ✨" or "disabled 🌸", 2)
+                notify("🎃 silent aim", cfg.Enabled and "enabled 🎃" or "disabled 💀", 2)
             end
         end)
 
@@ -1654,4 +1655,4 @@ task.spawn(function()
     end
 end)
 
-print("[livyii] script fully loaded ✨") 
+print("[livyii] script fully loaded 🎃")
