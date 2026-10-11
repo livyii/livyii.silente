@@ -1,4 +1,4 @@
--- livyii silent aim - halloween edition 🎃
+-- livyii silent aim - halloween edition 🎃 + right-click shiftlock
 print("[livyii] starting...")
 
 local Players = game:GetService("Players")
@@ -57,18 +57,18 @@ local function spawn_float_particles(parent, emojis, count)
 end
 
 -- 🎃 halloween palette 🎃
-local YELLOW = Color3.fromRGB(255, 130, 30)          -- pumpkin orange
-local CREAM = Color3.fromRGB(45, 25, 65)              -- dark night purple
-local BROWN = Color3.fromRGB(65, 30, 95)              -- deep purple (on-orange text)
-local PINK = Color3.fromRGB(165, 90, 220)             -- witch purple
+local YELLOW = Color3.fromRGB(255, 130, 30)
+local CREAM = Color3.fromRGB(45, 25, 65)
+local BROWN = Color3.fromRGB(65, 30, 95)
+local PINK = Color3.fromRGB(165, 90, 220)
 local WHITE = Color3.fromRGB(255, 255, 255)
-local SOFT_PINK = Color3.fromRGB(195, 155, 235)       -- pale lavender
-local BG_COLOR = Color3.fromRGB(22, 12, 35)           -- deep night background
-local BORDER_SOFT = Color3.fromRGB(85, 50, 120)       -- purple border
-local DEEP_BROWN = Color3.fromRGB(255, 215, 170)      -- pale pumpkin text
-local CARD_SOFT = Color3.fromRGB(48, 28, 72)          -- card background
-local MUTED_TEXT = Color3.fromRGB(165, 135, 200)      -- muted purple text
-local CARAMEL = Color3.fromRGB(255, 100, 25)          -- deep orange border
+local SOFT_PINK = Color3.fromRGB(195, 155, 235)
+local BG_COLOR = Color3.fromRGB(22, 12, 35)
+local BORDER_SOFT = Color3.fromRGB(85, 50, 120)
+local DEEP_BROWN = Color3.fromRGB(255, 215, 170)
+local CARD_SOFT = Color3.fromRGB(48, 28, 72)
+local MUTED_TEXT = Color3.fromRGB(165, 135, 200)
+local CARAMEL = Color3.fromRGB(255, 100, 25)
 
 local SMOOTH = Enum.EasingStyle.Quint
 local SOFT = Enum.EasingStyle.Cubic
@@ -99,9 +99,11 @@ genv.SilentAim = genv.SilentAim or {
     AutoPredictionEnabled = true, PredictionStrength = 0.15,
     TargetInfoEnabled = true,
     TargetedPlayers = {},
+    RightClickShiftlock = true,
 }
 local cfg = genv.SilentAim
 if not cfg.TargetedPlayers then cfg.TargetedPlayers = {} end
+if cfg.RightClickShiftlock == nil then cfg.RightClickShiftlock = true end
 
 local function cleanup_targets()
     for plr, _ in pairs(cfg.TargetedPlayers) do
@@ -167,6 +169,27 @@ local function disable_shiftlock()
         local hum = char:FindFirstChildOfClass("Humanoid")
         if hum then hum.AutoRotate = saved_auto_rotate end
     end
+end
+
+-- 🎃 shared shiftlock state helpers (used by UI toggle + right-click / 2-finger shortcuts)
+local shiftlock_ui_refresh = nil
+local last_shiftlock_toggle = 0
+
+local function set_shiftlock_state(new_state, silent)
+    cfg.ShiftlockEnabled = new_state
+    if new_state then enable_shiftlock() else disable_shiftlock() end
+    if shiftlock_ui_refresh then pcall(shiftlock_ui_refresh, new_state) end
+    if not silent then
+        notify("🎃 shiftlock", new_state and "enabled 🔒" or "disabled 🔓", 1.5)
+    end
+end
+
+local function try_toggle_shiftlock()
+    if not cfg.RightClickShiftlock then return end
+    local now = tick()
+    if now - last_shiftlock_toggle < 0.25 then return end
+    last_shiftlock_toggle = now
+    set_shiftlock_state(not cfg.ShiftlockEnabled)
 end
 
 local current_main_gui = nil
@@ -693,19 +716,26 @@ local function load_main_ui(platform)
         local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(1, 0); kc.Parent = knob
         local ks = Instance.new("UIStroke"); ks.Color = PINK; ks.Thickness = 1; ks.Parent = knob
 
+        -- 🎃 apply_visual lets external code (right-click / 2-finger) sync the pill w/o re-firing set_state
+        local function apply_visual(state)
+            TweenService:Create(pill, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {
+                BackgroundColor3 = state and YELLOW or Color3.fromRGB(70, 45, 100)
+            }):Play()
+            TweenService:Create(ps, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {
+                Color = state and PINK or Color3.fromRGB(95, 65, 130)
+            }):Play()
+            TweenService:Create(knob, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {
+                Position = state and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
+            }):Play()
+        end
+
         pill.MouseButton1Click:Connect(function()
             local ns = not get_state()
             set_state(ns)
-            TweenService:Create(pill, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {
-                BackgroundColor3 = ns and YELLOW or Color3.fromRGB(70, 45, 100)
-            }):Play()
-            TweenService:Create(ps, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {
-                Color = ns and PINK or Color3.fromRGB(95, 65, 130)
-            }):Play()
-            TweenService:Create(knob, TweenInfo.new(0.4, SMOOTH, DIR_OUT), {
-                Position = ns and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
-            }):Play()
+            apply_visual(ns)
         end)
+
+        return apply_visual
     end
 
     local function make_slider(parent, icon, text, min, max, get_value, set_value)
@@ -1067,10 +1097,33 @@ local function load_main_ui(platform)
     local misc_scroll = scroll_frames[4]
     make_section(misc_scroll, "✨", "misc")
     make_toggle(misc_scroll, "🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
-    make_toggle(misc_scroll, "🔒", "shiftlock", function() return cfg.ShiftlockEnabled end, function(v)
-        cfg.ShiftlockEnabled = v
-        if v then enable_shiftlock() else disable_shiftlock() end
-    end)
+
+    -- 🎃 shiftlock toggle (keeps its visual refresh fn so right-click / 2-finger tap can sync it)
+    shiftlock_ui_refresh = make_toggle(misc_scroll, "🔒", "shiftlock", 
+        function() return cfg.ShiftlockEnabled end, 
+        function(v)
+            cfg.ShiftlockEnabled = v
+            if v then enable_shiftlock() else disable_shiftlock() end
+        end
+    )
+
+    -- 🎃 right-click / 2-finger enable toggle
+    make_toggle(misc_scroll, "🖱️", "rc/2-finger shiftlock", 
+        function() return cfg.RightClickShiftlock end, 
+        function(v) cfg.RightClickShiftlock = v end
+    )
+
+    local sl_hint = Instance.new("TextLabel")
+    sl_hint.Size = UDim2.new(1, 0, 0, 22)
+    sl_hint.BackgroundTransparency = 1
+    sl_hint.Text = "right-click (pc) · 2-finger tap (mobile)\ntoggles shiftlock 🕸️"
+    sl_hint.TextColor3 = MUTED_TEXT
+    sl_hint.TextSize = 9
+    sl_hint.Font = Enum.Font.GothamMedium
+    sl_hint.TextXAlignment = Enum.TextXAlignment.Left
+    sl_hint.TextYAlignment = Enum.TextYAlignment.Top
+    sl_hint.ZIndex = 5
+    sl_hint.Parent = misc_scroll
 
     make_section(misc_scroll, "👥", "cursed souls")
 
@@ -1633,6 +1686,34 @@ task.spawn(function()
         end)
         UIS.InputEnded:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 then drag_cross = false end
+        end)
+
+        -- 🎃 right-click (PC) toggles shiftlock
+        UIS.InputBegan:Connect(function(input, gp)
+            if ui_flow_active then return end
+            if not cfg.RightClickShiftlock then return end
+            if input.UserInputType == Enum.UserInputType.MouseButton2 then
+                try_toggle_shiftlock()
+            end
+        end)
+
+        -- 🎃 two-finger tap (mobile) toggles shiftlock
+        local counted_touches = {}
+        UIS.TouchStarted:Connect(function(input)
+            if ui_flow_active then return end
+            if not cfg.RightClickShiftlock then return end
+            -- ignore touches on the UI so toggles don't accidentally trigger it
+            if is_touch_on_ui(input.Position) then return end
+            counted_touches[input] = true
+            local count = 0
+            for _ in pairs(counted_touches) do count = count + 1 end
+            if count >= 2 then
+                counted_touches = {}
+                try_toggle_shiftlock()
+            end
+        end)
+        UIS.TouchEnded:Connect(function(input)
+            counted_touches[input] = nil
         end)
 
         UIS.InputBegan:Connect(function(input, gp)
