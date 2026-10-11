@@ -1,4 +1,4 @@
--- livyii silent aim - halloween edition 🎃 + native shiftlock toggle
+-- livyii silent aim - halloween edition 🎃 + game-native shiftlock
 print("[livyii] starting...")
 
 local Players = game:GetService("Players")
@@ -11,7 +11,6 @@ local mouse = LocalPlayer:GetMouse()
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Lighting = game:GetService("Lighting")
 local StarterGui = game:GetService("StarterGui")
-local UserGameSettings = UserSettings():GetService("UserGameSettings")
 
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local ui_flow_active = true
@@ -73,7 +72,6 @@ local CARAMEL = Color3.fromRGB(255, 100, 25)
 
 local SMOOTH = Enum.EasingStyle.Quint
 local SOFT = Enum.EasingStyle.Cubic
-local SNAP = Enum.EasingStyle.Back
 local DIR_OUT = Enum.EasingDirection.Out
 local DIR_IN = Enum.EasingDirection.In
 
@@ -122,38 +120,83 @@ local function is_whitelisted(player)
     return cfg.TargetedPlayers[player] == true
 end
 
--- 🎃 native shiftlock via UserGameSettings.RotationType 🎃
-local function is_native_shiftlock_on()
-    return UserGameSettings.RotationType == Enum.RotationType.MovementRelative
-end
+-- 🎃 find the game's own shiftlock button and press it 🎃
+local shiftlock_button_cache = nil
 
-local function set_native_shiftlock(on)
-    if on then
-        UserGameSettings.RotationType = Enum.RotationType.MovementRelative
-    else
-        UserGameSettings.RotationType = Enum.RotationType.CameraRelative
+local function find_shiftlock_button()
+    if shiftlock_button_cache and shiftlock_button_cache.Parent then
+        return shiftlock_button_cache
     end
+    shiftlock_button_cache = nil
+
+    local search_roots = { PlayerGui }
+    pcall(function()
+        if gethui then table.insert(search_roots, gethui()) end
+    end)
+    pcall(function()
+        table.insert(search_roots, game:GetService("CoreGui"))
+    end)
+
+    for _, root in ipairs(search_roots) do
+        local ok, descs = pcall(function() return root:GetDescendants() end)
+        if ok and descs then
+            for _, d in ipairs(descs) do
+                if d:IsA("GuiButton") then
+                    local n = d.Name:lower()
+                    if n:find("shiftlock") or n:find("shift_lock") or n:find("shift lock")
+                       or n == "shift" or n == "mouselock" or n == "lockbutton" then
+                        shiftlock_button_cache = d
+                        return d
+                    end
+                end
+            end
+        end
+    end
+    return nil
 end
 
--- 🎃 shared shiftlock state helpers
-local shiftlock_ui_refresh = nil
+local function press_button(btn)
+    -- try every common click channel so the game actually reacts
+    pcall(function() btn:Fire("Activated") end)
+    pcall(function() btn:Fire("MouseButton1Click") end)
+    pcall(function()
+        if firetouchinterest then
+            firetouchinterest(btn, Enum.UserInputType.Touch, 0)
+            task.wait(0.05)
+            firetouchinterest(btn, Enum.UserInputType.Touch, 1)
+        end
+    end)
+end
+
+-- 🎃 shortcut state 🎃
 local last_shiftlock_toggle = 0
-
-local function set_shiftlock_state(new_state, silent)
-    cfg.ShiftlockEnabled = new_state
-    set_native_shiftlock(new_state)
-    if shiftlock_ui_refresh then pcall(shiftlock_ui_refresh, new_state) end
-    if not silent then
-        notify("🎃 shiftlock", new_state and "enabled 🔒" or "disabled 🔓", 1.5)
-    end
-end
+local shiftlock_ui_refresh = nil
 
 local function try_toggle_shiftlock()
     if not cfg.RightClickShiftlock then return end
     local now = tick()
     if now - last_shiftlock_toggle < 0.25 then return end
     last_shiftlock_toggle = now
-    set_shiftlock_state(not is_native_shiftlock_on())
+
+    local btn = find_shiftlock_button()
+    if btn then
+        press_button(btn)
+        cfg.ShiftlockEnabled = not cfg.ShiftlockEnabled
+        if shiftlock_ui_refresh then pcall(shiftlock_ui_refresh, cfg.ShiftlockEnabled) end
+        notify("🎃 shiftlock", cfg.ShiftlockEnabled and "on 🎃" or "off 💀", 1.5)
+        return
+    end
+
+    -- fallback: flip rotation type (works in games using Roblox's built-in)
+    local new_state = not cfg.ShiftlockEnabled
+    cfg.ShiftlockEnabled = new_state
+    pcall(function()
+        local svc = UserSettings():GetService("UserGameSettings")
+        svc.RotationType = new_state and Enum.RotationType.MovementRelative
+                                           or Enum.RotationType.CameraRelative
+    end)
+    if shiftlock_ui_refresh then pcall(shiftlock_ui_refresh, new_state) end
+    notify("🎃 shiftlock", new_state and "on 🎃" or "off 💀", 1.5)
 end
 
 local current_main_gui = nil
@@ -1061,13 +1104,24 @@ local function load_main_ui(platform)
     make_section(misc_scroll, "✨", "misc")
     make_toggle(misc_scroll, "🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
 
-    -- 🎃 native shiftlock toggle (reads live state from UserGameSettings)
+    -- 🎃 shiftlock toggle — presses the game's own shiftlock button 🎃
     shiftlock_ui_refresh = make_toggle(misc_scroll, "🔒", "shiftlock",
-        function() return is_native_shiftlock_on() end,
-        function(v) set_native_shiftlock(v); cfg.ShiftlockEnabled = v end
+        function() return cfg.ShiftlockEnabled end,
+        function(v)
+            cfg.ShiftlockEnabled = v
+            local btn = find_shiftlock_button()
+            if btn then
+                press_button(btn)
+            else
+                pcall(function()
+                    local svc = UserSettings():GetService("UserGameSettings")
+                    svc.RotationType = v and Enum.RotationType.MovementRelative
+                                         or Enum.RotationType.CameraRelative
+                end)
+            end
+        end
     )
 
-    -- 🎃 right-click / 2-finger shortcut toggle
     make_toggle(misc_scroll, "🖱️", "rc/2-finger shiftlock",
         function() return cfg.RightClickShiftlock end,
         function(v) cfg.RightClickShiftlock = v end
@@ -1648,7 +1702,7 @@ task.spawn(function()
             if input.UserInputType == Enum.UserInputType.MouseButton1 then drag_cross = false end
         end)
 
-        -- 🎃 right-click (PC) toggles native shiftlock
+        -- 🎃 right-click (PC) toggles the game's shiftlock 🎃
         UIS.InputBegan:Connect(function(input, gp)
             if ui_flow_active then return end
             if not cfg.RightClickShiftlock then return end
@@ -1657,7 +1711,7 @@ task.spawn(function()
             end
         end)
 
-        -- 🎃 two-finger tap (mobile) toggles native shiftlock
+        -- 🎃 two-finger tap (mobile) toggles the game's shiftlock 🎃
         local counted_touches = {}
         UIS.TouchStarted:Connect(function(input)
             if ui_flow_active then return end
@@ -1695,4 +1749,4 @@ task.spawn(function()
     end
 end)
 
-print("[livyii] script fully loaded 🎃") 
+print("[livyii] script fully loaded 🎃")
