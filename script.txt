@@ -1,4 +1,4 @@
--- livyii silent aim - halloween edition 🎃 + game-native shiftlock + melodihhh loader
+-- livyii silent aim - halloween edition 🎃 (centered FOV, cursor-aim toggle)
 print("[livyii] starting...")
 
 local Players = game:GetService("Players")
@@ -15,14 +15,47 @@ local StarterGui = game:GetService("StarterGui")
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local ui_flow_active = true
 
--- 🎵 melodihhh script URL 🎵
 local MELODIHHH_URL = "https://raw.githubusercontent.com/japan67-hub/meloy4everdanffa/refs/heads/main/highmcdel"
 
--- 🎵 melodihhh keys 🎵
-local MELODIHHH_KEYS = {
-    ["rabbit"] = true, ["pink"] = true, ["hood"] = true, ["mariland"] = true,
-    ["flat"] = true, ["kuromi"] = true, ["sanrio"] = true, ["1975"] = true,
-    ["sweet"] = true, ["baking"] = true,
+-- 🔒 obfuscated keys (offset +7 byte arrays, decoded at runtime)
+local function _dk(codes)
+    local out = {}
+    for i = 1, #codes do
+        out[i] = string.char(codes[i] - 7)
+    end
+    return table.concat(out)
+end
+
+local MELODIHHH_KEYS = {}
+for _, c in ipairs({
+    {121,104,105,105,112,123},
+    {119,112,117,114},
+    {111,118,118,107},
+    {116,104,121,112,115,104,117,107},
+    {109,115,104,123},
+    {114,124,121,118,116,112},
+    {122,104,117,121,112,118},
+    {56,64,62,60},
+    {122,126,108,108,123},
+    {105,104,114,112,117,110},
+}) do MELODIHHH_KEYS[_dk(c)] = true end
+
+local WEEKLY_KEYS = {}
+for _, c in ipairs({
+    {119,118,116,119,118,116},
+    {115,112,125,128,112,112},
+    {112,116,113,124,122,123,115,112,123},
+    {105,108,122,123,122,106,121,112,119,123},
+    {105,115,118,127,128,106,118,115,104},
+    {122,124,119,108,121,117,104,123,124,121,104,115},
+}) do WEEKLY_KEYS[_dk(c)] = true end
+
+-- 🎯 full part list (crimebeings-style) 🎯
+local bodyPartsList = {
+    "Head", "UpperTorso", "HumanoidRootPart", "LowerTorso",
+    "LeftUpperArm", "RightUpperArm", "LeftLowerArm", "RightLowerArm",
+    "LeftHand", "RightHand", "LeftUpperLeg", "RightUpperLeg",
+    "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot"
 }
 
 local function notify(title, text, duration)
@@ -66,7 +99,7 @@ local function spawn_float_particles(parent, emojis, count)
     end
 end
 
--- 🎃 halloween palette 🎃
+-- 🎃 palette 🎃
 local YELLOW = Color3.fromRGB(255, 130, 30)
 local CREAM = Color3.fromRGB(45, 25, 65)
 local BROWN = Color3.fromRGB(65, 30, 95)
@@ -88,18 +121,17 @@ local DIR_OUT = Enum.EasingDirection.Out
 local DIR_IN = Enum.EasingDirection.In
 
 local DEV_USERS = {
-    ["livyiilolly"] = true,
-    ["narvstar"] = true,
-    ["2lmost"] = true,
-    ["natalie_nunnlee"] = true,
+    ["livyiilolly"] = true, ["narvstar"] = true,
+    ["2lmost"] = true, ["natalie_nunnlee"] = true,
 }
 local is_dev = DEV_USERS[LocalPlayer.Name:lower()] or false
 
 local genv = getgenv and getgenv() or _G
 genv.SilentAim = genv.SilentAim or {
-    Enabled = true, FOVRadius = 150, HitPart = "HumanoidRootPart", TeamCheck = false,
+    Enabled = true, FOVRadius = 150, HitPart = "Head", TeamCheck = false,
     RequireTool = true, KnockCheck = true, WallCheck = false, RevolverBypass = false,
-    UseCursorAim = UIS.MouseEnabled, ShiftlockEnabled = false,
+    UseCursorAim = false, ShiftlockEnabled = false,
+    SilentAimClosestPart = false,
     CrosshairEnabled = true, CrosshairSize = 10, CrosshairGap = 4, CrosshairThickness = 1.5,
     CrosshairPosition = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2),
     ToggleKey = Enum.KeyCode.RightShift, HighlightEnabled = true, TracerEnabled = true,
@@ -111,10 +143,13 @@ genv.SilentAim = genv.SilentAim or {
     TargetInfoEnabled = true,
     TargetedPlayers = {},
     RightClickShiftlock = true,
+    MaxDistance = 1000,
 }
 local cfg = genv.SilentAim
 if not cfg.TargetedPlayers then cfg.TargetedPlayers = {} end
 if cfg.RightClickShiftlock == nil then cfg.RightClickShiftlock = true end
+if cfg.SilentAimClosestPart == nil then cfg.SilentAimClosestPart = false end
+if cfg.MaxDistance == nil then cfg.MaxDistance = 1000 end
 
 local function cleanup_targets()
     for plr, _ in pairs(cfg.TargetedPlayers) do
@@ -132,23 +167,26 @@ local function is_whitelisted(player)
     return cfg.TargetedPlayers[player] == true
 end
 
--- 🎃 find the game's own shiftlock button and press it 🎃
-local shiftlock_button_cache = nil
+local function get_reference_position()
+    if cfg.UseCursorAim then
+        local mp = UIS:GetMouseLocation()
+        return Vector2.new(
+            math.clamp(mp.X, 0, cam.ViewportSize.X),
+            math.clamp(mp.Y, 0, cam.ViewportSize.Y)
+        )
+    end
+    return Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
+end
 
+local shiftlock_button_cache = nil
 local function find_shiftlock_button()
     if shiftlock_button_cache and shiftlock_button_cache.Parent then
         return shiftlock_button_cache
     end
     shiftlock_button_cache = nil
-
     local search_roots = { PlayerGui }
-    pcall(function()
-        if gethui then table.insert(search_roots, gethui()) end
-    end)
-    pcall(function()
-        table.insert(search_roots, game:GetService("CoreGui"))
-    end)
-
+    pcall(function() if gethui then table.insert(search_roots, gethui()) end end)
+    pcall(function() table.insert(search_roots, game:GetService("CoreGui")) end)
     for _, root in ipairs(search_roots) do
         local ok, descs = pcall(function() return root:GetDescendants() end)
         if ok and descs then
@@ -179,7 +217,6 @@ local function press_button(btn)
     end)
 end
 
--- 🎃 shortcut state 🎃
 local last_shiftlock_toggle = 0
 local shiftlock_ui_refresh = nil
 
@@ -197,7 +234,6 @@ local function try_toggle_shiftlock()
         notify("🎃 shiftlock", cfg.ShiftlockEnabled and "on 🎃" or "off 💀", 1.5)
         return
     end
-
     local new_state = not cfg.ShiftlockEnabled
     cfg.ShiftlockEnabled = new_state
     pcall(function()
@@ -209,7 +245,6 @@ local function try_toggle_shiftlock()
     notify("🎃 shiftlock", new_state and "on 🎃" or "off 💀", 1.5)
 end
 
--- 🎃 cleanup helper for melodihhh loader 🎃
 local cleanup_callbacks = {}
 local function register_cleanup(fn) table.insert(cleanup_callbacks, fn) end
 
@@ -953,17 +988,27 @@ local function load_main_ui(platform)
         local bstr = Instance.new("UIStroke"); bstr.Color = PINK; bstr.Thickness = 1.1; bstr.Parent = btn
 
         local container = Instance.new("Frame")
-        container.Size = UDim2.new(0.4, 0, 0, #options * 20)
+        container.Size = UDim2.new(0.4, 0, 0, math.min(#options, 8) * 20)
         container.Position = UDim2.new(0.58, 0, 0, CARD_H)
         container.BackgroundColor3 = Color3.fromRGB(55, 32, 82)
         container.BorderSizePixel = 0
         container.Visible = false
         container.ZIndex = 30
+        container.ClipsDescendants = true
         container.Parent = card
 
         local ccor = Instance.new("UICorner"); ccor.CornerRadius = UDim.new(0, 8); ccor.Parent = container
         local cstr = Instance.new("UIStroke"); cstr.Color = PINK; cstr.Thickness = 1.3; cstr.Parent = container
-        local list = Instance.new("UIListLayout"); list.Padding = UDim.new(0, 2); list.Parent = container
+
+        local cscroll = Instance.new("ScrollingFrame")
+        cscroll.Size = UDim2.new(1, 0, 1, 0)
+        cscroll.BackgroundTransparency = 1
+        cscroll.BorderSizePixel = 0
+        cscroll.CanvasSize = UDim2.new(0, 0, 0, #options * 20)
+        cscroll.ScrollBarThickness = 2
+        cscroll.Parent = container
+
+        local list = Instance.new("UIListLayout"); list.Padding = UDim.new(0, 2); list.Parent = cscroll
 
         btn.MouseButton1Click:Connect(function()
             container.Visible = not container.Visible
@@ -980,7 +1025,7 @@ local function load_main_ui(platform)
             ob.Font = Enum.Font.GothamMedium
             ob.AutoButtonColor = false
             ob.ZIndex = 31
-            ob.Parent = container
+            ob.Parent = cscroll
             ob.MouseButton1Click:Connect(function()
                 btn.Text = tostring(opt)
                 container.Visible = false
@@ -1113,7 +1158,9 @@ local function load_main_ui(platform)
     make_toggle(combat_scroll, "🔫", "bypass revolver", function() return cfg.RevolverBypass end, function(v) cfg.RevolverBypass = v end)
     make_toggle(combat_scroll, "🧱", "wall check", function() return cfg.WallCheck end, function(v) cfg.WallCheck = v end)
     make_toggle(combat_scroll, "💀", "knocked check", function() return cfg.KnockCheck end, function(v) cfg.KnockCheck = v end)
-    make_dropdown(combat_scroll, "🎯", "hit part", {"Head", "HumanoidRootPart", "UpperTorso", "LowerTorso"}, function() return cfg.HitPart end, function(v) cfg.HitPart = v end)
+    make_toggle(combat_scroll, "🎯", "closest body part", function() return cfg.SilentAimClosestPart end, function(v) cfg.SilentAimClosestPart = v end)
+    make_dropdown(combat_scroll, "🎯", "hit part", bodyPartsList, function() return cfg.HitPart end, function(v) cfg.HitPart = v end)
+    make_slider(combat_scroll, "📡", "max distance", 100, 3000, function() return cfg.MaxDistance end, function(v) cfg.MaxDistance = v end)
 
     local visual_scroll = scroll_frames[3]
     make_section(visual_scroll, "🎨", "visuals")
@@ -1165,7 +1212,6 @@ local function load_main_ui(platform)
     sl_hint.ZIndex = 5
     sl_hint.Parent = misc_scroll
 
-    -- 🎵 load melodihhh tile with key 🎵
     make_section(misc_scroll, "🎵", "scripts")
 
     local melodihhh_tile = Instance.new("Frame")
@@ -1265,13 +1311,9 @@ local function load_main_ui(platform)
                 mstatus.TextColor3 = SUCCESS
                 TweenService:Create(mstatus, TweenInfo.new(0.3, SOFT, DIR_OUT), {TextTransparency = 0}):Play()
                 notify("🎵 melodihhh", "unlocked! loading..", 2)
-
                 task.wait(0.4)
-
                 unload_self()
-
                 task.wait(0.35)
-
                 local ok, err = pcall(function()
                     local src = game:HttpGet(MELODIHHH_URL, true)
                     local fn = loadstring(src)
@@ -1405,11 +1447,6 @@ local function load_main_ui(platform)
     ui_flow_active = false
     notify("🎃 livyii.silent", "summoned for " .. platform, 4)
 end
-
-local WEEKLY_KEYS = {
-    ["pompom"] = true, ["livyii"] = true, ["imjustlit"] = true,
-    ["bestscript"] = true, ["bloxycola"] = true, ["supernatural"] = true,
-}
 
 local function show_key_ui()
     local key_gui = Instance.new("ScreenGui")
@@ -1621,14 +1658,46 @@ task.spawn(function()
             return part.Position
         end
 
+        local function get_closest_body_part(char, ref_pos)
+            local closestPart, shortestDist = nil, math.huge
+            for _, pName in ipairs(bodyPartsList) do
+                local part = char:FindFirstChild(pName)
+                if part then
+                    local sp, onScreen = cam:WorldToViewportPoint(part.Position)
+                    if onScreen then
+                        local dist = (Vector2.new(sp.X, sp.Y) - ref_pos).Magnitude
+                        if dist < shortestDist then
+                            shortestDist = dist
+                            closestPart = part
+                        end
+                    end
+                end
+            end
+            return closestPart
+        end
+
+        local function get_target_part(char, ref_pos)
+            if not char then return nil end
+            if cfg.SilentAimClosestPart then
+                return get_closest_body_part(char, ref_pos)
+                    or char:FindFirstChild("Head")
+                    or char:FindFirstChild("HumanoidRootPart")
+            end
+            return char:FindFirstChild(cfg.HitPart)
+                or char:FindFirstChild("Head")
+                or char:FindFirstChild("HumanoidRootPart")
+        end
+
         local current_target_plr = nil
 
         local function get_target()
             if not cfg.Enabled then return nil end
             if not is_holding_tool() then return nil end
             local whitelist_active = has_active_whitelist()
-            local aim_pos = cfg.UseCursorAim and UIS:GetMouseLocation() or Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
+            local ref_pos = get_reference_position()
+
             local best_part, best_dist, best_plr = nil, cfg.FOVRadius, nil
+
             for _, plr in ipairs(Players:GetPlayers()) do
                 if plr == LocalPlayer then continue end
                 if whitelist_active and not is_whitelisted(plr) then continue end
@@ -1636,13 +1705,22 @@ task.spawn(function()
                 if not char then continue end
                 if cfg.KnockCheck and is_knocked(char) then continue end
                 if cfg.TeamCheck and plr.Team == LocalPlayer.Team then continue end
-                local part = char:FindFirstChild(cfg.HitPart) or char:FindFirstChild("HumanoidRootPart")
+
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    local dist3D = (hrp.Position - cam.CFrame.Position).Magnitude
+                    if dist3D > cfg.MaxDistance then continue end
+                end
+
+                local part = get_target_part(char, ref_pos)
                 if not part then continue end
                 if not is_visible(part) then continue end
+
                 local target_pos = get_aim_position(part)
                 local sp, on_screen = cam:WorldToViewportPoint(target_pos)
                 if not on_screen then continue end
-                local dist = (Vector2.new(sp.X, sp.Y) - aim_pos).Magnitude
+
+                local dist = (Vector2.new(sp.X, sp.Y) - ref_pos).Magnitude
                 if dist < best_dist then
                     best_dist = dist
                     best_part = part
@@ -1717,14 +1795,14 @@ task.spawn(function()
                 return
             end
 
-            if cfg.UseCursorAim then
-                local mp = UIS:GetMouseLocation()
-                cfg.CrosshairPosition = Vector2.new(math.clamp(mp.X, 0, cam.ViewportSize.X), math.clamp(mp.Y, 0, cam.ViewportSize.Y))
-            end
+            cfg.CrosshairPosition = get_reference_position()
+
             if cfg.CrosshairRotationEnabled then
                 rotation_angle = rotation_angle + cfg.CrosshairRotationSpeed * dt
             end
+
             update_crosshair()
+
             fov_circle.Position = cfg.CrosshairPosition
             fov_circle.Radius = cfg.FOVRadius
             fov_circle.Color = Color3.fromHSV((cfg.FOVHue or 0) / 360, 1, 1)
@@ -1816,50 +1894,6 @@ task.spawn(function()
                     end
                 end
             end
-        end)
-
-        local drag_cross = false
-        local drag_offset = Vector2.new(0, 0)
-        UIS.TouchBegan:Connect(function(touch)
-            if ui_flow_active then return end
-            if is_touch_on_ui(touch.Position) then return end
-            if cfg.FollowTarget and get_target() then return end
-            if cfg.UseCursorAim then return end
-            local pos = touch.Position
-            local dist = (pos - cfg.CrosshairPosition).Magnitude
-            if dist <= cfg.FOVRadius + 20 then
-                drag_cross = true
-                drag_offset = pos - cfg.CrosshairPosition
-            end
-        end)
-        UIS.TouchMoved:Connect(function(touch)
-            if drag_cross then cfg.CrosshairPosition = touch.Position - drag_offset end
-        end)
-        UIS.TouchEnded:Connect(function() drag_cross = false end)
-        UIS.InputBegan:Connect(function(input, gp)
-            if gp then return end
-            if ui_flow_active then return end
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                if is_touch_on_ui(Vector2.new(input.Position.X, input.Position.Y)) then return end
-            end
-            if cfg.FollowTarget and get_target() then return end
-            if cfg.UseCursorAim then return end
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                local pos = Vector2.new(input.Position.X, input.Position.Y)
-                local dist = (pos - cfg.CrosshairPosition).Magnitude
-                if dist <= cfg.FOVRadius + 20 then
-                    drag_cross = true
-                    drag_offset = pos - cfg.CrosshairPosition
-                end
-            end
-        end)
-        UIS.InputChanged:Connect(function(input)
-            if drag_cross and input.UserInputType == Enum.UserInputType.MouseMovement then
-                cfg.CrosshairPosition = Vector2.new(input.Position.X, input.Position.Y) - drag_offset
-            end
-        end)
-        UIS.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then drag_cross = false end
         end)
 
         UIS.InputBegan:Connect(function(input, gp)
