@@ -1,7 +1,5 @@
--- livyiiween.silente - THE ULTIMATE HORROR UI ☠️
--- Fully Fixed: Forced CoreGui/Gethui parenting & instant visibility.
-
-print("[livyiiween] Initializing core architecture...")
+-- 🎀 livyiiween.silente - [KAWAII HORROR ARCHITECTURE] 💀
+print("[livyiiween] initializing kawaii nightmare...")
 
 -- // SERVICES //
 local Players = game:GetService("Players")
@@ -57,9 +55,6 @@ for _, c in ipairs({
     {122,124,119,108,121,117,104,123,124,121,104,115},
 }) do WEEKLY_KEYS[_dk(c)] = true end
 
--- // Bypass for testing (you can delete this line later) //
-WEEKLY_KEYS["livyii"] = true
-
 local bodyPartsList = {
     "Head", "UpperTorso", "HumanoidRootPart", "LowerTorso",
     "LeftUpperArm", "RightUpperArm", "LeftLowerArm", "RightLowerArm",
@@ -67,22 +62,23 @@ local bodyPartsList = {
     "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot"
 }
 
--- // ENVIRONMENT CONFIG //
+-- // 🎀 KAWAII HORROR PALETTE 🎀 //
 local ColorConfig = {
-    Void = Color3.fromRGB(5, 5, 8),
-    Surface = Color3.fromRGB(12, 12, 16),
-    SurfaceHover = Color3.fromRGB(20, 20, 26),
-    Blood = Color3.fromRGB(139, 0, 0),
-    BloodGlow = Color3.fromRGB(255, 20, 20),
-    TextMain = Color3.fromRGB(230, 225, 225),
-    TextMuted = Color3.fromRGB(130, 110, 110),
-    Success = Color3.fromRGB(0, 200, 50),
-    Error = Color3.fromRGB(255, 30, 30)
+    Void = Color3.fromRGB(20, 10, 25),          -- Deep pastel midnight
+    Surface = Color3.fromRGB(35, 18, 40),       -- Dark soft purple
+    SurfaceHover = Color3.fromRGB(50, 25, 60),  -- Lighter purple
+    PinkGlow = Color3.fromRGB(255, 105, 180),   -- Hot pink
+    PastelPink = Color3.fromRGB(255, 182, 193), -- Soft pink
+    Cherry = Color3.fromRGB(200, 20, 60),       -- Blood red
+    TextMain = Color3.fromRGB(255, 230, 240),   -- Soft white/pink
+    TextMuted = Color3.fromRGB(180, 140, 170),  -- Muted lavender
+    Success = Color3.fromRGB(0, 255, 150),
+    Error = Color3.fromRGB(255, 50, 50)
 }
 
 local FontConfig = {
     Title = Enum.Font.GothamBlack,
-    Body = Enum.Font.Antique,
+    Body = Enum.Font.FredokaOne,   -- Bubbly, cute font
     Code = Enum.Font.Code,
     Bold = Enum.Font.GothamBold
 }
@@ -90,8 +86,10 @@ local FontConfig = {
 local TweenConfig = {
     Fast = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
     Smooth = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
+    Bouncy = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
     Slow = TweenInfo.new(0.6, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out),
-    Pulse = TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+    Pulse = TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut),
+    Float = TweenInfo.new(2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 }
 
 local function notify(title, text, duration)
@@ -118,7 +116,8 @@ genv.SilentAim = genv.SilentAim or {
     CrosshairOutlineEnabled = true, CrosshairOutlineThickness = 2.5,
     CrosshairRotationEnabled = true, CrosshairRotationSpeed = 1.5, FollowTarget = true,
     FOVCircleEnabled = true, FOVCircleThickness = 1.5, FOVCircleTransparency = 0.5,
-    CrosshairHue = 0, TracerHue = 0, FOVHue = 0, AutoPredictionEnabled = true, PredictionStrength = 0.15,
+    CrosshairHue = 330, TracerHue = 300, FOVHue = 300, -- Default to pinks/purples
+    AutoPredictionEnabled = true, PredictionStrength = 0.15,
     TargetInfoEnabled = true, TargetedPlayers = {}, RightClickShiftlock = true, MaxDistance = 1000,
 }
 local cfg = genv.SilentAim
@@ -196,7 +195,7 @@ local function try_toggle_shiftlock()
         press_button(btn)
         cfg.ShiftlockEnabled = not cfg.ShiftlockEnabled
         if shiftlock_ui_refresh then pcall(shiftlock_ui_refresh, cfg.ShiftlockEnabled) end
-        notify("☠️ shiftlock", cfg.ShiftlockEnabled and "on" or "off", 1.5)
+        notify("🎀 shiftlock", cfg.ShiftlockEnabled and "on" or "off", 1.5)
         return
     end
     local new_state = not cfg.ShiftlockEnabled
@@ -206,7 +205,7 @@ local function try_toggle_shiftlock()
         svc.RotationType = new_state and Enum.RotationType.MovementRelative or Enum.RotationType.CameraRelative
     end)
     if shiftlock_ui_refresh then pcall(shiftlock_ui_refresh, new_state) end
-    notify("☠️ shiftlock", new_state and "on" or "off", 1.5)
+    notify("🎀 shiftlock", new_state and "on" or "off", 1.5)
 end
 
 local cleanup_callbacks = {}
@@ -233,7 +232,7 @@ local function is_touch_on_ui(pos)
 end
 
 -- ==========================================
--- // 🩸 FLOATING BUTTON 🩸 //
+-- // 🎀 FLOATING BUTTON 🎀 //
 -- ==========================================
 do
     local float_gui = Instance.new("ScreenGui")
@@ -244,26 +243,29 @@ do
     float_gui.Parent = GuiParent
 
     local toggle_btn = Instance.new("TextButton")
-    toggle_btn.Size = UDim2.new(0, 40, 0, 40)
-    toggle_btn.Position = UDim2.new(1, -55, 0, 60)
-    toggle_btn.BackgroundColor3 = ColorConfig.Void
+    toggle_btn.Size = UDim2.new(0, 44, 0, 44)
+    toggle_btn.Position = UDim2.new(1, -60, 0, 60)
+    toggle_btn.BackgroundColor3 = ColorConfig.Surface
     toggle_btn.BorderSizePixel = 0
-    toggle_btn.Text = "☠"
-    toggle_btn.TextColor3 = ColorConfig.BloodGlow
-    toggle_btn.TextSize = 22
+    toggle_btn.Text = "👻"
+    toggle_btn.TextColor3 = ColorConfig.PastelPink
+    toggle_btn.TextSize = 24
     toggle_btn.Font = FontConfig.Title
     toggle_btn.AutoButtonColor = false
     toggle_btn.Parent = float_gui
 
     local t_c = Instance.new("UICorner"); t_c.CornerRadius = UDim.new(1, 0); t_c.Parent = toggle_btn
-    local t_s = Instance.new("UIStroke"); t_s.Color = ColorConfig.Blood; t_s.Thickness = 1.5; t_s.Parent = toggle_btn
+    local t_s = Instance.new("UIStroke"); t_s.Color = ColorConfig.PinkGlow; t_s.Thickness = 2; t_s.Parent = toggle_btn
     
+    -- Cute bobbing and pulsing animation
     task.spawn(function()
         while toggle_btn.Parent do
-            TweenService:Create(t_s, TweenConfig.Pulse, {Color = ColorConfig.BloodGlow, Thickness = 2.5, Transparency = 0}):Play()
-            task.wait(1.2)
-            TweenService:Create(t_s, TweenConfig.Pulse, {Color = ColorConfig.Blood, Thickness = 1, Transparency = 0.5}):Play()
-            task.wait(1.2)
+            TweenService:Create(t_s, TweenConfig.Pulse, {Color = ColorConfig.PastelPink, Thickness = 3, Transparency = 0}):Play()
+            TweenService:Create(toggle_btn, TweenConfig.Float, {Position = UDim2.new(1, -60, 0, 55)}):Play()
+            task.wait(1.5)
+            TweenService:Create(t_s, TweenConfig.Pulse, {Color = ColorConfig.PinkGlow, Thickness = 1.5, Transparency = 0.3}):Play()
+            TweenService:Create(toggle_btn, TweenConfig.Float, {Position = UDim2.new(1, -60, 0, 65)}):Play()
+            task.wait(1.5)
         end
     end)
 
@@ -277,14 +279,14 @@ do
         if current_main_gui then 
             current_main_gui.Enabled = not current_main_gui.Enabled 
         else
-            notify("☠️ System", "UI is still loading...", 2)
+            notify("🎀 System", "UI is still loading...", 2)
         end
     end)
 end
 print("[livyiiween] Floating button created.")
 
 -- ==========================================
--- // 🩸 PLATFORM PICKER 🩸 //
+-- // 🎀 PLATFORM PICKER 🎀 //
 -- ==========================================
 local function show_platform_picker(callback)
     local plat_gui = Instance.new("ScreenGui")
@@ -294,17 +296,17 @@ local function show_platform_picker(callback)
     plat_gui.Parent = GuiParent
 
     local blur = Instance.new("BlurEffect")
-    blur.Size = 12
+    blur.Size = 14
     blur.Parent = Lighting
 
     local bg = Instance.new("Frame")
     bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = Color3.fromRGB(5, 0, 0)
+    bg.BackgroundColor3 = Color3.fromRGB(20, 5, 25)
     bg.BackgroundTransparency = 0.2
     bg.Parent = plat_gui
 
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 240, 0, 160) -- Instantly visible
+    frame.Size = UDim2.new(0, 260, 0, 170) -- Instantly visible
     frame.Position = UDim2.new(0.5, 0, 0.5, 0)
     frame.AnchorPoint = Vector2.new(0.5, 0.5)
     frame.BackgroundColor3 = ColorConfig.Void
@@ -312,42 +314,42 @@ local function show_platform_picker(callback)
     frame.ClipsDescendants = true
     frame.Parent = plat_gui
     
-    local f_corner = Instance.new("UICorner"); f_corner.CornerRadius = UDim.new(0, 4); f_corner.Parent = frame
-    local f_stroke = Instance.new("UIStroke"); f_stroke.Color = ColorConfig.Blood; f_stroke.Thickness = 1.5; f_stroke.Parent = frame
+    local f_corner = Instance.new("UICorner"); f_corner.CornerRadius = UDim.new(0, 12); f_corner.Parent = frame
+    local f_stroke = Instance.new("UIStroke"); f_stroke.Color = ColorConfig.PinkGlow; f_stroke.Thickness = 2; f_stroke.Parent = frame
     
     local f_grad = Instance.new("UIGradient")
-    f_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(5, 0, 0)) })
-    f_grad.Rotation = 90
+    f_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 20, 60)), ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 5, 30)) })
+    f_grad.Rotation = 45
     f_grad.Parent = frame
 
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 30)
-    title.Position = UDim2.new(0, 0, 0, 15)
+    title.Position = UDim2.new(0, 0, 0, 20)
     title.BackgroundTransparency = 1
-    title.Text = "CHOOSE YOUR DEVICE"
-    title.TextColor3 = ColorConfig.BloodGlow
+    title.Text = "🎀 CHOOSE YOUR DEVICE 🎀"
+    title.TextColor3 = ColorConfig.PastelPink
     title.TextSize = 16
     title.Font = FontConfig.Title
     title.Parent = frame
 
     local function createCard(text, icon, pos, platform)
         local card = Instance.new("TextButton")
-        card.Size = UDim2.new(0.4, 0, 0, 75)
-        card.Position = UDim2.new(pos, 0, 0, 55)
+        card.Size = UDim2.new(0.4, 0, 0, 80)
+        card.Position = UDim2.new(pos, 0, 0, 60)
         card.BackgroundColor3 = ColorConfig.Surface
         card.BorderSizePixel = 0
         card.Text = ""
         card.AutoButtonColor = false
         card.Parent = frame
         
-        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 2); c_corner.Parent = card
-        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = ColorConfig.Blood; c_stroke.Thickness = 1; c_stroke.Parent = card
+        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 10); c_corner.Parent = card
+        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = ColorConfig.PinkGlow; c_stroke.Thickness = 1.5; c_stroke.Parent = card
         
-        local i_lbl = Instance.new("TextLabel"); i_lbl.Size = UDim2.new(1, 0, 0, 35); i_lbl.Position = UDim2.new(0, 0, 0, 8); i_lbl.BackgroundTransparency = 1; i_lbl.Text = icon; i_lbl.TextSize = 26; i_lbl.Parent = card
-        local t_lbl = Instance.new("TextLabel"); t_lbl.Size = UDim2.new(1, 0, 0, 16); t_lbl.Position = UDim2.new(0, 0, 0, 48); t_lbl.BackgroundTransparency = 1; t_lbl.Text = text; t_lbl.TextColor3 = ColorConfig.TextMain; t_lbl.TextSize = 11; t_lbl.Font = FontConfig.Bold; t_lbl.Parent = card
+        local i_lbl = Instance.new("TextLabel"); i_lbl.Size = UDim2.new(1, 0, 0, 40); i_lbl.Position = UDim2.new(0, 0, 0, 8); i_lbl.BackgroundTransparency = 1; i_lbl.Text = icon; i_lbl.TextSize = 30; i_lbl.Parent = card
+        local t_lbl = Instance.new("TextLabel"); t_lbl.Size = UDim2.new(1, 0, 0, 20); t_lbl.Position = UDim2.new(0, 0, 0, 50); t_lbl.BackgroundTransparency = 1; t_lbl.Text = text; t_lbl.TextColor3 = ColorConfig.TextMain; t_lbl.TextSize = 13; t_lbl.Font = FontConfig.Bold; t_lbl.Parent = card
 
-        card.MouseEnter:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.BloodGlow, Thickness = 2}):Play() end)
-        card.MouseLeave:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.Blood, Thickness = 1}):Play() end)
+        card.MouseEnter:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.Cherry, Thickness = 2.5}):Play() end)
+        card.MouseLeave:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.PinkGlow, Thickness = 1.5}):Play() end)
 
         card.MouseButton1Click:Connect(function()
             plat_gui:Destroy()
@@ -361,7 +363,7 @@ local function show_platform_picker(callback)
 end
 
 -- ==========================================
--- // 🩸 CINEMATIC INTRO 🩸 //
+-- // 🎀 CINEMATIC INTRO 🎀 //
 -- ==========================================
 local function show_intro(platform, callback)
     local intro_gui = Instance.new("ScreenGui")
@@ -372,19 +374,20 @@ local function show_intro(platform, callback)
     
     local bg = Instance.new("Frame")
     bg.Size = UDim2.new(1, 0, 1, 0)
-    bg.BackgroundColor3 = ColorConfig.Blood
+    bg.BackgroundColor3 = ColorConfig.PinkGlow
     bg.BorderSizePixel = 0
     bg.Parent = intro_gui
 
+    -- Pastel glitch effect
     local is_flashing = true
     task.spawn(function()
         while is_flashing do
-            bg.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-            task.wait(math.random(1, 3) / 25)
-            bg.BackgroundColor3 = Color3.fromRGB(10, 0, 0)
-            task.wait(math.random(2, 5) / 25)
-            bg.BackgroundColor3 = Color3.fromRGB(255, 10, 10)
-            task.wait(math.random(1, 2) / 25)
+            bg.BackgroundColor3 = ColorConfig.PastelPink
+            task.wait(math.random(1, 3) / 30)
+            bg.BackgroundColor3 = ColorConfig.Void
+            task.wait(math.random(2, 5) / 30)
+            bg.BackgroundColor3 = ColorConfig.Cherry
+            task.wait(math.random(1, 2) / 30)
         end
     end)
 
@@ -394,25 +397,25 @@ local function show_intro(platform, callback)
     title.BackgroundTransparency = 1
     title.Text = "livyiiween.silente"
     title.TextColor3 = ColorConfig.TextMain
-    title.TextSize = 36
+    title.TextSize = 38
     title.Font = FontConfig.Title
     
-    local shadow = Instance.new("UIStroke"); shadow.Color = ColorConfig.BloodGlow; shadow.Thickness = 3; shadow.Parent = title
+    local shadow = Instance.new("UIStroke"); shadow.Color = ColorConfig.Cherry; shadow.Thickness = 3; shadow.Parent = title
     title.Parent = intro_gui
 
     local loading = Instance.new("TextLabel")
     loading.Size = UDim2.new(1, 0, 0, 24)
     loading.Position = UDim2.new(0, 0, 0.55, -10)
     loading.BackgroundTransparency = 1
-    loading.Text = "SUMMONING..."
-    loading.TextColor3 = ColorConfig.BloodGlow
-    loading.TextSize = 16
+    loading.Text = "you're so cute... I could just die! 🎀"
+    loading.TextColor3 = ColorConfig.PastelPink
+    loading.TextSize = 18
     loading.Font = FontConfig.Body
     loading.Parent = intro_gui
 
-    task.wait(2)
+    task.wait(2.5)
     is_flashing = false
-    loading.Text = "WELCOME TO THE VOID"
+    loading.Text = "WELCOME TO THE VOID..."
     
     task.wait(1)
     intro_gui:Destroy()
@@ -420,17 +423,17 @@ local function show_intro(platform, callback)
 end
 
 -- ==========================================
--- // ☠️ MAIN INTERFACE ☠️ //
+-- // 💀 MAIN INTERFACE 💀 //
 -- ==========================================
 local function load_main_ui(platform)
     clear_blurs()
 
     local UI_W, UI_H = 390, 280
-    local CARD_H = 32
-    local TOGGLE_W, TOGGLE_H = 16, 16
+    local CARD_H = 34
+    local TOGGLE_W, TOGGLE_H = 18, 18
     local LABEL_SIZE = 11
     local SLIDER_H = 36
-    local SLIDER_KNOB = 12
+    local SLIDER_KNOB = 14
 
     local l_bloom = Instance.new("BloomEffect"); l_bloom.Name = "livyii_Bloom"; l_bloom.Intensity = 0.5; l_bloom.Enabled = false; l_bloom.Parent = Lighting
     local l_sunrays = Instance.new("SunRaysEffect"); l_sunrays.Name = "livyii_SunRays"; l_sunrays.Enabled = false; l_sunrays.Parent = Lighting
@@ -462,51 +465,51 @@ local function load_main_ui(platform)
     main.Parent = main_gui
     ui_main_frame = main
 
-    local main_corner = Instance.new("UICorner"); main_corner.CornerRadius = UDim.new(0, 4); main_corner.Parent = main
-    local main_stroke = Instance.new("UIStroke"); main_stroke.Color = ColorConfig.Blood; main_stroke.Thickness = 1.5; main_stroke.Parent = main
+    local main_corner = Instance.new("UICorner"); main_corner.CornerRadius = UDim.new(0, 12); main_corner.Parent = main
+    local main_stroke = Instance.new("UIStroke"); main_stroke.Color = ColorConfig.PinkGlow; main_stroke.Thickness = 2; main_stroke.Parent = main
     
     local main_grad = Instance.new("UIGradient")
-    main_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(15, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(5, 0, 0)) })
+    main_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 10, 40)), ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 5, 20)) })
     main_grad.Rotation = 45
     main_grad.Parent = main
 
     task.spawn(function()
         while main.Parent do
-            TweenService:Create(main_stroke, TweenConfig.Pulse, {Color = ColorConfig.BloodGlow, Thickness = 2.5}):Play()
+            TweenService:Create(main_stroke, TweenConfig.Pulse, {Color = ColorConfig.PastelPink, Thickness = 3}):Play()
             task.wait(1.5)
-            TweenService:Create(main_stroke, TweenConfig.Pulse, {Color = ColorConfig.Blood, Thickness = 1}):Play()
+            TweenService:Create(main_stroke, TweenConfig.Pulse, {Color = ColorConfig.PinkGlow, Thickness = 1.5}):Play()
             task.wait(1.5)
         end
     end)
 
     local header = Instance.new("Frame")
-    header.Size = UDim2.new(1, 0, 0, 34)
+    header.Size = UDim2.new(1, 0, 0, 36)
     header.BackgroundColor3 = ColorConfig.Surface
     header.BorderSizePixel = 0
     header.Parent = main
     
-    local h_corner = Instance.new("UICorner"); h_corner.CornerRadius = UDim.new(0, 4); h_corner.Parent = header
+    local h_corner = Instance.new("UICorner"); h_corner.CornerRadius = UDim.new(0, 12); h_corner.Parent = header
     local header_grad = Instance.new("UIGradient")
-    header_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(15, 15, 20)) })
+    header_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 20, 70)), ColorSequenceKeypoint.new(1, Color3.fromRGB(30, 10, 40)) })
     header_grad.Parent = header
     
-    local header_line = Instance.new("Frame"); header_line.Size = UDim2.new(1, 0, 0, 1); header_line.Position = UDim2.new(0, 0, 1, -1); header_line.BackgroundColor3 = ColorConfig.Blood; header_line.BorderSizePixel = 0; header_line.Parent = header
+    local header_line = Instance.new("Frame"); header_line.Size = UDim2.new(1, 0, 0, 1); header_line.Position = UDim2.new(0, 0, 1, -1); header_line.BackgroundColor3 = ColorConfig.PinkGlow; header_line.BorderSizePixel = 0; header_line.Parent = header
 
     local title_lbl = Instance.new("TextLabel")
     title_lbl.Size = UDim2.new(1, -60, 1, 0)
-    title_lbl.Position = UDim2.new(0, 10, 0, 0)
+    title_lbl.Position = UDim2.new(0, 15, 0, 0)
     title_lbl.BackgroundTransparency = 1
-    title_lbl.Text = "livyiiween.silente" 
+    title_lbl.Text = "🎀 livyiiween.silente" 
     title_lbl.TextColor3 = ColorConfig.TextMain
-    title_lbl.TextSize = 14
+    title_lbl.TextSize = 15
     title_lbl.Font = FontConfig.Title
     title_lbl.TextXAlignment = Enum.TextXAlignment.Left
     title_lbl.Parent = header
 
     local close_btn = Instance.new("TextButton")
-    close_btn.Size = UDim2.new(0, 20, 0, 20)
-    close_btn.Position = UDim2.new(1, -26, 0.5, -10)
-    close_btn.BackgroundColor3 = ColorConfig.Blood
+    close_btn.Size = UDim2.new(0, 22, 0, 22)
+    close_btn.Position = UDim2.new(1, -28, 0.5, -11)
+    close_btn.BackgroundColor3 = ColorConfig.Cherry
     close_btn.Text = "X"
     close_btn.TextColor3 = ColorConfig.TextMain
     close_btn.TextSize = 12
@@ -514,7 +517,9 @@ local function load_main_ui(platform)
     close_btn.AutoButtonColor = false
     close_btn.Parent = header
     
-    local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 2); c_corner.Parent = close_btn
+    local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 6); c_corner.Parent = close_btn
+    close_btn.MouseEnter:Connect(function() TweenService:Create(close_btn, TweenConfig.Fast, {BackgroundColor3 = ColorConfig.PinkGlow}):Play() end)
+    close_btn.MouseLeave:Connect(function() TweenService:Create(close_btn, TweenConfig.Fast, {BackgroundColor3 = ColorConfig.Cherry}):Play() end)
     close_btn.MouseButton1Click:Connect(function() main_gui.Enabled = false end)
 
     local dragging = false
@@ -535,14 +540,14 @@ local function load_main_ui(platform)
     end)
 
     local sidebar = Instance.new("Frame")
-    sidebar.Size = UDim2.new(0, 85, 1, -34)
-    sidebar.Position = UDim2.new(0, 0, 0, 34)
+    sidebar.Size = UDim2.new(0, 90, 1, -36)
+    sidebar.Position = UDim2.new(0, 0, 0, 36)
     sidebar.BackgroundColor3 = ColorConfig.Surface
     sidebar.BorderSizePixel = 0
     sidebar.Parent = main
     
-    local s_corner = Instance.new("UICorner"); s_corner.CornerRadius = UDim.new(0, 4); s_corner.Parent = sidebar
-    local s_line = Instance.new("Frame"); s_line.Size = UDim2.new(0, 1, 1, -10); s_line.Position = UDim2.new(1, -1, 0, 5); s_line.BackgroundColor3 = ColorConfig.Blood; s_line.Parent = sidebar
+    local s_corner = Instance.new("UICorner"); s_corner.CornerRadius = UDim.new(0, 12); s_corner.Parent = sidebar
+    local s_line = Instance.new("Frame"); s_line.Size = UDim2.new(0, 2, 1, -20); s_line.Position = UDim2.new(1, -2, 0, 10); s_line.BackgroundColor3 = ColorConfig.PinkGlow; s_line.Parent = sidebar
 
     local tab_container = Instance.new("Frame")
     tab_container.Size = UDim2.new(1, 0, 0, 200)
@@ -553,23 +558,25 @@ local function load_main_ui(platform)
     local tab_layout = Instance.new("UIListLayout"); tab_layout.Padding = UDim.new(0, 4); tab_layout.Parent = tab_container
 
     local tab_indicator = Instance.new("Frame")
-    tab_indicator.Size = UDim2.new(0, 3, 0, 26)
+    tab_indicator.Size = UDim2.new(0, 4, 0, 28)
     tab_indicator.Position = UDim2.new(0, 0, 0, 10)
-    tab_indicator.BackgroundColor3 = ColorConfig.BloodGlow
+    tab_indicator.BackgroundColor3 = ColorConfig.PastelPink
     tab_indicator.BorderSizePixel = 0
     tab_indicator.Parent = sidebar
+    
+    local ti_corner = Instance.new("UICorner"); ti_corner.CornerRadius = UDim.new(0, 2); ti_corner.Parent = tab_indicator
 
     local tab_names = {"AIM", "COMBAT", "VISUAL", "MISC"}
-    local tab_icons = {"☠", "⚔", "🩸", "⚙"}
+    local tab_icons = {"🎀", "🦴", "🕸️", "💀"}
     local tab_btns = {}
     local current_tab = 1
 
     for i = 1, 4 do
         local tb = Instance.new("TextButton")
-        tb.Size = UDim2.new(1, -6, 0, 26)
+        tb.Size = UDim2.new(1, -8, 0, 28)
         tb.BackgroundTransparency = 1
         tb.Text = "  " .. tab_icons[i] .. "   " .. tab_names[i]
-        tb.TextColor3 = i == 1 and ColorConfig.BloodGlow or ColorConfig.TextMuted
+        tb.TextColor3 = i == 1 and ColorConfig.PastelPink or ColorConfig.TextMuted
         tb.TextSize = 11
         tb.Font = FontConfig.Bold
         tb.TextXAlignment = Enum.TextXAlignment.Left
@@ -579,24 +586,24 @@ local function load_main_ui(platform)
     end
 
     local content_area = Instance.new("Frame")
-    content_area.Size = UDim2.new(1, -85, 1, -34)
-    content_area.Position = UDim2.new(0, 85, 0, 34)
+    content_area.Size = UDim2.new(1, -90, 1, -36)
+    content_area.Position = UDim2.new(0, 90, 0, 36)
     content_area.BackgroundTransparency = 1
     content_area.Parent = main
 
     local scroll_frames = {}
     for i = 1, 4 do
         local sf = Instance.new("ScrollingFrame")
-        sf.Size = UDim2.new(1, -12, 1, -12)
-        sf.Position = UDim2.new(0, 6, 0, 6)
+        sf.Size = UDim2.new(1, -16, 1, -16)
+        sf.Position = UDim2.new(0, 8, 0, 8)
         sf.BackgroundTransparency = 1
         sf.CanvasSize = UDim2.new(0, 0, 0, 2000)
-        sf.ScrollBarThickness = 2
-        sf.ScrollBarImageColor3 = ColorConfig.Blood
+        sf.ScrollBarThickness = 3
+        sf.ScrollBarImageColor3 = ColorConfig.PinkGlow
         sf.Visible = (i == 1)
         sf.Parent = content_area
         
-        local lyt = Instance.new("UIListLayout"); lyt.Padding = UDim.new(0, 5); lyt.SortOrder = Enum.SortOrder.LayoutOrder; lyt.Parent = sf
+        local lyt = Instance.new("UIListLayout"); lyt.Padding = UDim.new(0, 6); lyt.SortOrder = Enum.SortOrder.LayoutOrder; lyt.Parent = sf
         scroll_frames[i] = sf
     end
 
@@ -610,8 +617,8 @@ local function load_main_ui(platform)
         lbl.Size = UDim2.new(1, -4, 1, 0)
         lbl.Position = UDim2.new(0, 4, 0, 0)
         lbl.BackgroundTransparency = 1
-        lbl.Text = string.upper(text)
-        lbl.TextColor3 = ColorConfig.BloodGlow
+        lbl.Text = "🎀 " .. string.upper(text)
+        lbl.TextColor3 = ColorConfig.PastelPink
         lbl.TextSize = 10
         lbl.Font = FontConfig.Title
         lbl.TextXAlignment = Enum.TextXAlignment.Left
@@ -627,12 +634,12 @@ local function load_main_ui(platform)
         card.AutoButtonColor = false
         card.Parent = parent
         
-        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 2); c_corner.Parent = card
-        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = ColorConfig.Blood; c_stroke.Thickness = 1; c_stroke.Parent = card
+        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 8); c_corner.Parent = card
+        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = ColorConfig.PinkGlow; c_stroke.Thickness = 1; c_stroke.Parent = card
 
         local lbl = Instance.new("TextLabel")
         lbl.Size = UDim2.new(1, -40, 1, 0)
-        lbl.Position = UDim2.new(0, 10, 0, 0)
+        lbl.Position = UDim2.new(0, 12, 0, 0)
         lbl.BackgroundTransparency = 1
         lbl.Text = icon .. " " .. text
         lbl.TextColor3 = ColorConfig.TextMain
@@ -643,31 +650,34 @@ local function load_main_ui(platform)
 
         local toggleBox = Instance.new("Frame")
         toggleBox.Size = UDim2.new(0, TOGGLE_W, 0, TOGGLE_H)
-        toggleBox.Position = UDim2.new(1, -TOGGLE_W-10, 0.5, -TOGGLE_H/2)
-        toggleBox.BackgroundColor3 = getState() and ColorConfig.Blood or ColorConfig.Void
+        toggleBox.Position = UDim2.new(1, -TOGGLE_W-12, 0.5, -TOGGLE_H/2)
+        toggleBox.BackgroundColor3 = getState() and ColorConfig.PinkGlow or ColorConfig.Void
         toggleBox.Parent = card
         
-        local tb_corner = Instance.new("UICorner"); tb_corner.CornerRadius = UDim.new(0, 2); tb_corner.Parent = toggleBox
-        local tb_stroke = Instance.new("UIStroke"); tb_stroke.Color = getState() and ColorConfig.BloodGlow or ColorConfig.Blood; tb_stroke.Thickness = 1; tb_stroke.Parent = toggleBox
+        local tb_corner = Instance.new("UICorner"); tb_corner.CornerRadius = UDim.new(1, 0); tb_corner.Parent = toggleBox
+        local tb_stroke = Instance.new("UIStroke"); tb_stroke.Color = getState() and ColorConfig.PastelPink or ColorConfig.TextMuted; tb_stroke.Thickness = 1; tb_stroke.Parent = toggleBox
 
         local innerCore = Instance.new("Frame")
-        innerCore.Size = UDim2.new(0, 6, 0, 6)
-        innerCore.Position = UDim2.new(0.5, -3, 0.5, -3)
-        innerCore.BackgroundColor3 = getState() and ColorConfig.TextMain or ColorConfig.Blood
+        innerCore.Size = UDim2.new(0, 10, 0, 10)
+        innerCore.Position = getState() and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5)
+        innerCore.BackgroundColor3 = getState() and ColorConfig.Void or ColorConfig.TextMuted
         innerCore.Parent = toggleBox
         
-        local ic_corner = Instance.new("UICorner"); ic_corner.CornerRadius = UDim.new(0, 1); ic_corner.Parent = innerCore
+        local ic_corner = Instance.new("UICorner"); ic_corner.CornerRadius = UDim.new(1, 0); ic_corner.Parent = innerCore
 
         local function applyVisual(state)
-            TweenService:Create(toggleBox, TweenConfig.Fast, {BackgroundColor3 = state and ColorConfig.Blood or ColorConfig.Void}):Play()
-            TweenService:Create(tb_stroke, TweenConfig.Fast, {Color = state and ColorConfig.BloodGlow or ColorConfig.Blood}):Play()
-            TweenService:Create(innerCore, TweenConfig.Fast, {BackgroundColor3 = state and ColorConfig.TextMain or ColorConfig.Blood}):Play()
-            TweenService:Create(lbl, TweenConfig.Fast, {TextColor3 = state and ColorConfig.TextMain or ColorConfig.TextMuted}):Play()
+            TweenService:Create(toggleBox, TweenConfig.Fast, {BackgroundColor3 = state and ColorConfig.PinkGlow or ColorConfig.Void}):Play()
+            TweenService:Create(tb_stroke, TweenConfig.Fast, {Color = state and ColorConfig.PastelPink or ColorConfig.TextMuted}):Play()
+            TweenService:Create(innerCore, TweenConfig.Bouncy, {
+                Position = state and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5),
+                BackgroundColor3 = state and ColorConfig.Void or ColorConfig.TextMuted
+            }):Play()
+            TweenService:Create(lbl, TweenConfig.Fast, {TextColor3 = state and ColorConfig.PastelPink or ColorConfig.TextMain}):Play()
         end
 
         card.MouseButton1Click:Connect(function() local ns = not getState(); setState(ns); applyVisual(ns) end)
-        card.MouseEnter:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.BloodGlow, Thickness = 1.5}):Play() end)
-        card.MouseLeave:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.Blood, Thickness = 1}):Play() end)
+        card.MouseEnter:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.PastelPink, Thickness = 2}):Play() end)
+        card.MouseLeave:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.PinkGlow, Thickness = 1}):Play() end)
 
         return applyVisual
     end
@@ -679,12 +689,12 @@ local function load_main_ui(platform)
         card.BorderSizePixel = 0
         card.Parent = parent
         
-        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 2); c_corner.Parent = card
-        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = ColorConfig.Blood; c_stroke.Thickness = 1; c_stroke.Parent = card
+        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 8); c_corner.Parent = card
+        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = ColorConfig.PinkGlow; c_stroke.Thickness = 1; c_stroke.Parent = card
 
         local lbl = Instance.new("TextLabel")
         lbl.Size = UDim2.new(1, -40, 0, 14)
-        lbl.Position = UDim2.new(0, 10, 0, 4)
+        lbl.Position = UDim2.new(0, 12, 0, 4)
         lbl.BackgroundTransparency = 1
         lbl.Text = icon .. " " .. text
         lbl.TextColor3 = ColorConfig.TextMain
@@ -695,17 +705,17 @@ local function load_main_ui(platform)
 
         local valLbl = Instance.new("TextLabel")
         valLbl.Size = UDim2.new(0, 30, 0, 14)
-        valLbl.Position = UDim2.new(1, -38, 0, 4)
+        valLbl.Position = UDim2.new(1, -40, 0, 4)
         valLbl.BackgroundTransparency = 1
         valLbl.Text = tostring(getValue())
-        valLbl.TextColor3 = ColorConfig.BloodGlow
-        valLbl.TextSize = 10
+        valLbl.TextColor3 = ColorConfig.PastelPink
+        valLbl.TextSize = 11
         valLbl.Font = FontConfig.Code
         valLbl.Parent = card
 
         local track = Instance.new("Frame")
-        track.Size = UDim2.new(1, -16, 0, 4)
-        track.Position = UDim2.new(0, 8, 0, SLIDER_H - 12)
+        track.Size = UDim2.new(1, -24, 0, 6)
+        track.Position = UDim2.new(0, 12, 0, SLIDER_H - 12)
         track.BackgroundColor3 = ColorConfig.Void
         track.Parent = card
         
@@ -713,7 +723,7 @@ local function load_main_ui(platform)
 
         local fill = Instance.new("Frame")
         fill.Size = UDim2.new((getValue() - min) / (max - min), 0, 1, 0)
-        fill.BackgroundColor3 = ColorConfig.Blood
+        fill.BackgroundColor3 = ColorConfig.PinkGlow
         fill.Parent = track
         
         local f_corner = Instance.new("UICorner"); f_corner.CornerRadius = UDim.new(1, 0); f_corner.Parent = fill
@@ -721,13 +731,13 @@ local function load_main_ui(platform)
         local knob = Instance.new("TextButton")
         knob.Size = UDim2.new(0, SLIDER_KNOB, 0, SLIDER_KNOB)
         knob.Position = UDim2.new((getValue() - min) / (max - min), -SLIDER_KNOB/2, 0.5, -SLIDER_KNOB/2)
-        knob.BackgroundColor3 = ColorConfig.BloodGlow
+        knob.BackgroundColor3 = ColorConfig.PastelPink
         knob.Text = ""
         knob.AutoButtonColor = false
         knob.Parent = track
         
         local k_corner = Instance.new("UICorner"); k_corner.CornerRadius = UDim.new(1, 0); k_corner.Parent = knob
-        local k_glow = Instance.new("UIStroke"); k_glow.Color = ColorConfig.BloodGlow; k_glow.Thickness = 1.5; k_glow.Transparency = 0.5; k_glow.Parent = knob
+        local k_glow = Instance.new("UIStroke"); k_glow.Color = ColorConfig.PinkGlow; k_glow.Thickness = 2; k_glow.Transparency = 0.5; k_glow.Parent = knob
 
         local isDragging = false
         local function updateSlider(xPos)
@@ -739,13 +749,13 @@ local function load_main_ui(platform)
             knob.Position = UDim2.new(pct, -SLIDER_KNOB/2, 0.5, -SLIDER_KNOB/2)
         end
         
-        knob.MouseButton1Down:Connect(function() isDragging = true; TweenService:Create(k_glow, TweenConfig.Fast, {Thickness = 3, Transparency = 0}):Play() end)
-        UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then isDragging = false; TweenService:Create(k_glow, TweenConfig.Fast, {Thickness = 1.5, Transparency = 0.5}):Play() end end)
+        knob.MouseButton1Down:Connect(function() isDragging = true; TweenService:Create(k_glow, TweenConfig.Fast, {Thickness = 4, Transparency = 0}):Play() end)
+        UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then isDragging = false; TweenService:Create(k_glow, TweenConfig.Fast, {Thickness = 2, Transparency = 0.5}):Play() end end)
         UIS.InputChanged:Connect(function(input) if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then updateSlider(input.Position.X) end end)
         track.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then isDragging = true; updateSlider(input.Position.X) end end)
 
-        card.MouseEnter:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.BloodGlow, Thickness = 1.5}):Play() end)
-        card.MouseLeave:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.Blood, Thickness = 1}):Play() end)
+        card.MouseEnter:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.PastelPink, Thickness = 2}):Play() end)
+        card.MouseLeave:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = ColorConfig.PinkGlow, Thickness = 1}):Play() end)
     end
 
     local function createDropdown(parent, icon, text, options, getValue, setValue)
@@ -755,12 +765,12 @@ local function load_main_ui(platform)
         card.BorderSizePixel = 0
         card.Parent = parent
         
-        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 2); c_corner.Parent = card
-        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = ColorConfig.Blood; c_stroke.Thickness = 1; c_stroke.Parent = card
+        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 8); c_corner.Parent = card
+        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = ColorConfig.PinkGlow; c_stroke.Thickness = 1; c_stroke.Parent = card
 
         local lbl = Instance.new("TextLabel")
         lbl.Size = UDim2.new(0.45, 0, 1, 0)
-        lbl.Position = UDim2.new(0, 10, 0, 0)
+        lbl.Position = UDim2.new(0, 12, 0, 0)
         lbl.BackgroundTransparency = 1
         lbl.Text = icon .. " " .. text
         lbl.TextColor3 = ColorConfig.TextMain
@@ -770,35 +780,36 @@ local function load_main_ui(platform)
         lbl.Parent = card
 
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0.4, 0, 0, CARD_H - 8)
-        btn.Position = UDim2.new(0.58, 0, 0.5, -(CARD_H - 8)/2)
+        btn.Size = UDim2.new(0.4, 0, 0, CARD_H - 10)
+        btn.Position = UDim2.new(0.58, 0, 0.5, -(CARD_H - 10)/2)
         btn.BackgroundColor3 = ColorConfig.Void
         btn.Text = tostring(getValue())
-        btn.TextColor3 = ColorConfig.BloodGlow
-        btn.TextSize = 10
+        btn.TextColor3 = ColorConfig.PastelPink
+        btn.TextSize = 11
         btn.Font = FontConfig.Bold
         btn.AutoButtonColor = false
         btn.Parent = card
         
-        local b_corner = Instance.new("UICorner"); b_corner.CornerRadius = UDim.new(0, 2); b_corner.Parent = btn
-        local b_stroke = Instance.new("UIStroke"); b_stroke.Color = ColorConfig.Blood; b_stroke.Thickness = 1; b_stroke.Parent = btn
+        local b_corner = Instance.new("UICorner"); b_corner.CornerRadius = UDim.new(0, 6); b_corner.Parent = btn
+        local b_stroke = Instance.new("UIStroke"); b_stroke.Color = ColorConfig.PinkGlow; b_stroke.Thickness = 1; b_stroke.Parent = btn
 
         local container = Instance.new("Frame")
-        container.Size = UDim2.new(0.4, 0, 0, math.min(#options, 6) * 20)
+        container.Size = UDim2.new(0.4, 0, 0, math.min(#options, 6) * 22)
         container.Position = UDim2.new(0.58, 0, 0, CARD_H)
         container.BackgroundColor3 = ColorConfig.Surface
         container.Visible = false
         container.ZIndex = 30
         container.Parent = card
         
-        local ct_corner = Instance.new("UICorner"); ct_corner.CornerRadius = UDim.new(0, 2); ct_corner.Parent = container
-        local ct_stroke = Instance.new("UIStroke"); ct_stroke.Color = ColorConfig.Blood; ct_stroke.Thickness = 1; ct_stroke.Parent = container
+        local ct_corner = Instance.new("UICorner"); ct_corner.CornerRadius = UDim.new(0, 6); ct_corner.Parent = container
+        local ct_stroke = Instance.new("UIStroke"); ct_stroke.Color = ColorConfig.PastelPink; ct_stroke.Thickness = 1; ct_stroke.Parent = container
 
         local scroll = Instance.new("ScrollingFrame")
         scroll.Size = UDim2.new(1, 0, 1, 0)
         scroll.BackgroundTransparency = 1
-        scroll.CanvasSize = UDim2.new(0, 0, 0, #options * 20)
+        scroll.CanvasSize = UDim2.new(0, 0, 0, #options * 22)
         scroll.ScrollBarThickness = 2
+        scroll.ScrollBarImageColor3 = ColorConfig.PastelPink
         scroll.Parent = container
         
         local list = Instance.new("UIListLayout"); list.Padding = UDim.new(0, 2); list.Parent = scroll
@@ -806,11 +817,11 @@ local function load_main_ui(platform)
         btn.MouseButton1Click:Connect(function() container.Visible = not container.Visible end)
         for _, opt in ipairs(options) do
             local ob = Instance.new("TextButton")
-            ob.Size = UDim2.new(1, 0, 0, 18)
+            ob.Size = UDim2.new(1, 0, 0, 20)
             ob.BackgroundColor3 = ColorConfig.Surface
             ob.Text = tostring(opt)
             ob.TextColor3 = ColorConfig.TextMuted
-            ob.TextSize = 9
+            ob.TextSize = 10
             ob.Font = FontConfig.Body
             ob.AutoButtonColor = false
             ob.Parent = scroll
@@ -821,10 +832,11 @@ local function load_main_ui(platform)
         end
     end
 
+    -- POPULATE TABS --
     local aim_scroll = scroll_frames[1]
     createSection(aim_scroll, "core aim")
-    createToggle(aim_scroll, "☠", "silent aim", function() return cfg.Enabled end, function(v) cfg.Enabled = v end)
-    createToggle(aim_scroll, "⭕", "fov circle", function() return cfg.FOVCircleEnabled end, function(v) cfg.FOVCircleEnabled = v end)
+    createToggle(aim_scroll, "🎀", "silent aim", function() return cfg.Enabled end, function(v) cfg.Enabled = v end)
+    createToggle(aim_scroll, "🕸️", "fov circle", function() return cfg.FOVCircleEnabled end, function(v) cfg.FOVCircleEnabled = v end)
     createSlider(aim_scroll, "📏", "fov radius", 10, 500, function() return cfg.FOVRadius end, function(v) cfg.FOVRadius = v end)
     
     createSection(aim_scroll, "triggerbot")
@@ -843,7 +855,7 @@ local function load_main_ui(platform)
     createToggle(combat_scroll, "🔫", "bypass revolver", function() return cfg.RevolverBypass end, function(v) cfg.RevolverBypass = v end)
     
     createSection(combat_scroll, "targeting")
-    createToggle(combat_scroll, "🩸", "closest part", function() return cfg.SilentAimClosestPart end, function(v) cfg.SilentAimClosestPart = v end)
+    createToggle(combat_scroll, "🦴", "closest part", function() return cfg.SilentAimClosestPart end, function(v) cfg.SilentAimClosestPart = v end)
     createDropdown(combat_scroll, "🎯", "hit part", bodyPartsList, function() return cfg.HitPart end, function(v) cfg.HitPart = v end)
     createSlider(combat_scroll, "📡", "max distance", 100, 3000, function() return cfg.MaxDistance end, function(v) cfg.MaxDistance = v end)
 
@@ -877,31 +889,31 @@ local function load_main_ui(platform)
 
     createSection(misc_scroll, "stats")
     local stats_tile = Instance.new("Frame")
-    stats_tile.Size = UDim2.new(1, 0, 0, 65)
+    stats_tile.Size = UDim2.new(1, 0, 0, 70)
     stats_tile.BackgroundColor3 = ColorConfig.Surface
     stats_tile.Parent = misc_scroll
     
-    local st_corner = Instance.new("UICorner"); st_corner.CornerRadius = UDim.new(0, 2); st_corner.Parent = stats_tile
-    local st_stroke = Instance.new("UIStroke"); st_stroke.Color = ColorConfig.Blood; st_stroke.Thickness = 1; st_stroke.Parent = stats_tile
-    local st_grad = Instance.new("UIGradient"); st_grad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(30,0,0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(15,15,20))}); st_grad.Parent = stats_tile
+    local st_corner = Instance.new("UICorner"); st_corner.CornerRadius = UDim.new(0, 8); st_corner.Parent = stats_tile
+    local st_stroke = Instance.new("UIStroke"); st_stroke.Color = ColorConfig.PinkGlow; st_stroke.Thickness = 1; st_stroke.Parent = stats_tile
+    local st_grad = Instance.new("UIGradient"); st_grad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(60,20,70)), ColorSequenceKeypoint.new(1, Color3.fromRGB(30,10,40))}); st_grad.Parent = stats_tile
 
     local st_title = Instance.new("TextLabel")
     st_title.Size = UDim2.new(1, -16, 0, 14)
-    st_title.Position = UDim2.new(0, 10, 0, 6)
+    st_title.Position = UDim2.new(0, 12, 0, 6)
     st_title.BackgroundTransparency = 1
     st_title.Text = "how many times executed?"
     st_title.TextColor3 = ColorConfig.TextMuted
-    st_title.TextSize = 9
+    st_title.TextSize = 10
     st_title.Font = FontConfig.Body
     st_title.TextXAlignment = Enum.TextXAlignment.Left
     st_title.Parent = stats_tile
 
     local st_num = Instance.new("TextLabel")
     st_num.Size = UDim2.new(1, -16, 0, 24)
-    st_num.Position = UDim2.new(0, 10, 0, 20)
+    st_num.Position = UDim2.new(0, 12, 0, 22)
     st_num.BackgroundTransparency = 1
-    st_num.Text = tostring(exec_count) .. "!"
-    st_num.TextColor3 = ColorConfig.BloodGlow
+    st_num.Text = tostring(exec_count) .. "! 🎀"
+    st_num.TextColor3 = ColorConfig.PastelPink
     st_num.TextSize = 22
     st_num.Font = FontConfig.Title
     st_num.TextXAlignment = Enum.TextXAlignment.Left
@@ -909,11 +921,11 @@ local function load_main_ui(platform)
 
     local st_sub = Instance.new("TextLabel")
     st_sub.Size = UDim2.new(1, -16, 0, 12)
-    st_sub.Position = UDim2.new(0, 10, 0, 46)
+    st_sub.Position = UDim2.new(0, 12, 0, 50)
     st_sub.BackgroundTransparency = 1
     st_sub.Text = "this script was made 2 months ago!"
-    st_sub.TextColor3 = ColorConfig.Blood
-    st_sub.TextSize = 8
+    st_sub.TextColor3 = ColorConfig.Cherry
+    st_sub.TextSize = 9
     st_sub.Font = FontConfig.Bold
     st_sub.TextXAlignment = Enum.TextXAlignment.Left
     st_sub.Parent = stats_tile
@@ -925,54 +937,57 @@ local function load_main_ui(platform)
     player_list.BackgroundTransparency = 1
     player_list.Parent = misc_scroll
     
-    local pl_layout = Instance.new("UIListLayout"); pl_layout.Padding = UDim.new(0, 3); pl_layout.Parent = player_list
+    local pl_layout = Instance.new("UIListLayout"); pl_layout.Padding = UDim.new(0, 4); pl_layout.Parent = player_list
 
     local function createPlayerTile(player)
         local tile = Instance.new("TextButton")
-        tile.Size = UDim2.new(1, 0, 0, 26)
+        tile.Size = UDim2.new(1, 0, 0, 28)
         tile.BackgroundColor3 = ColorConfig.Surface
         tile.Text = ""
         tile.AutoButtonColor = false
         tile.Parent = player_list
         
-        local t_corner = Instance.new("UICorner"); t_corner.CornerRadius = UDim.new(0, 2); t_corner.Parent = tile
-        local t_stroke = Instance.new("UIStroke"); t_stroke.Color = ColorConfig.Blood; t_stroke.Thickness = 1; t_stroke.Parent = tile
+        local t_corner = Instance.new("UICorner"); t_corner.CornerRadius = UDim.new(0, 6); t_corner.Parent = tile
+        local t_stroke = Instance.new("UIStroke"); t_stroke.Color = ColorConfig.PinkGlow; t_stroke.Thickness = 1; t_stroke.Parent = tile
 
         local name_lbl = Instance.new("TextLabel")
         name_lbl.Size = UDim2.new(1, -30, 1, 0)
-        name_lbl.Position = UDim2.new(0, 8, 0, 0)
+        name_lbl.Position = UDim2.new(0, 10, 0, 0)
         name_lbl.BackgroundTransparency = 1
         name_lbl.Text = player.Name
         name_lbl.TextColor3 = ColorConfig.TextMain
-        name_lbl.TextSize = 9
+        name_lbl.TextSize = 10
         name_lbl.Font = FontConfig.Body
         name_lbl.TextXAlignment = Enum.TextXAlignment.Left
         name_lbl.Parent = tile
 
         local box = Instance.new("Frame")
         box.Size = UDim2.new(0, TOGGLE_W, 0, TOGGLE_H)
-        box.Position = UDim2.new(1, -TOGGLE_W-8, 0.5, -TOGGLE_H/2)
-        box.BackgroundColor3 = cfg.TargetedPlayers[player] and ColorConfig.Blood or ColorConfig.Void
+        box.Position = UDim2.new(1, -TOGGLE_W-10, 0.5, -TOGGLE_H/2)
+        box.BackgroundColor3 = cfg.TargetedPlayers[player] and ColorConfig.PinkGlow or ColorConfig.Void
         box.Parent = tile
         
-        local b_corner = Instance.new("UICorner"); b_corner.CornerRadius = UDim.new(0, 1); b_corner.Parent = box
-        local b_stroke = Instance.new("UIStroke"); b_stroke.Color = cfg.TargetedPlayers[player] and ColorConfig.BloodGlow or ColorConfig.Blood; b_stroke.Thickness = 1; b_stroke.Parent = box
+        local b_corner = Instance.new("UICorner"); b_corner.CornerRadius = UDim.new(1, 0); b_corner.Parent = box
+        local b_stroke = Instance.new("UIStroke"); b_stroke.Color = cfg.TargetedPlayers[player] and ColorConfig.PastelPink or ColorConfig.TextMuted; b_stroke.Thickness = 1; b_stroke.Parent = box
 
         local inner = Instance.new("Frame")
-        inner.Size = UDim2.new(0, 6, 0, 6)
-        inner.Position = UDim2.new(0.5, -3, 0.5, -3)
-        inner.BackgroundColor3 = cfg.TargetedPlayers[player] and ColorConfig.TextMain or ColorConfig.Blood
+        inner.Size = UDim2.new(0, 10, 0, 10)
+        inner.Position = cfg.TargetedPlayers[player] and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5)
+        inner.BackgroundColor3 = cfg.TargetedPlayers[player] and ColorConfig.Void or ColorConfig.TextMuted
         inner.Parent = box
         
-        local i_corner = Instance.new("UICorner"); i_corner.CornerRadius = UDim.new(0, 1); i_corner.Parent = inner
+        local i_corner = Instance.new("UICorner"); i_corner.CornerRadius = UDim.new(1, 0); i_corner.Parent = inner
 
         local function toggle()
             local ns = not (cfg.TargetedPlayers[player] == true)
             cfg.TargetedPlayers[player] = ns or nil
-            TweenService:Create(box, TweenConfig.Fast, {BackgroundColor3 = ns and ColorConfig.Blood or ColorConfig.Void}):Play()
-            TweenService:Create(b_stroke, TweenConfig.Fast, {Color = ns and ColorConfig.BloodGlow or ColorConfig.Blood}):Play()
-            TweenService:Create(inner, TweenConfig.Fast, {BackgroundColor3 = ns and ColorConfig.TextMain or ColorConfig.Blood}):Play()
-            TweenService:Create(name_lbl, TweenConfig.Fast, {TextColor3 = ns and ColorConfig.BloodGlow or ColorConfig.TextMain}):Play()
+            TweenService:Create(box, TweenConfig.Fast, {BackgroundColor3 = ns and ColorConfig.PinkGlow or ColorConfig.Void}):Play()
+            TweenService:Create(b_stroke, TweenConfig.Fast, {Color = ns and ColorConfig.PastelPink or ColorConfig.TextMuted}):Play()
+            TweenService:Create(inner, TweenConfig.Bouncy, {
+                Position = ns and UDim2.new(1, -12, 0.5, -5) or UDim2.new(0, 2, 0.5, -5),
+                BackgroundColor3 = ns and ColorConfig.Void or ColorConfig.TextMuted
+            }):Play()
+            TweenService:Create(name_lbl, TweenConfig.Fast, {TextColor3 = ns and ColorConfig.PastelPink or ColorConfig.TextMain}):Play()
         end
         tile.MouseButton1Click:Connect(toggle)
     end
@@ -994,9 +1009,9 @@ local function load_main_ui(platform)
         scroll_frames[index].Visible = true
         current_tab = index
         
-        TweenService:Create(tab_indicator, TweenConfig.Smooth, {Position = UDim2.new(0, 0, 0, 10 + (index - 1) * 30)}):Play()
+        TweenService:Create(tab_indicator, TweenConfig.Smooth, {Position = UDim2.new(0, 0, 0, 10 + (index - 1) * 32)}):Play()
         for i, btn in ipairs(tab_btns) do 
-            TweenService:Create(btn, TweenConfig.Fast, {TextColor3 = i == index and ColorConfig.BloodGlow or ColorConfig.TextMuted}):Play() 
+            TweenService:Create(btn, TweenConfig.Fast, {TextColor3 = i == index and ColorConfig.PastelPink or ColorConfig.TextMuted}):Play() 
         end
     end
     
@@ -1007,7 +1022,7 @@ local function load_main_ui(platform)
     end
 
     ui_flow_active = false
-    notify("☠️ livyiiween.silente", "nightmare architecture loaded", 3)
+    notify("🎀 livyiiween.silente", "kawaii nightmare loaded!", 3)
 end
 print("[livyiiween] Main UI Function Defined.")
 
@@ -1024,7 +1039,7 @@ if is_dev then
     print("[livyiiween] Developer recognized. Bypassing Key.")
     show_platform_picker(function(p) show_intro(p, load_main_ui) end)
 else
-    print("[livyiiween] User recognized. Initializing Blood Lock.")
+    print("[livyiiween] User recognized. Initializing Key System.")
     
     local key_gui = Instance.new("ScreenGui")
     key_gui.Name = "livyiiKeySystem"
@@ -1034,74 +1049,81 @@ else
     key_gui.Parent = GuiParent
     
     local kf = Instance.new("Frame")
-    kf.Size = UDim2.new(0, 200, 0, 160) -- Instantly visible
+    kf.Size = UDim2.new(0, 220, 0, 180) -- Instantly visible
     kf.Position = UDim2.new(0.5, 0, 0.5, 0)
     kf.AnchorPoint = Vector2.new(0.5, 0.5)
     kf.BackgroundColor3 = ColorConfig.Void
     kf.ClipsDescendants = true
     kf.Parent = key_gui
     
-    local kfc = Instance.new("UICorner"); kfc.CornerRadius = UDim.new(0, 4); kfc.Parent = kf
-    local kfs = Instance.new("UIStroke"); kfs.Color = ColorConfig.BloodGlow; kfs.Thickness = 1.5; kfs.Parent = kf
+    local kfc = Instance.new("UICorner"); kfc.CornerRadius = UDim.new(0, 12); kfc.Parent = kf
+    local kfs = Instance.new("UIStroke"); kfs.Color = ColorConfig.PinkGlow; kfs.Thickness = 2; kfs.Parent = kf
+    
+    local kg = Instance.new("UIGradient")
+    kg.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 20, 60)), ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 5, 30)) })
+    kg.Rotation = 45
+    kg.Parent = kf
 
     local kt = Instance.new("TextLabel")
     kt.Size = UDim2.new(1, 0, 0, 30)
-    kt.Position = UDim2.new(0, 0, 0, 10)
+    kt.Position = UDim2.new(0, 0, 0, 15)
     kt.BackgroundTransparency = 1
-    kt.Text = "BLOOD LOCK"
-    kt.TextColor3 = ColorConfig.BloodGlow
+    kt.Text = "🎀 KAWAII LOCK 🎀"
+    kt.TextColor3 = ColorConfig.PastelPink
     kt.TextSize = 18
     kt.Font = FontConfig.Title
     kt.Parent = kf
 
     local kbox = Instance.new("TextBox")
-    kbox.Size = UDim2.new(0.8, 0, 0, 28)
-    kbox.Position = UDim2.new(0.1, 0, 0, 56)
+    kbox.Size = UDim2.new(0.8, 0, 0, 32)
+    kbox.Position = UDim2.new(0.1, 0, 0, 60)
     kbox.BackgroundColor3 = ColorConfig.Surface
     kbox.BorderSizePixel = 0
     kbox.Text = ""
-    kbox.PlaceholderText = "incantation..."
-    kbox.TextColor3 = ColorConfig.BloodGlow
-    kbox.TextSize = 11
+    kbox.PlaceholderText = "secret incantation..."
+    kbox.TextColor3 = ColorConfig.PastelPink
+    kbox.TextSize = 12
     kbox.Font = FontConfig.Code
     kbox.ClearTextOnFocus = false
     kbox.Parent = kf
     
-    local kbc = Instance.new("UICorner"); kbc.CornerRadius = UDim.new(0, 2); kbc.Parent = kbox
-    local kbs = Instance.new("UIStroke"); kbs.Color = ColorConfig.Blood; kbs.Thickness = 1; kbs.Parent = kbox
+    local kbc = Instance.new("UICorner"); kbc.CornerRadius = UDim.new(0, 6); kbc.Parent = kbox
+    local kbs = Instance.new("UIStroke"); kbs.Color = ColorConfig.PinkGlow; kbs.Thickness = 1; kbs.Parent = kbox
 
     local ksubmit = Instance.new("TextButton")
-    ksubmit.Size = UDim2.new(0.5, 0, 0, 28)
-    ksubmit.Position = UDim2.new(0.25, 0, 0, 94)
-    ksubmit.BackgroundColor3 = ColorConfig.Blood
-    ksubmit.Text = "SACRIFICE"
+    ksubmit.Size = UDim2.new(0.5, 0, 0, 32)
+    ksubmit.Position = UDim2.new(0.25, 0, 0, 105)
+    ksubmit.BackgroundColor3 = ColorConfig.Cherry
+    ksubmit.Text = "UNLOCK 💀"
     ksubmit.TextColor3 = ColorConfig.TextMain
-    ksubmit.TextSize = 11
+    ksubmit.TextSize = 12
     ksubmit.Font = FontConfig.Title
     ksubmit.Parent = kf
     
-    local ksc = Instance.new("UICorner"); ksc.CornerRadius = UDim.new(0, 2); ksc.Parent = ksubmit
+    local ksc = Instance.new("UICorner"); ksc.CornerRadius = UDim.new(0, 6); ksc.Parent = ksubmit
+    ksubmit.MouseEnter:Connect(function() TweenService:Create(ksubmit, TweenConfig.Fast, {BackgroundColor3 = ColorConfig.PinkGlow}):Play() end)
+    ksubmit.MouseLeave:Connect(function() TweenService:Create(ksubmit, TweenConfig.Fast, {BackgroundColor3 = ColorConfig.Cherry}):Play() end)
 
     local kstatus = Instance.new("TextLabel")
     kstatus.Size = UDim2.new(1, -16, 0, 14)
-    kstatus.Position = UDim2.new(0, 8, 0, 130)
+    kstatus.Position = UDim2.new(0, 8, 0, 145)
     kstatus.BackgroundTransparency = 1
     kstatus.Text = ""
     kstatus.TextColor3 = ColorConfig.Error
-    kstatus.TextSize = 9
+    kstatus.TextSize = 10
     kstatus.Font = FontConfig.Body
     kstatus.Parent = kf
 
     ksubmit.MouseButton1Click:Connect(function()
         local entered = kbox.Text:lower():gsub("%s+", "")
         if WEEKLY_KEYS[entered] then
-            kstatus.Text = "ACCEPTED"
+            kstatus.Text = "ACCEPTED!"
             kstatus.TextColor3 = ColorConfig.Success
             task.wait(0.5)
             key_gui:Destroy()
             show_platform_picker(function(p) show_intro(p, load_main_ui) end)
         else
-            kstatus.Text = "REJECTED"
+            kstatus.Text = "REJECTED..."
             kbox.Text = ""
         end
     end)
@@ -1119,13 +1141,13 @@ task.spawn(function()
         for i = 1, 4 do
             local line = Drawing.new("Line")
             line.Thickness = cfg.CrosshairOutlineThickness
-            line.Color = Color3.fromRGB(10, 0, 0)
+            line.Color = Color3.fromRGB(20, 10, 25)
             line.Visible = false
             table.insert(outline_lines, line)
             
             local line2 = Drawing.new("Line")
             line2.Thickness = cfg.CrosshairThickness
-            line2.Color = ColorConfig.BloodGlow
+            line2.Color = ColorConfig.PastelPink
             line2.Visible = false
             table.insert(crosshair_lines, line2)
         end
@@ -1135,7 +1157,7 @@ task.spawn(function()
         fov_circle.NumSides = 64
         fov_circle.Radius = cfg.FOVRadius
         fov_circle.Filled = false
-        fov_circle.Color = ColorConfig.Blood
+        fov_circle.Color = ColorConfig.PinkGlow
         fov_circle.Visible = false
         
         local info_text = Drawing.new("Text")
@@ -1143,20 +1165,20 @@ task.spawn(function()
         info_text.Center = true
         info_text.Outline = true
         info_text.OutlineColor = Color3.new(0, 0, 0)
-        info_text.Color = ColorConfig.BloodGlow
+        info_text.Color = ColorConfig.PastelPink
         info_text.Font = 2
         info_text.Visible = false
         
         local highlight = Instance.new("Highlight")
-        highlight.FillColor = ColorConfig.Blood
-        highlight.OutlineColor = ColorConfig.BloodGlow
+        highlight.FillColor = ColorConfig.PinkGlow
+        highlight.OutlineColor = ColorConfig.PastelPink
         highlight.FillTransparency = 0.6
         highlight.Enabled = false
         pcall(function() highlight.Parent = game:GetService("CoreGui") end)
         
         local tracer = Drawing.new("Line")
         tracer.Thickness = 1.5
-        tracer.Color = ColorConfig.Blood
+        tracer.Color = ColorConfig.PinkGlow
         tracer.Visible = false
 
         register_cleanup(function()
@@ -1313,7 +1335,7 @@ task.spawn(function()
                 crosshair_lines[4].From, crosshair_lines[4].To = pos + rS, pos + rE
                 
                 for i = 1, 4 do
-                    outline_lines[i].Color = Color3.fromRGB(10, 0, 0)
+                    outline_lines[i].Color = Color3.fromRGB(20, 10, 25)
                     outline_lines[i].Thickness = cfg.CrosshairOutlineThickness
                     outline_lines[i].Visible = cfg.CrosshairOutlineEnabled
                     crosshair_lines[i].Color = Color3.fromHSV((cfg.CrosshairHue or 0) / 360, 1, 1)
@@ -1357,9 +1379,9 @@ task.spawn(function()
                 if cfg.TargetInfoEnabled and current_target_plr then
                     local my_root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                     if my_root then
-                        info_text.Text = "☠ " .. current_target_plr.Name .. " • " .. math.floor((my_root.Position - target_part.Position).Magnitude) .. "m"
+                        info_text.Text = "🎀 " .. current_target_plr.Name .. " • " .. math.floor((my_root.Position - target_part.Position).Magnitude) .. "m"
                         info_text.Position = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2 - 50)
-                        info_text.Color = ColorConfig.BloodGlow
+                        info_text.Color = ColorConfig.PastelPink
                         info_text.Visible = true
                     else
                         info_text.Visible = false
@@ -1395,7 +1417,7 @@ task.spawn(function()
             if input.UserInputType == Enum.UserInputType.MouseButton2 and cfg.RightClickShiftlock then try_toggle_shiftlock() end
             if input.KeyCode == cfg.ToggleKey then
                 cfg.Enabled = not cfg.Enabled
-                notify("☠ silent aim", cfg.Enabled and "enabled" or "disabled", 2)
+                notify("🎀 silent aim", cfg.Enabled and "enabled" or "disabled", 2)
             end
         end)
 
@@ -1416,4 +1438,4 @@ task.spawn(function()
     if not ok then warn("[livyiiween] core error: " .. tostring(err)) end
 end)
 
-print("[livyiiween] loaded successfully. Welcome to the void.")
+print("[livyiiween] loaded successfully. Stay cute, stay spooky. 🎀💀")
