@@ -68,7 +68,9 @@ end
 
 local function clear_blurs()
     for _, v in ipairs(Lighting:GetChildren()) do
-        if v:IsA("BlurEffect") then v:Destroy() end
+        if v:IsA("BlurEffect") and v.Name == "livyii_Blur" then 
+            v:Destroy() 
+        end
     end
 end
 
@@ -507,6 +509,54 @@ local function load_main_ui(platform)
     local LABEL_SIZE = 9
     local SLIDER_H = 42
     local SLIDER_KNOB = 13
+
+    -- 🎃 lighting & shader instances 🎃
+    local l_bloom = Instance.new("BloomEffect")
+    l_bloom.Name = "livyii_Bloom"
+    l_bloom.Intensity = 0.5
+    l_bloom.Size = 24
+    l_bloom.Threshold = 1
+    l_bloom.Enabled = false
+    l_bloom.Parent = Lighting
+
+    local l_sunrays = Instance.new("SunRaysEffect")
+    l_sunrays.Name = "livyii_SunRays"
+    l_sunrays.Intensity = 0.05
+    l_sunrays.Spread = 1
+    l_sunrays.Enabled = false
+    l_sunrays.Parent = Lighting
+
+    local l_dof = Instance.new("DepthOfFieldEffect")
+    l_dof.Name = "livyii_DOF"
+    l_dof.FarIntensity = 0.1
+    l_dof.FocusDistance = 10
+    l_dof.InFocusRadius = 10
+    l_dof.NearIntensity = 0.75
+    l_dof.Enabled = false
+    l_dof.Parent = Lighting
+
+    local l_blur = Instance.new("BlurEffect")
+    l_blur.Name = "livyii_Blur"
+    l_blur.Size = 8
+    l_blur.Enabled = false
+    l_blur.Parent = Lighting
+
+    local l_cc = Instance.new("ColorCorrectionEffect")
+    l_cc.Name = "livyii_ColorCorrection"
+    l_cc.Brightness = 0
+    l_cc.Contrast = 0
+    l_cc.Saturation = 0
+    l_cc.TintColor = Color3.fromRGB(255, 255, 255)
+    l_cc.Enabled = false
+    l_cc.Parent = Lighting
+
+    register_cleanup(function()
+        pcall(function() l_bloom:Destroy() end)
+        pcall(function() l_sunrays:Destroy() end)
+        pcall(function() l_dof:Destroy() end)
+        pcall(function() l_blur:Destroy() end)
+        pcall(function() l_cc:Destroy() end)
+    end)
 
     local main_gui = Instance.new("ScreenGui")
     main_gui.Name = "livyiiMainGui"
@@ -1162,6 +1212,7 @@ local function load_main_ui(platform)
     make_dropdown(combat_scroll, "🎯", "hit part", bodyPartsList, function() return cfg.HitPart end, function(v) cfg.HitPart = v end)
     make_slider(combat_scroll, "📡", "max distance", 100, 3000, function() return cfg.MaxDistance end, function(v) cfg.MaxDistance = v end)
 
+    -- VISUAL TAB (With new Lighting/Camera/Shaders sections)
     local visual_scroll = scroll_frames[3]
     make_section(visual_scroll, "🎨", "visuals")
     make_toggle(visual_scroll, "👤", "target highlight", function() return cfg.HighlightEnabled end, function(v) cfg.HighlightEnabled = v end)
@@ -1169,10 +1220,42 @@ local function load_main_ui(platform)
     make_toggle(visual_scroll, "🎯", "crosshair", function() return cfg.CrosshairEnabled end, function(v) cfg.CrosshairEnabled = v end)
     make_toggle(visual_scroll, "🔄", "crosshair rotation", function() return cfg.CrosshairRotationEnabled end, function(v) cfg.CrosshairRotationEnabled = v end)
     make_toggle(visual_scroll, "ℹ️", "target info", function() return cfg.TargetInfoEnabled end, function(v) cfg.TargetInfoEnabled = v end)
+    
     make_section(visual_scroll, "🌈", "colors")
     make_slider(visual_scroll, "🎯", "crosshair hue", 0, 360, function() return math.floor(cfg.CrosshairHue or 0) end, function(v) cfg.CrosshairHue = v end)
     make_slider(visual_scroll, "📍", "tracer hue", 0, 360, function() return math.floor(cfg.TracerHue or 0) end, function(v) cfg.TracerHue = v end)
     make_slider(visual_scroll, "⭕", "fov hue", 0, 360, function() return math.floor(cfg.FOVHue or 0) end, function(v) cfg.FOVHue = v end)
+
+    make_section(visual_scroll, "💡", "lighting controls")
+    make_slider(visual_scroll, "⏰", "time of day", 0, 24, function() return math.floor(Lighting.ClockTime) end, function(v) Lighting.ClockTime = v end)
+    make_toggle(visual_scroll, "✨", "bloom", function() return l_bloom.Enabled end, function(v) l_bloom.Enabled = v end)
+    make_toggle(visual_scroll, "☀️", "sun rays", function() return l_sunrays.Enabled end, function(v) l_sunrays.Enabled = v end)
+    make_toggle(visual_scroll, "🔭", "depth of field", function() return l_dof.Enabled end, function(v) l_dof.Enabled = v end)
+    make_toggle(visual_scroll, "💨", "blur", function() return l_blur.Enabled end, function(v) l_blur.Enabled = v end)
+    make_toggle(visual_scroll, "🎨", "color adjustments", function() return l_cc.Enabled end, function(v) l_cc.Enabled = v end)
+    make_slider(visual_scroll, "🌈", "saturation", -1, 1, function() return l_cc.Saturation end, function(v) l_cc.Saturation = v end)
+    make_slider(visual_scroll, "🌓", "contrast", -1, 1, function() return l_cc.Contrast end, function(v) l_cc.Contrast = v end)
+    make_slider(visual_scroll, "☀️", "brightness", -1, 1, function() return l_cc.Brightness end, function(v) l_cc.Brightness = v end)
+
+    make_section(visual_scroll, "📷", "camera controls")
+    make_slider(visual_scroll, "🔍", "camera fov", 30, 120, function() return math.floor(cam.FieldOfView) end, function(v) cam.FieldOfView = v end)
+
+    make_section(visual_scroll, "✨", "shaders")
+    make_toggle(visual_scroll, "👻", "spectral shader", 
+        function() return l_cc.Enabled and l_cc.TintColor == Color3.fromRGB(150, 50, 255) end, 
+        function(v) 
+            if v then
+                l_cc.Enabled = true
+                l_cc.TintColor = Color3.fromRGB(150, 50, 255)
+                l_cc.Saturation = -0.8
+                l_cc.Contrast = 0.3
+            else
+                l_cc.TintColor = Color3.fromRGB(255, 255, 255)
+                l_cc.Saturation = 0
+                l_cc.Contrast = 0
+            end
+        end
+    )
 
     local misc_scroll = scroll_frames[4]
     make_section(misc_scroll, "✨", "misc")
