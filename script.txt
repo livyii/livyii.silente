@@ -1,4 +1,4 @@
--- 🌸 livyii.silente - [KAWAII SANRIO UI V3] 🎀
+-- 🌸 livyii.silente - [KAWAII SANRIO UI V4] 🎀
 print("[livyii] initializing cuteness overload...")
 
 -- // SERVICES //
@@ -62,7 +62,7 @@ local bodyPartsList = {
     "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot"
 }
 
--- // 🌸 THEME CONFIGURATION 🌸 //
+-- // 🌸 THEME CONFIGURATION (DYNAMIC EMOJIS & COLORS) 🌸 //
 local Themes = {
     Pompompurin = {
         Bg = Color3.fromRGB(255, 250, 240),
@@ -72,7 +72,10 @@ local Themes = {
         TextMain = Color3.fromRGB(90, 60, 40),
         TextMuted = Color3.fromRGB(160, 130, 110),
         Grad1 = Color3.fromRGB(255, 245, 230),
-        Grad2 = Color3.fromRGB(255, 255, 255)
+        Grad2 = Color3.fromRGB(255, 255, 255),
+        Emoji = "🍮",
+        SectionEmoji = "🍮",
+        TabEmojis = {"🎯", "⚔️", "✨", "🌸", "⚙️"}
     },
     MyMelody = {
         Bg = Color3.fromRGB(255, 240, 245),
@@ -82,7 +85,10 @@ local Themes = {
         TextMain = Color3.fromRGB(100, 50, 70),
         TextMuted = Color3.fromRGB(180, 130, 150),
         Grad1 = Color3.fromRGB(255, 220, 230),
-        Grad2 = Color3.fromRGB(255, 255, 255)
+        Grad2 = Color3.fromRGB(255, 255, 255),
+        Emoji = "🎀",
+        SectionEmoji = "🎀",
+        TabEmojis = {"🎀", "⚔️", "✨", "🌸", "⚙️"}
     },
     Cinnamoroll = {
         Bg = Color3.fromRGB(240, 250, 255),
@@ -92,7 +98,10 @@ local Themes = {
         TextMain = Color3.fromRGB(50, 90, 140),
         TextMuted = Color3.fromRGB(120, 160, 200),
         Grad1 = Color3.fromRGB(220, 240, 255),
-        Grad2 = Color3.fromRGB(255, 255, 255)
+        Grad2 = Color3.fromRGB(255, 255, 255),
+        Emoji = "☁️",
+        SectionEmoji = "☁️",
+        TabEmojis = {"☁️", "⚔️", "✨", "🌸", "⚙️"}
     },
     HelloKitty = {
         Bg = Color3.fromRGB(255, 245, 245),
@@ -102,7 +111,10 @@ local Themes = {
         TextMain = Color3.fromRGB(120, 50, 50),
         TextMuted = Color3.fromRGB(180, 120, 120),
         Grad1 = Color3.fromRGB(255, 210, 210),
-        Grad2 = Color3.fromRGB(255, 255, 255)
+        Grad2 = Color3.fromRGB(255, 255, 255),
+        Emoji = "🐱",
+        SectionEmoji = "🐱",
+        TabEmojis = {"🐱", "⚔️", "✨", "🌸", "⚙️"}
     }
 }
 
@@ -289,7 +301,7 @@ do
     toggle_btn.Position = UDim2.new(1, -62, 0, 60)
     toggle_btn.BackgroundColor3 = GetColor("Bg")
     toggle_btn.BorderSizePixel = 0
-    toggle_btn.Text = "🍮"
+    toggle_btn.Text = GetColor("Emoji")
     toggle_btn.TextColor3 = GetColor("TextMain")
     toggle_btn.TextSize = 26
     toggle_btn.Font = FontConfig.Title
@@ -325,7 +337,7 @@ do
     end)
     
     table.insert(ThemeListeners, function()
-        TweenService:Create(toggle_btn, TweenConfig.Smooth, {BackgroundColor3 = GetColor("Bg"), TextColor3 = GetColor("TextMain")}):Play()
+        TweenService:Create(toggle_btn, TweenConfig.Smooth, {BackgroundColor3 = GetColor("Bg"), TextColor3 = GetColor("TextMain"), Text = GetColor("Emoji")}):Play()
         TweenService:Create(t_s, TweenConfig.Smooth, {Color = GetColor("Stroke")}):Play()
     end)
 end
@@ -371,7 +383,7 @@ local function show_platform_picker(callback)
     title.Size = UDim2.new(1, 0, 0, 30)
     title.Position = UDim2.new(0, 0, 0, 20)
     title.BackgroundTransparency = 1
-    title.Text = "🍮 choose your device 🍮"
+    title.Text = GetColor("Emoji") .. " choose your device " .. GetColor("Emoji")
     title.TextColor3 = GetColor("TextMain")
     title.TextSize = 20
     title.Font = FontConfig.Title
@@ -434,7 +446,7 @@ local function show_intro(platform, callback)
         p.Size = UDim2.new(0, 30, 0, 30)
         p.Position = UDim2.new(math.random(), 0, math.random() + 0.5, 0)
         p.BackgroundTransparency = 1
-        p.Text = ({"🌸", "🍮", "🎀", "☁️", "💖", "✨"})[math.random(1,6)]
+        p.Text = GetColor("Emoji")
         p.TextSize = math.random(20, 40)
         p.TextTransparency = 0.5
         p.Parent = intro_gui
@@ -453,7 +465,7 @@ local function show_intro(platform, callback)
     title.Size = UDim2.new(1, 0, 0, 40)
     title.Position = UDim2.new(0, 0, 0.4, -40)
     title.BackgroundTransparency = 1
-    title.Text = "🍮 livyii.silente 🍮"
+    title.Text = GetColor("Emoji") .. " livyii.silente " .. GetColor("Emoji")
     title.TextColor3 = GetColor("TextMain")
     title.TextSize = 40
     title.Font = FontConfig.Title
@@ -546,7 +558,6 @@ local function load_main_ui(platform)
     main_grad.Rotation = 45
     main_grad.Parent = main
 
-    -- INSTANT update to prevent the green mixing bug
     table.insert(ThemeListeners, function()
         main.BackgroundColor3 = GetColor("Bg")
         main_stroke.Color = GetColor("Stroke")
@@ -564,15 +575,39 @@ local function load_main_ui(platform)
     local h_corner = Instance.new("UICorner"); h_corner.CornerRadius = UDim.new(0, 20); h_corner.Parent = header
     
     local title_lbl = Instance.new("TextLabel")
-    title_lbl.Size = UDim2.new(1, -60, 1, 0)
+    title_lbl.Size = UDim2.new(1, -100, 1, 0)
     title_lbl.Position = UDim2.new(0, 20, 0, 0)
     title_lbl.BackgroundTransparency = 1
-    title_lbl.Text = "🍮 livyii.silente" 
+    title_lbl.Text = GetColor("Emoji") .. " livyii.silente" 
     title_lbl.TextColor3 = GetColor("TextMain")
     title_lbl.TextSize = 18
     title_lbl.Font = FontConfig.Title
     title_lbl.TextXAlignment = Enum.TextXAlignment.Left
     title_lbl.Parent = header
+
+    -- DEV BADGE
+    local is_dev_user = false
+    local dev_names = {"livyiilolly", "narvstar", "2lmost", "natalie_nunnlee"}
+    for _, name in ipairs(dev_names) do
+        if LocalPlayer.Name:lower() == name then is_dev_user = true break end
+    end
+
+    if is_dev_user then
+        local dev_badge = Instance.new("TextLabel")
+        dev_badge.Size = UDim2.new(0, 40, 0, 20)
+        dev_badge.Position = UDim2.new(1, -75, 0.5, -10)
+        dev_badge.BackgroundColor3 = GetColor("Accent")
+        dev_badge.Text = "DEV"
+        dev_badge.TextColor3 = Color3.fromRGB(255, 255, 255)
+        dev_badge.TextSize = 10
+        dev_badge.Font = FontConfig.Title
+        dev_badge.Parent = header
+        
+        local d_corner = Instance.new("UICorner"); d_corner.CornerRadius = UDim.new(1, 0); d_corner.Parent = dev_badge
+        table.insert(ThemeListeners, function()
+            dev_badge.BackgroundColor3 = GetColor("Accent")
+        end)
+    end
 
     local close_btn = Instance.new("TextButton")
     close_btn.Size = UDim2.new(0, 26, 0, 26)
@@ -592,6 +627,7 @@ local function load_main_ui(platform)
     table.insert(ThemeListeners, function()
         header.BackgroundColor3 = GetColor("Surface")
         title_lbl.TextColor3 = GetColor("TextMain")
+        title_lbl.Text = GetColor("Emoji") .. " livyii.silente"
         close_btn.BackgroundColor3 = GetColor("Surface")
         close_btn.TextColor3 = GetColor("TextMain")
         c_stroke.Color = GetColor("Stroke")
@@ -629,7 +665,6 @@ local function load_main_ui(platform)
     tab_layout.Parent = tab_bar
 
     local tab_names = {"AIM", "COMBAT", "VISUAL", "THEMES", "MISC"}
-    local tab_icons = {"🎯", "⚔️", "✨", "🌸", "⚙️"}
     local tab_btns = {}
     local current_tab = 1
 
@@ -637,7 +672,7 @@ local function load_main_ui(platform)
         local tb = Instance.new("TextButton")
         tb.Size = UDim2.new(0, 60, 1, 0)
         tb.BackgroundColor3 = GetColor("Surface")
-        tb.Text = tab_icons[i] .. " " .. tab_names[i]
+        tb.Text = GetColor("TabEmojis")[i] .. " " .. tab_names[i]
         tb.TextColor3 = i == 1 and GetColor("TextMain") or GetColor("TextMuted")
         tb.TextSize = 11
         tb.Font = FontConfig.Bold
@@ -655,6 +690,7 @@ local function load_main_ui(platform)
         table.insert(ThemeListeners, function()
             btn.BackgroundColor3 = GetColor("Surface")
             strk.Color = GetColor("Stroke")
+            btn.Text = GetColor("TabEmojis")[idx] .. " " .. tab_names[idx]
             btn.TextColor3 = idx == current_tab and GetColor("TextMain") or GetColor("TextMuted")
         end)
     end
@@ -697,7 +733,7 @@ local function load_main_ui(platform)
         lbl.Size = UDim2.new(1, -4, 1, 0)
         lbl.Position = UDim2.new(0, 4, 0, 0)
         lbl.BackgroundTransparency = 1
-        lbl.Text = "🌸 " .. string.upper(text)
+        lbl.Text = GetColor("SectionEmoji") .. " " .. string.upper(text)
         lbl.TextColor3 = GetColor("Accent")
         lbl.TextSize = 11
         lbl.Font = FontConfig.Title
@@ -705,6 +741,7 @@ local function load_main_ui(platform)
         lbl.Parent = sec
         
         table.insert(ThemeListeners, function()
+            lbl.Text = GetColor("SectionEmoji") .. " " .. string.upper(text)
             lbl.TextColor3 = GetColor("Accent")
         end)
     end
@@ -1024,7 +1061,7 @@ local function load_main_ui(platform)
     createThemeButton("Pompompurin", "🍮")
     createThemeButton("MyMelody", "🎀")
     createThemeButton("Cinnamoroll", "☁️")
-    createThemeButton("HelloKitty", "🎀")
+    createThemeButton("HelloKitty", "🐱")
 
     -- MISC TAB
     local misc_scroll = scroll_frames[5]
