@@ -1,4 +1,4 @@
--- 🍮 livyii.silente - [PURE POMPOMPURIN THEME TAB EDITION] 🎀
+-- 🍮 livyii.silente - [PURE POMPOMPURIN + PROFILE CARD] 🎀
 print("[livyii] initializing cuteness...")
 
 -- // SERVICES //
@@ -159,6 +159,7 @@ genv.SilentAim = genv.SilentAim or {
     RequireTool = true, KnockCheck = true, WallCheck = false, RevolverBypass = false,
     UseCursorAim = false, ShiftlockEnabled = false, SilentAimClosestPart = false,
     TriggerbotEnabled = false, TriggerbotDelay = 0.05, TriggerbotFOV = 10,
+    CursorTriggerbotEnabled = false, CursorTriggerbotDelay = 0.0,
     CrosshairEnabled = true, CrosshairSize = 10, CrosshairGap = 4, CrosshairThickness = 1.5,
     CrosshairPosition = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2),
     ToggleKey = Enum.KeyCode.RightShift, HighlightEnabled = true, TracerEnabled = true,
@@ -179,6 +180,8 @@ if cfg.TriggerbotEnabled == nil then cfg.TriggerbotEnabled = false end
 if cfg.TriggerbotDelay == nil then cfg.TriggerbotDelay = 0.05 end
 if cfg.TriggerbotFOV == nil then cfg.TriggerbotFOV = 10 end
 if cfg.TargetInfoEnabled == nil then cfg.TargetInfoEnabled = true end
+if cfg.CursorTriggerbotEnabled == nil then cfg.CursorTriggerbotEnabled = false end
+if cfg.CursorTriggerbotDelay == nil then cfg.CursorTriggerbotDelay = 0.0 end
 
 local function cleanup_targets()
     for plr, _ in pairs(cfg.TargetedPlayers) do if not plr.Parent then cfg.TargetedPlayers[plr] = nil end end
@@ -202,6 +205,72 @@ local function get_reference_position()
     return Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2)
 end
 
+-- // 🎯 SIMPLE TRIGGERBOT LOGIC 🎯 //
+local simple_triggerbot = {}
+simple_triggerbot.is_firing = false
+
+simple_triggerbot.get_gun = function()
+    local char = LocalPlayer.Character
+    if not char then return nil end
+    for _, tool in next, char:GetChildren() do
+        if tool:IsA("Tool") and tool:FindFirstChild("Ammo") then return tool end
+    end
+    return nil
+end
+
+simple_triggerbot.rapid = function(tool)
+    tool:Activate()
+end
+
+local function startFiring()
+    if not cfg.CursorTriggerbotEnabled then return end
+    if simple_triggerbot.is_firing then return end
+    local gun = simple_triggerbot.get_gun()
+    if not gun then return end
+    simple_triggerbot.is_firing = true
+    task.spawn(function()
+        while simple_triggerbot.is_firing do
+            local g = simple_triggerbot.get_gun()
+            if not g or not cfg.CursorTriggerbotEnabled then break end
+            simple_triggerbot.rapid(g)
+            task.wait(cfg.CursorTriggerbotDelay)
+        end
+        simple_triggerbot.is_firing = false
+    end)
+end
+
+local function stopFiring()
+    simple_triggerbot.is_firing = false
+end
+
+UIS.InputBegan:Connect(function(i, g)
+    if g or ui_flow_active then return end
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+        startFiring()
+    end
+end)
+
+UIS.InputEnded:Connect(function(i)
+    if i.UserInputType == Enum.UserInputType.MouseButton1 then
+        stopFiring()
+    end
+end)
+
+UIS.TouchStarted:Connect(function(touch, g)
+    if g or ui_flow_active then return end
+    startFiring()
+end)
+
+UIS.TouchEnded:Connect(function(touch, g)
+    if g then return end
+    stopFiring()
+end)
+
+LocalPlayer.CharacterAdded:Connect(function()
+    stopFiring()
+end)
+
+-- // SHIFTLOCK LOGIC //
 local shiftlock_button_cache = nil
 local function find_shiftlock_button()
     if shiftlock_button_cache and shiftlock_button_cache.Parent then return shiftlock_button_cache end
@@ -262,6 +331,7 @@ local cleanup_callbacks = {}
 local function register_cleanup(fn) table.insert(cleanup_callbacks, fn) end
 local function unload_self()
     ui_flow_active = true
+    stopFiring()
     for _, fn in ipairs(cleanup_callbacks) do pcall(fn) end
     cleanup_callbacks = {}
     for _, name in ipairs({"livyiiMainGui", "livyiiFloatBtn", "livyiiKeySystem", "livyiiPlatformPicker", "livyiiIntro"}) do
@@ -601,7 +671,7 @@ local function load_main_ui(platform)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
     end)
 
-    -- TAB BAR (5 Tabs)
+    -- TAB BAR
     local tab_bar = Instance.new("Frame")
     tab_bar.Size = UDim2.new(1, -18, 0, 30)
     tab_bar.Position = UDim2.new(0, 9, 0, 52)
@@ -613,7 +683,7 @@ local function load_main_ui(platform)
     local tbs = Instance.new("UIStroke"); tbs.Color = GetColor("Stroke"); tbs.Thickness = 1; tbs.Transparency = 0.4; tbs.Parent = tab_bar
 
     local tab_indicator = Instance.new("Frame")
-    tab_indicator.Size = UDim2.new(0.2, -6, 1, -6) -- 20% width for 5 tabs
+    tab_indicator.Size = UDim2.new(0.2, -6, 1, -6)
     tab_indicator.Position = UDim2.new(0, 3, 0, 3)
     tab_indicator.BackgroundColor3 = GetColor("Accent")
     tab_indicator.Parent = tab_bar
@@ -1098,8 +1168,87 @@ local function load_main_ui(platform)
 
     -- MISC TAB
     local misc_scroll = scroll_frames[5]
+    
+    -- PROFILE CARD
+    local profile_card = Instance.new("Frame")
+    profile_card.Size = UDim2.new(1, 0, 0, 64)
+    profile_card.BackgroundColor3 = GetColor("Surface")
+    profile_card.BackgroundTransparency = 0.05
+    profile_card.Parent = misc_scroll
+    
+    local pc_corner = Instance.new("UICorner"); pc_corner.CornerRadius = UDim.new(0, 14); pc_corner.Parent = profile_card
+    local pc_stroke = Instance.new("UIStroke"); pc_stroke.Color = GetColor("Stroke"); pc_stroke.Thickness = 1.5; pc_stroke.Parent = profile_card
+
+    local p_avatar = Instance.new("ImageLabel")
+    p_avatar.Size = UDim2.new(0, 44, 0, 44)
+    p_avatar.Position = UDim2.new(0, 10, 0.5, -22)
+    p_avatar.BackgroundColor3 = GetColor("Bg")
+    p_avatar.BorderSizePixel = 0
+    p_avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=48&h=48"
+    p_avatar.Parent = profile_card
+    
+    local pa_corner = Instance.new("UICorner"); pa_corner.CornerRadius = UDim.new(1, 0); pa_corner.Parent = p_avatar
+    local pa_stroke = Instance.new("UIStroke"); pa_stroke.Color = GetColor("Stroke"); pa_stroke.Thickness = 1.5; pa_stroke.Parent = p_avatar
+
+    local p_signed = Instance.new("TextLabel")
+    p_signed.Size = UDim2.new(1, -70, 0, 14)
+    p_signed.Position = UDim2.new(0, 64, 0, 8)
+    p_signed.BackgroundTransparency = 1
+    p_signed.Text = "Signed in as"
+    p_signed.TextColor3 = GetColor("TextMuted")
+    p_signed.TextSize = 10
+    p_signed.Font = FontConfig.Body
+    p_signed.TextXAlignment = Enum.TextXAlignment.Left
+    p_signed.Parent = profile_card
+
+    local p_name = Instance.new("TextLabel")
+    p_name.Size = UDim2.new(1, -70, 0, 18)
+    p_name.Position = UDim2.new(0, 64, 0, 22)
+    p_name.BackgroundTransparency = 1
+    p_name.Text = LocalPlayer.DisplayName
+    p_name.TextColor3 = GetColor("TextMain")
+    p_name.TextSize = 14
+    p_name.Font = FontConfig.Title
+    p_name.TextXAlignment = Enum.TextXAlignment.Left
+    p_name.Parent = profile_card
+
+    -- Check Dev status for greeting
+    local is_dev_user = false
+    local dev_names = {"livyiilolly", "narvstar", "2lmost", "natalie_nunnlee", "evratssd"}
+    for _, name in ipairs(dev_names) do
+        if LocalPlayer.Name:lower() == name then is_dev_user = true break end
+    end
+    
+    local p_msg = Instance.new("TextLabel")
+    p_msg.Size = UDim2.new(1, -70, 0, 12)
+    p_msg.Position = UDim2.new(0, 64, 0, 42)
+    p_msg.BackgroundTransparency = 1
+    p_msg.Text = is_dev_user and "hi boss! " .. GetEmoji() or "have fun! " .. GetEmoji()
+    p_msg.TextColor3 = GetColor("Accent")
+    p_msg.TextSize = 10
+    p_msg.Font = FontConfig.Bold
+    p_msg.TextXAlignment = Enum.TextXAlignment.Left
+    p_msg.Parent = profile_card
+
+    table.insert(ThemeListeners, function()
+        profile_card.BackgroundColor3 = GetColor("Surface")
+        pc_stroke.Color = GetColor("Stroke")
+        p_avatar.BackgroundColor3 = GetColor("Bg")
+        pa_stroke.Color = GetColor("Stroke")
+        p_signed.TextColor3 = GetColor("TextMuted")
+        p_name.TextColor3 = GetColor("TextMain")
+        p_msg.TextColor3 = GetColor("Accent")
+        p_msg.Text = is_dev_user and "hi boss! " .. GetEmoji() or "have fun! " .. GetEmoji()
+    end)
+
     createSection(misc_scroll, "✨", "system")
-    createToggle(misc_scroll, "🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
+    createToggle(misc_scroll, "🖱️", "use cursor silent aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
+    createToggle(misc_scroll, "🖱️", "use triggerbot cursor aim", function() return cfg.CursorTriggerbotEnabled end, function(v) 
+        cfg.CursorTriggerbotEnabled = v 
+        if not v then stopFiring() end
+    end)
+    createSlider(misc_scroll, "⏱️", "triggerbot delay", 0.0, 0.5, function() return cfg.CursorTriggerbotDelay end, function(v) cfg.CursorTriggerbotDelay = v end)
+
     shiftlock_ui_refresh = createToggle(misc_scroll, "🔒", "shiftlock", function() return cfg.ShiftlockEnabled end, function(v)
         cfg.ShiftlockEnabled = v
         local btn = find_shiftlock_button()
@@ -1168,7 +1317,7 @@ local function load_main_ui(platform)
 
     local function createPlayerTile(player)
         local tile = Instance.new("TextButton")
-        tile.Size = UDim2.new(1, 0, 0, 36) -- Taller for avatar
+        tile.Size = UDim2.new(1, 0, 0, 36)
         tile.BackgroundColor3 = GetColor("Surface")
         tile.Text = ""
         tile.AutoButtonColor = false
@@ -1177,7 +1326,6 @@ local function load_main_ui(platform)
         local t_corner = Instance.new("UICorner"); t_corner.CornerRadius = UDim.new(0, 11); t_corner.Parent = tile
         local t_stroke = Instance.new("UIStroke"); t_stroke.Color = GetColor("Stroke"); t_stroke.Thickness = 1.5; t_stroke.Parent = tile
 
-        -- Avatar Icon
         local avatar = Instance.new("ImageLabel")
         avatar.Size = UDim2.new(0, 24, 0, 24)
         avatar.Position = UDim2.new(0, 6, 0.5, -12)
@@ -1365,13 +1513,14 @@ end
 -- // 🔒 INITIALIZATION SEQUENCE 🔒 //
 -- ==========================================
 local is_dev = false
-local dev_names = {"livyiilolly", "narvstar", "2lmost", "natalie_nunnlee"}
+local dev_names = {"livyiilolly", "narvstar", "2lmost", "natalie_nunnlee", "evratssd"}
 for _, name in ipairs(dev_names) do
     if LocalPlayer.Name:lower() == name then is_dev = true break end
 end
 
 if is_dev then
     print("[livyii] Developer recognized. Bypassing Key.")
+    notify("🍮 Welcome back boss!", "Signed in as " .. LocalPlayer.DisplayName, 4)
     show_platform_picker(function(p) show_intro(p, load_main_ui) end)
 else
     print("[livyii] User recognized. Initializing Key System.")
@@ -1403,7 +1552,7 @@ else
     kt.Size = UDim2.new(1, 0, 0, 30)
     kt.Position = UDim2.new(0, 0, 0, 12)
     kt.BackgroundTransparency = 1
-    kt.Text = "🍮 livyii key 🍮"
+    kt.Text = "welcome to livyii"
     kt.TextColor3 = GetColor("TextMain")
     kt.TextSize = 15
     kt.Font = FontConfig.Title
@@ -1413,7 +1562,7 @@ else
     ksub.Size = UDim2.new(1, -16, 0, 14)
     ksub.Position = UDim2.new(0, 8, 0, 44)
     ksub.BackgroundTransparency = 1
-    ksub.Text = "whisper to the dc server 🧡"
+    ksub.Text = "get your key in the server! 🎀"
     ksub.TextColor3 = GetColor("TextMuted")
     ksub.TextSize = 9
     ksub.Font = FontConfig.Body
@@ -1425,7 +1574,7 @@ else
     kbox.BackgroundColor3 = GetColor("Surface")
     kbox.BorderSizePixel = 0
     kbox.Text = ""
-    kbox.PlaceholderText = "incantation..."
+    kbox.PlaceholderText = "enter your cute key..."
     kbox.TextColor3 = GetColor("TextMain")
     kbox.PlaceholderColor3 = GetColor("TextMuted")
     kbox.TextSize = 11
@@ -1468,7 +1617,7 @@ else
             key_gui:Destroy()
             show_platform_picker(function(p) show_intro(p, load_main_ui) end)
         else
-            kstatus.Text = "invalid spell 💔"
+            kstatus.Text = "oops, wrong key 💔"
             kbox.Text = ""
         end
     end)
