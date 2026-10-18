@@ -1,4 +1,4 @@
--- 🍮 livyii.silente - [FIXED AUTO-AIM TRIGGERBOT] 🎀
+-- 🍮 livyii.silente - [CRASH FIX + NEW THEMES] 🎀
 print("[livyii] initializing cuteness...")
 
 -- // SERVICES //
@@ -62,7 +62,7 @@ local bodyPartsList = {
     "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot"
 }
 
--- // 🍮 THEME CONFIGURATION 🍮 //
+-- // 🍮 THEME CONFIGURATION (MORE THEMES!) 🍮 //
 local Themes = {
     Pompompurin = {
         Bg = Color3.fromRGB(255, 250, 240),
@@ -107,6 +107,28 @@ local Themes = {
         Grad1 = Color3.fromRGB(255, 190, 190),
         Grad2 = Color3.fromRGB(255, 245, 245),
         Emoji = "🐱"
+    },
+    Kuromi = {
+        Bg = Color3.fromRGB(25, 25, 30),
+        Surface = Color3.fromRGB(40, 40, 50),
+        Stroke = Color3.fromRGB(150, 80, 200),
+        Accent = Color3.fromRGB(180, 100, 255),
+        TextMain = Color3.fromRGB(230, 230, 240),
+        TextMuted = Color3.fromRGB(150, 140, 170),
+        Grad1 = Color3.fromRGB(50, 40, 70),
+        Grad2 = Color3.fromRGB(20, 20, 25),
+        Emoji = "😈"
+    },
+    MySweetPiano = {
+        Bg = Color3.fromRGB(255, 240, 245),
+        Surface = Color3.fromRGB(255, 255, 255),
+        Stroke = Color3.fromRGB(255, 182, 193),
+        Accent = Color3.fromRGB(255, 105, 180),
+        TextMain = Color3.fromRGB(139, 69, 19),
+        TextMuted = Color3.fromRGB(210, 180, 140),
+        Grad1 = Color3.fromRGB(255, 220, 230),
+        Grad2 = Color3.fromRGB(255, 250, 255),
+        Emoji = "🐑"
     }
 }
 
@@ -270,20 +292,23 @@ LocalPlayer.CharacterAdded:Connect(function()
     stopFiring()
 end)
 
--- // 🎯 AUTO-AIM TRIGGERBOT (SAFE LOOP) 🎯 //
+-- // 🎯 SAFE AUTO-AIM TRIGGERBOT LOOP 🎯 //
 task.spawn(function()
     while task.wait(0.1) do
         if cfg.TriggerbotEnabled and cfg.Enabled and not ui_flow_active then
             local closestTarget, closestDistance = nil, math.huge
             local myChar = LocalPlayer.Character
             local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+            local myHum = myChar and myChar:FindFirstChildOfClass("Humanoid")
             
-            if myHRP and myHRP.Parent then
+            if myHRP and myHum and myHum.Health > 0 then
                 for _, plr in ipairs(Players:GetPlayers()) do
                     if plr ~= LocalPlayer and (not cfg.TeamCheck or plr.Team ~= LocalPlayer.Team) then
                         local char = plr.Character
-                        if char and char:FindFirstChild("HumanoidRootPart") then
-                            local distance = (myHRP.Position - char.HumanoidRootPart.Position).Magnitude
+                        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                        local hum = char and char:FindFirstChildOfClass("Humanoid")
+                        if hrp and hum and hum.Health > 0 then
+                            local distance = (myHRP.Position - hrp.Position).Magnitude
                             if distance < closestDistance then
                                 closestTarget = plr
                                 closestDistance = distance
@@ -296,9 +321,7 @@ task.spawn(function()
                     local targetPart = closestTarget.Character:FindFirstChild("Head") or closestTarget.Character:FindFirstChild("Torso") or closestTarget.Character:FindFirstChild("UpperTorso")
                     if targetPart then
                         pcall(function()
-                            -- Safely rotate to target
                             myHRP.CFrame = CFrame.new(myHRP.Position, targetPart.Position)
-                            -- Safe click attempt
                             if VirtualUser then
                                 VirtualUser:CaptureController()
                                 VirtualUser:ClickButton1(Vector2.new(1,1), cam.CFrame)
@@ -1211,6 +1234,8 @@ local function load_main_ui(platform)
     createThemeButton("MyMelody", "🎀")
     createThemeButton("Cinnamoroll", "☁️")
     createThemeButton("HelloKitty", "🐱")
+    createThemeButton("Kuromi", "😈")
+    createThemeButton("MySweetPiano", "🐑")
 
     -- MISC TAB
     local misc_scroll = scroll_frames[5]
