@@ -1,4 +1,4 @@
--- 🍮 livyii.silente - [POMPOMPURIN COMPACT EDITION] 🎀
+-- 🍮 livyii.silente - [PURE POMPOMPURIN EDITION] 🎀
 print("[livyii] initializing cuteness...")
 
 -- // SERVICES //
@@ -62,7 +62,7 @@ local bodyPartsList = {
     "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot"
 }
 
--- // 🍮 POMPOMPURIN THEME (from image style) 🍮 //
+-- // 🍮 THEME CONFIGURATION (PURE POMPOMPURIN) 🍮 //
 local Themes = {
     Pompompurin = {
         Bg = Color3.fromRGB(255, 250, 240),
@@ -329,9 +329,86 @@ do
 end
 
 -- ==========================================
--- // 🍮 LOW OPACITY CUTE INTRO 🍮 //
+-- // 🍮 PLATFORM PICKER 🍮 //
 -- ==========================================
-local function show_intro(callback)
+local function show_platform_picker(callback)
+    local plat_gui = Instance.new("ScreenGui")
+    plat_gui.Name = "livyiiPlatformPicker"
+    plat_gui.ResetOnSpawn = false
+    plat_gui.DisplayOrder = 1500
+    plat_gui.Parent = GuiParent
+
+    local blur = Instance.new("BlurEffect")
+    blur.Size = 14
+    blur.Parent = Lighting
+
+    local bg = Instance.new("Frame")
+    bg.Size = UDim2.new(1, 0, 1, 0)
+    bg.BackgroundColor3 = GetColor("Bg")
+    bg.BackgroundTransparency = 0.3
+    bg.Parent = plat_gui
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 260, 0, 185)
+    frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    frame.BackgroundColor3 = GetColor("Bg")
+    frame.BorderSizePixel = 0
+    frame.ClipsDescendants = true
+    frame.Parent = plat_gui
+    
+    local f_corner = Instance.new("UICorner"); f_corner.CornerRadius = UDim.new(0, 18); f_corner.Parent = frame
+    local f_stroke = Instance.new("UIStroke"); f_stroke.Color = GetColor("Stroke"); f_stroke.Thickness = 2.5; f_stroke.Parent = frame
+    
+    local f_grad = Instance.new("UIGradient")
+    f_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, GetColor("Grad1")), ColorSequenceKeypoint.new(1, GetColor("Grad2")) })
+    f_grad.Rotation = 45
+    f_grad.Parent = frame
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.Position = UDim2.new(0, 0, 0, 15)
+    title.BackgroundTransparency = 1
+    title.Text = "choose your device 🍮"
+    title.TextColor3 = GetColor("TextMain")
+    title.TextSize = 18
+    title.Font = FontConfig.Title
+    title.Parent = frame
+
+    local function createCard(text, icon, pos, platform)
+        local card = Instance.new("TextButton")
+        card.Size = UDim2.new(0.4, 0, 0, 85)
+        card.Position = UDim2.new(pos, 0, 0, 60)
+        card.BackgroundColor3 = GetColor("Surface")
+        card.BorderSizePixel = 0
+        card.Text = ""
+        card.AutoButtonColor = false
+        card.Parent = frame
+        
+        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 12); c_corner.Parent = card
+        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 1.5; c_stroke.Parent = card
+        
+        local i_lbl = Instance.new("TextLabel"); i_lbl.Size = UDim2.new(1, 0, 0, 40); i_lbl.Position = UDim2.new(0, 0, 0, 8); i_lbl.BackgroundTransparency = 1; i_lbl.Text = icon; i_lbl.TextSize = 30; i_lbl.Parent = card
+        local t_lbl = Instance.new("TextLabel"); t_lbl.Size = UDim2.new(1, 0, 0, 16); t_lbl.Position = UDim2.new(0, 0, 0, 56); t_lbl.BackgroundTransparency = 1; t_lbl.Text = text; t_lbl.TextColor3 = GetColor("TextMain"); t_lbl.TextSize = 12; t_lbl.Font = FontConfig.Bold; t_lbl.Parent = card
+
+        card.MouseEnter:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = GetColor("Accent"), Thickness = 2.5}):Play() end)
+        card.MouseLeave:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = GetColor("Stroke"), Thickness = 1.5}):Play() end)
+
+        card.MouseButton1Click:Connect(function()
+            plat_gui:Destroy()
+            if blur then blur:Destroy() end
+            if callback then callback(platform) end
+        end)
+    end
+    
+    createCard("PC", "💻", 0.06, "pc")
+    createCard("MOBILE", "📱", 0.54, "mobile")
+end
+
+-- ==========================================
+-- // 🍮 CUTE INTRO 🍮 //
+-- ==========================================
+local function show_intro(platform, callback)
     local intro_gui = Instance.new("ScreenGui")
     intro_gui.Name = "livyiiIntro"
     intro_gui.ResetOnSpawn = false
@@ -341,7 +418,7 @@ local function show_intro(callback)
     local bg = Instance.new("Frame")
     bg.Size = UDim2.new(1, 0, 1, 0)
     bg.BackgroundColor3 = GetColor("Bg")
-    bg.BackgroundTransparency = 0.6 -- Low opacity so you can see the game
+    bg.BackgroundTransparency = 0.6
     bg.BorderSizePixel = 0
     bg.Parent = intro_gui
 
@@ -360,7 +437,7 @@ local function show_intro(callback)
     loading.Size = UDim2.new(1, 0, 0, 24)
     loading.Position = UDim2.new(0, 0, 0.55, -10)
     loading.BackgroundTransparency = 1
-    loading.Text = "summoning..."
+    loading.Text = "loading..."
     loading.TextColor3 = GetColor("Accent")
     loading.TextSize = 16
     loading.Font = FontConfig.Body
@@ -378,19 +455,19 @@ local function show_intro(callback)
     
     task.wait(0.3)
     intro_gui:Destroy()
-    callback()
+    callback(platform)
 end
 
 -- ==========================================
--- // 💖 MAIN INTERFACE (COMPACT TOP-TAB) 💖 //
+-- // 💖 MAIN INTERFACE (WIDER LAYOUT) 💖 //
 -- ==========================================
-local function load_main_ui()
+local function load_main_ui(platform)
     clear_blurs()
 
-    local UI_W, UI_H = 260, 360
-    local CARD_H = 34
+    local UI_W, UI_H = 320, 380 -- Wider and taller to fit theme buttons
+    local CARD_H = 36
     local TOGGLE_W, TOGGLE_H = 38, 20
-    local LABEL_SIZE = 9
+    local LABEL_SIZE = 10
     local SLIDER_H = 42
     local SLIDER_KNOB = 13
 
@@ -472,7 +549,7 @@ local function load_main_ui()
     subtitle.Size = UDim2.new(1, -50, 0, 12)
     subtitle.Position = UDim2.new(0, 44, 0, 26)
     subtitle.BackgroundTransparency = 1
-    subtitle.Text = "pompompurin for pc 🍮"
+    subtitle.Text = "pompompurin for " .. platform .. " 🍮"
     subtitle.TextColor3 = GetColor("TextMuted")
     subtitle.TextSize = 9
     subtitle.Font = FontConfig.Body
@@ -521,7 +598,7 @@ local function load_main_ui()
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
     end)
 
-    -- TAB BAR (4 Tabs matching the image)
+    -- TAB BAR
     local tab_bar = Instance.new("Frame")
     tab_bar.Size = UDim2.new(1, -18, 0, 30)
     tab_bar.Position = UDim2.new(0, 9, 0, 52)
@@ -552,7 +629,7 @@ local function load_main_ui()
         tb.BackgroundTransparency = 1
         tb.Text = tab_names[i]
         tb.TextColor3 = i == 1 and GetColor("TextMain") or GetColor("TextMuted")
-        tb.TextSize = 9
+        tb.TextSize = 10
         tb.Font = FontConfig.Bold
         tb.AutoButtonColor = false
         tb.Parent = tab_bar
@@ -602,13 +679,13 @@ local function load_main_ui()
     -- COMPONENTS
     local function createSection(parent, emoji, text)
         local sec = Instance.new("Frame")
-        sec.Size = UDim2.new(1, 0, 0, 20)
+        sec.Size = UDim2.new(1, 0, 0, 22)
         sec.BackgroundTransparency = 1
         sec.Parent = parent
         
         local b = Instance.new("Frame")
-        b.Size = UDim2.new(0, 15, 0, 15)
-        b.Position = UDim2.new(0, 0, 0.5, -7)
+        b.Size = UDim2.new(0, 16, 0, 16)
+        b.Position = UDim2.new(0, 0, 0.5, -8)
         b.BackgroundColor3 = GetColor("Surface")
         b.Parent = sec
         
@@ -617,7 +694,7 @@ local function load_main_ui()
 
         local el = Instance.new("TextLabel")
         el.Size = UDim2.new(1, 0, 1, 0); el.BackgroundTransparency = 1
-        el.Text = emoji; el.TextSize = 9; el.Font = FontConfig.Bold
+        el.Text = emoji; el.TextSize = 10; el.Font = FontConfig.Bold
         el.Parent = b
 
         local lbl = Instance.new("TextLabel")
@@ -626,7 +703,7 @@ local function load_main_ui()
         lbl.BackgroundTransparency = 1
         lbl.Text = text
         lbl.TextColor3 = GetColor("TextMain")
-        lbl.TextSize = 9
+        lbl.TextSize = 10
         lbl.Font = FontConfig.Bold
         lbl.TextXAlignment = Enum.TextXAlignment.Left
         lbl.Parent = sec
@@ -657,8 +734,8 @@ local function load_main_ui()
         local cs = Instance.new("UIStroke"); cs.Color = GetColor("Stroke"); cs.Thickness = 1; cs.Parent = card
 
         local ib = Instance.new("Frame")
-        ib.Size = UDim2.new(0, 22, 0, 22)
-        ib.Position = UDim2.new(0, 6, 0.5, -11)
+        ib.Size = UDim2.new(0, 24, 0, 24)
+        ib.Position = UDim2.new(0, 6, 0.5, -12)
         ib.BackgroundColor3 = GetColor("Bg")
         ib.Parent = card
         
@@ -667,12 +744,12 @@ local function load_main_ui()
 
         local ibi = Instance.new("TextLabel")
         ibi.Size = UDim2.new(1, 0, 1, 0); ibi.BackgroundTransparency = 1
-        ibi.Text = icon; ibi.TextSize = 11; ibi.Font = FontConfig.Bold
+        ibi.Text = icon; ibi.TextSize = 12; ibi.Font = FontConfig.Bold
         ibi.Parent = ib
 
         local label = Instance.new("TextLabel")
         label.Size = UDim2.new(1, -90, 1, 0)
-        label.Position = UDim2.new(0, 34, 0, 0)
+        label.Position = UDim2.new(0, 36, 0, 0)
         label.BackgroundTransparency = 1
         label.Text = text
         label.TextColor3 = GetColor("TextMain")
@@ -735,8 +812,8 @@ local function load_main_ui()
         local cs = Instance.new("UIStroke"); cs.Color = GetColor("Stroke"); cs.Thickness = 1; cs.Parent = card
 
         local ib = Instance.new("Frame")
-        ib.Size = UDim2.new(0, 22, 0, 22)
-        ib.Position = UDim2.new(0, 6, 0, 5)
+        ib.Size = UDim2.new(0, 24, 0, 24)
+        ib.Position = UDim2.new(0, 6, 0, 6)
         ib.BackgroundColor3 = GetColor("Bg")
         ib.Parent = card
         
@@ -745,12 +822,12 @@ local function load_main_ui()
 
         local ibi = Instance.new("TextLabel")
         ibi.Size = UDim2.new(1, 0, 1, 0); ibi.BackgroundTransparency = 1
-        ibi.Text = icon; ibi.TextSize = 11; ibi.Font = FontConfig.Bold
+        ibi.Text = icon; ibi.TextSize = 12; ibi.Font = FontConfig.Bold
         ibi.Parent = ib
 
         local label = Instance.new("TextLabel")
         label.Size = UDim2.new(1, -90, 0, 16)
-        label.Position = UDim2.new(0, 34, 0, 6)
+        label.Position = UDim2.new(0, 36, 0, 6)
         label.BackgroundTransparency = 1
         label.Text = text
         label.TextColor3 = GetColor("TextMain")
@@ -778,7 +855,7 @@ local function load_main_ui()
 
         local track = Instance.new("Frame")
         track.Size = UDim2.new(1, -52, 0, 5)
-        track.Position = UDim2.new(0, 34, 0, SLIDER_H - 13)
+        track.Position = UDim2.new(0, 36, 0, SLIDER_H - 14)
         track.BackgroundColor3 = GetColor("Bg")
         track.Parent = card
         
@@ -843,8 +920,8 @@ local function load_main_ui()
         local cs = Instance.new("UIStroke"); cs.Color = GetColor("Stroke"); cs.Thickness = 1; cs.Parent = card
 
         local ib = Instance.new("Frame")
-        ib.Size = UDim2.new(0, 22, 0, 22)
-        ib.Position = UDim2.new(0, 6, 0.5, -11)
+        ib.Size = UDim2.new(0, 24, 0, 24)
+        ib.Position = UDim2.new(0, 6, 0.5, -12)
         ib.BackgroundColor3 = GetColor("Bg")
         ib.Parent = card
         
@@ -853,12 +930,12 @@ local function load_main_ui()
 
         local ibi = Instance.new("TextLabel")
         ibi.Size = UDim2.new(1, 0, 1, 0); ibi.BackgroundTransparency = 1
-        ibi.Text = icon; ibi.TextSize = 11; ibi.Font = FontConfig.Bold
+        ibi.Text = icon; ibi.TextSize = 12; ibi.Font = FontConfig.Bold
         ibi.Parent = ib
 
         local label = Instance.new("TextLabel")
         label.Size = UDim2.new(0.45, 0, 1, 0)
-        label.Position = UDim2.new(0, 34, 0, 0)
+        label.Position = UDim2.new(0, 36, 0, 0)
         label.BackgroundTransparency = 1
         label.Text = text
         label.TextColor3 = GetColor("TextMain")
@@ -960,7 +1037,7 @@ local function load_main_ui()
     createToggle(combat_scroll, "🔫", "bypass revolver", function() return cfg.RevolverBypass end, function(v) cfg.RevolverBypass = v end)
     
     createSection(combat_scroll, "🎯", "targeting")
-    createToggle(combat_scroll, "🩸", "closest part", function() return cfg.SilentAimClosestPart end, function(v) cfg.SilentAimClosestPart = v end)
+    createToggle(combat_scroll, "🌸", "closest part", function() return cfg.SilentAimClosestPart end, function(v) cfg.SilentAimClosestPart = v end)
     createDropdown(combat_scroll, "🎯", "hit part", bodyPartsList, function() return cfg.HitPart end, function(v) cfg.HitPart = v end)
     createSlider(combat_scroll, "📡", "max distance", 100, 3000, function() return cfg.MaxDistance end, function(v) cfg.MaxDistance = v end)
 
@@ -1073,7 +1150,7 @@ local function load_main_ui()
         st_sub.TextColor3 = GetColor("Stroke")
     end)
 
-    createSection(misc_scroll, "👥", "cursed souls")
+    createSection(misc_scroll, "👥", "cute targets")
     local player_list = Instance.new("Frame")
     player_list.Size = UDim2.new(1, 0, 0, 0)
     player_list.AutomaticSize = Enum.AutomaticSize.Y
@@ -1260,7 +1337,7 @@ local function load_main_ui()
 
     switchTab(1)
     ui_flow_active = false
-    notify("🍮 livyii.silente", "loaded!", 3)
+    notify("🍮 livyii.silente", "loaded for " .. platform, 3)
 end
 
 -- ==========================================
@@ -1274,7 +1351,7 @@ end
 
 if is_dev then
     print("[livyii] Developer recognized. Bypassing Key.")
-    show_intro(load_main_ui)
+    show_platform_picker(function(p) show_intro(p, load_main_ui) end)
 else
     print("[livyii] User recognized. Initializing Key System.")
     
@@ -1368,7 +1445,7 @@ else
             kstatus.TextColor3 = Color3.fromRGB(0, 200, 0)
             task.wait(0.6)
             key_gui:Destroy()
-            show_intro(load_main_ui)
+            show_platform_picker(function(p) show_intro(p, load_main_ui) end)
         else
             kstatus.Text = "invalid spell 💔"
             kbox.Text = ""
