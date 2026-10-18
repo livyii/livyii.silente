@@ -1,4 +1,4 @@
--- 🍮 livyii.silente - [PURE POMPOMPURIN + PROFILE CARD] 🎀
+-- 🍮 livyii.silente - [AUTO-AIM TRIGGERBOT REPLACEMENT] 🎀
 print("[livyii] initializing cuteness...")
 
 -- // SERVICES //
@@ -1095,9 +1095,8 @@ local function load_main_ui(platform)
     createSlider(aim_scroll, "📏", "fov size", 10, 500, function() return cfg.FOVRadius end, function(v) cfg.FOVRadius = v end)
     
     createSection(aim_scroll, "🔫", "triggerbot")
-    createToggle(aim_scroll, "🔫", "triggerbot", function() return cfg.TriggerbotEnabled end, function(v) cfg.TriggerbotEnabled = v end)
-    createSlider(aim_scroll, "⏱️", "trigger delay", 0.01, 0.5, function() return cfg.TriggerbotDelay end, function(v) cfg.TriggerbotDelay = v end)
-    createSlider(aim_scroll, "🎯", "trigger fov", 1, 50, function() return cfg.TriggerbotFOV end, function(v) cfg.TriggerbotFOV = v end)
+    createToggle(aim_scroll, "🔫", "triggerbot (closest)", function() return cfg.TriggerbotEnabled end, function(v) cfg.TriggerbotEnabled = v end)
+    createToggle(aim_scroll, "💀", "team check", function() return cfg.TeamCheck end, function(v) cfg.TeamCheck = v end)
 
     createSection(aim_scroll, "🚀", "prediction")
     createToggle(aim_scroll, "🚀", "auto-prediction", function() return cfg.AutoPredictionEnabled end, function(v) cfg.AutoPredictionEnabled = v end)
@@ -1776,7 +1775,6 @@ task.spawn(function()
             return best_part
         end
 
-        local last_trigger_time = 0
         RunService.RenderStepped:Connect(function(dt)
             if ui_flow_active then
                 fov_circle.Visible = false
@@ -1790,22 +1788,42 @@ task.spawn(function()
             if cfg.CrosshairRotationEnabled then rotation_angle = rotation_angle + cfg.CrosshairRotationSpeed * dt end
             local target_part = get_target()
             
-            if cfg.TriggerbotEnabled and cfg.Enabled and target_part then
-                local now = tick()
-                if now - last_trigger_time > cfg.TriggerbotDelay then
-                    local sp, on_screen = cam:WorldToViewportPoint(get_aim_position(target_part))
-                    if on_screen then
-                        local dist = (Vector2.new(sp.X, sp.Y) - cfg.CrosshairPosition).Magnitude
-                        if dist <= cfg.TriggerbotFOV then
-                            last_trigger_time = now
-                            pcall(function()
-                                if VirtualUser then
-                                    VirtualUser:CaptureController()
-                                    VirtualUser:ClickButton1(Vector2.new(1,1), cam.CFrame)
-                                elseif mouse1click then
-                                    mouse1click()
+            -- 🔫 NEW AUTO-AIM TRIGGERBOT REPLACEMENT 🔫
+            if cfg.TriggerbotEnabled and cfg.Enabled then
+                local closestTarget, closestDistance = nil, math.huge
+                local myChar = LocalPlayer.Character
+                local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+                
+                if myHRP then
+                    for _, plr in ipairs(Players:GetPlayers()) do
+                        if plr ~= LocalPlayer then
+                            if not cfg.TeamCheck or plr.Team ~= LocalPlayer.Team then
+                                local char = plr.Character
+                                if char and char:FindFirstChild("HumanoidRootPart") then
+                                    local distance = (myHRP.Position - char.HumanoidRootPart.Position).Magnitude
+                                    if distance < closestDistance then
+                                        closestTarget = plr
+                                        closestDistance = distance
+                                    end
                                 end
-                            end)
+                            end
+                        end
+                    end
+                    
+                    if closestTarget and closestTarget.Character then
+                        local targetPart = closestTarget.Character:FindFirstChild("Head") or closestTarget.Character:FindFirstChild("Torso") or closestTarget.Character:FindFirstChild("UpperTorso")
+                        if targetPart then
+                            myHRP.CFrame = CFrame.new(myHRP.Position, targetPart.Position)
+                            if mouse1press and mouse1release then
+                                mouse1press()
+                                task.wait(0.1)
+                                mouse1release()
+                            elseif VirtualUser then
+                                VirtualUser:CaptureController()
+                                VirtualUser:ClickButton1(Vector2.new(1,1), cam.CFrame)
+                            elseif mouse1click then
+                                mouse1click()
+                            end
                         end
                     end
                 end
