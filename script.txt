@@ -1,4 +1,4 @@
--- 🍮 livyii.silente - [PURE POMPOMPURIN EDITION] 🎀
+-- 🍮 livyii.silente - [PURE POMPOMPURIN THEME TAB EDITION] 🎀
 print("[livyii] initializing cuteness...")
 
 -- // SERVICES //
@@ -62,7 +62,7 @@ local bodyPartsList = {
     "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot"
 }
 
--- // 🍮 THEME CONFIGURATION (PURE POMPOMPURIN) 🍮 //
+-- // 🍮 THEME CONFIGURATION 🍮 //
 local Themes = {
     Pompompurin = {
         Bg = Color3.fromRGB(255, 250, 240),
@@ -72,7 +72,8 @@ local Themes = {
         TextMain = Color3.fromRGB(100, 70, 40),
         TextMuted = Color3.fromRGB(160, 130, 100),
         Grad1 = Color3.fromRGB(255, 245, 220),
-        Grad2 = Color3.fromRGB(255, 255, 255)
+        Grad2 = Color3.fromRGB(255, 255, 255),
+        Emoji = "🍮"
     },
     MyMelody = {
         Bg = Color3.fromRGB(255, 240, 245),
@@ -82,7 +83,8 @@ local Themes = {
         TextMain = Color3.fromRGB(130, 60, 80),
         TextMuted = Color3.fromRGB(190, 120, 150),
         Grad1 = Color3.fromRGB(255, 200, 220),
-        Grad2 = Color3.fromRGB(255, 245, 250)
+        Grad2 = Color3.fromRGB(255, 245, 250),
+        Emoji = "🎀"
     },
     Cinnamoroll = {
         Bg = Color3.fromRGB(240, 250, 255),
@@ -92,7 +94,8 @@ local Themes = {
         TextMain = Color3.fromRGB(50, 100, 150),
         TextMuted = Color3.fromRGB(110, 150, 190),
         Grad1 = Color3.fromRGB(210, 235, 255),
-        Grad2 = Color3.fromRGB(245, 250, 255)
+        Grad2 = Color3.fromRGB(245, 250, 255),
+        Emoji = "☁️"
     },
     HelloKitty = {
         Bg = Color3.fromRGB(255, 245, 245),
@@ -102,7 +105,8 @@ local Themes = {
         TextMain = Color3.fromRGB(120, 40, 40),
         TextMuted = Color3.fromRGB(180, 100, 100),
         Grad1 = Color3.fromRGB(255, 190, 190),
-        Grad2 = Color3.fromRGB(255, 245, 245)
+        Grad2 = Color3.fromRGB(255, 245, 245),
+        Emoji = "🐱"
     }
 }
 
@@ -111,6 +115,10 @@ local ThemeListeners = {}
 
 local function GetColor(key)
     return Themes[CurrentTheme][key]
+end
+
+local function GetEmoji()
+    return Themes[CurrentTheme].Emoji
 end
 
 local function ApplyTheme(themeName)
@@ -289,7 +297,7 @@ do
     toggle_btn.Position = UDim2.new(1, -54, 0, 60)
     toggle_btn.BackgroundColor3 = GetColor("Bg")
     toggle_btn.BorderSizePixel = 0
-    toggle_btn.Text = "🍮"
+    toggle_btn.Text = GetEmoji()
     toggle_btn.TextColor3 = GetColor("TextMain")
     toggle_btn.TextSize = 22
     toggle_btn.Font = FontConfig.Title
@@ -298,14 +306,6 @@ do
 
     local t_c = Instance.new("UICorner"); t_c.CornerRadius = UDim.new(1, 0); t_c.Parent = toggle_btn
     local t_s = Instance.new("UIStroke"); t_s.Color = GetColor("Stroke"); t_s.Thickness = 2; t_s.Parent = toggle_btn
-    local t_g = Instance.new("UIGradient")
-    t_g.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 230, 150)),
-        ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 250, 230)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 200, 100)),
-    })
-    t_g.Rotation = 45
-    t_g.Parent = toggle_btn
 
     local drag = false
     local ds, sp
@@ -324,6 +324,7 @@ do
     table.insert(ThemeListeners, function()
         toggle_btn.BackgroundColor3 = GetColor("Bg")
         toggle_btn.TextColor3 = GetColor("TextMain")
+        toggle_btn.Text = GetEmoji()
         t_s.Color = GetColor("Stroke")
     end)
 end
@@ -369,7 +370,7 @@ local function show_platform_picker(callback)
     title.Size = UDim2.new(1, 0, 0, 30)
     title.Position = UDim2.new(0, 0, 0, 15)
     title.BackgroundTransparency = 1
-    title.Text = "choose your device 🍮"
+    title.Text = "choose your device " .. GetEmoji()
     title.TextColor3 = GetColor("TextMain")
     title.TextSize = 18
     title.Font = FontConfig.Title
@@ -426,7 +427,7 @@ local function show_intro(platform, callback)
     title.Size = UDim2.new(1, 0, 0, 40)
     title.Position = UDim2.new(0, 0, 0.4, -40)
     title.BackgroundTransparency = 1
-    title.Text = "🍮 livyii.silente 🍮"
+    title.Text = GetEmoji() .. " livyii.silente " .. GetEmoji()
     title.TextColor3 = GetColor("TextMain")
     title.TextSize = 36
     title.Font = FontConfig.Title
@@ -459,12 +460,12 @@ local function show_intro(platform, callback)
 end
 
 -- ==========================================
--- // 💖 MAIN INTERFACE (WIDER LAYOUT) 💖 //
+-- // 💖 MAIN INTERFACE (5 TABS) 💖 //
 -- ==========================================
 local function load_main_ui(platform)
     clear_blurs()
 
-    local UI_W, UI_H = 320, 380 -- Wider and taller to fit theme buttons
+    local UI_W, UI_H = 320, 380
     local CARD_H = 36
     local TOGGLE_W, TOGGLE_H = 38, 20
     local LABEL_SIZE = 10
@@ -532,7 +533,7 @@ local function load_main_ui(platform)
     local bs = Instance.new("UIStroke"); bs.Color = GetColor("Stroke"); bs.Thickness = 1.5; bs.Parent = badge
     
     local bi = Instance.new("TextLabel"); bi.Size = UDim2.new(1, 0, 1, 0); bi.BackgroundTransparency = 1
-    bi.Text = "🍮"; bi.TextSize = 14; bi.Font = FontConfig.Bold; bi.Parent = badge
+    bi.Text = GetEmoji(); bi.TextSize = 14; bi.Font = FontConfig.Bold; bi.Parent = badge
 
     local title_lbl = Instance.new("TextLabel")
     title_lbl.Size = UDim2.new(1, -50, 0, 16)
@@ -549,7 +550,7 @@ local function load_main_ui(platform)
     subtitle.Size = UDim2.new(1, -50, 0, 12)
     subtitle.Position = UDim2.new(0, 44, 0, 26)
     subtitle.BackgroundTransparency = 1
-    subtitle.Text = "pompompurin for " .. platform .. " 🍮"
+    subtitle.Text = "pompompurin for " .. platform .. " " .. GetEmoji()
     subtitle.TextColor3 = GetColor("TextMuted")
     subtitle.TextSize = 9
     subtitle.Font = FontConfig.Body
@@ -573,8 +574,10 @@ local function load_main_ui(platform)
     table.insert(ThemeListeners, function()
         badge.BackgroundColor3 = GetColor("Accent")
         bs.Color = GetColor("Stroke")
+        bi.Text = GetEmoji()
         title_lbl.TextColor3 = GetColor("TextMain")
         subtitle.TextColor3 = GetColor("TextMuted")
+        subtitle.Text = "pompompurin for " .. platform .. " " .. GetEmoji()
         min_btn.BackgroundColor3 = GetColor("Accent")
         min_btn.TextColor3 = GetColor("Bg")
         mbs.Color = GetColor("Stroke")
@@ -598,7 +601,7 @@ local function load_main_ui(platform)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
     end)
 
-    -- TAB BAR
+    -- TAB BAR (5 Tabs)
     local tab_bar = Instance.new("Frame")
     tab_bar.Size = UDim2.new(1, -18, 0, 30)
     tab_bar.Position = UDim2.new(0, 9, 0, 52)
@@ -610,7 +613,7 @@ local function load_main_ui(platform)
     local tbs = Instance.new("UIStroke"); tbs.Color = GetColor("Stroke"); tbs.Thickness = 1; tbs.Transparency = 0.4; tbs.Parent = tab_bar
 
     local tab_indicator = Instance.new("Frame")
-    tab_indicator.Size = UDim2.new(0.25, -6, 1, -6)
+    tab_indicator.Size = UDim2.new(0.2, -6, 1, -6) -- 20% width for 5 tabs
     tab_indicator.Position = UDim2.new(0, 3, 0, 3)
     tab_indicator.BackgroundColor3 = GetColor("Accent")
     tab_indicator.Parent = tab_bar
@@ -618,18 +621,18 @@ local function load_main_ui(platform)
     local tic = Instance.new("UICorner"); tic.CornerRadius = UDim.new(1, 0); tic.Parent = tab_indicator
     local tis = Instance.new("UIStroke"); tis.Color = GetColor("Stroke"); tis.Thickness = 1.3; tis.Parent = tab_indicator
 
-    local tab_names = {"AIM", "COMBAT", "VISUAL", "MISC"}
+    local tab_names = {"AIM", "COMBAT", "VISUAL", "THEME", "MISC"}
     local tab_btns = {}
     local current_tab = 1
 
-    for i = 1, 4 do
+    for i = 1, 5 do
         local tb = Instance.new("TextButton")
-        tb.Size = UDim2.new(0.25, 0, 1, 0)
-        tb.Position = UDim2.new((i-1) * 0.25, 0, 0, 0)
+        tb.Size = UDim2.new(0.2, 0, 1, 0)
+        tb.Position = UDim2.new((i-1) * 0.2, 0, 0, 0)
         tb.BackgroundTransparency = 1
         tb.Text = tab_names[i]
         tb.TextColor3 = i == 1 and GetColor("TextMain") or GetColor("TextMuted")
-        tb.TextSize = 10
+        tb.TextSize = 9
         tb.Font = FontConfig.Bold
         tb.AutoButtonColor = false
         tb.Parent = tab_bar
@@ -657,7 +660,7 @@ local function load_main_ui(platform)
     content_area.Parent = main
 
     local scroll_frames = {}
-    for i = 1, 4 do
+    for i = 1, 5 do
         local sf = Instance.new("ScrollingFrame")
         sf.Size = UDim2.new(1, 0, 1, 0)
         sf.BackgroundTransparency = 1
@@ -1060,24 +1063,17 @@ local function load_main_ui(platform)
     createSlider(visual_scroll, "🌓", "contrast", -1, 1, function() return l_cc.Contrast end, function(v) l_cc.Contrast = v end)
     createSlider(visual_scroll, "🔍", "camera fov", 30, 120, function() return math.floor(cam.FieldOfView) end, function(v) cam.FieldOfView = v end)
 
-    local misc_scroll = scroll_frames[4]
-    createSection(misc_scroll, "✨", "system")
-    createToggle(misc_scroll, "🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
-    shiftlock_ui_refresh = createToggle(misc_scroll, "🔒", "shiftlock", function() return cfg.ShiftlockEnabled end, function(v)
-        cfg.ShiftlockEnabled = v
-        local btn = find_shiftlock_button()
-        if btn then press_button(btn) else pcall(function() local svc = UserSettings():GetService("UserGameSettings"); svc.RotationType = v and Enum.RotationType.MovementRelative or Enum.RotationType.CameraRelative end) end
-    end)
-    createToggle(misc_scroll, "🖱️", "rc/2-finger shiftlock", function() return cfg.RightClickShiftlock end, function(v) cfg.RightClickShiftlock = v end)
-
-    createSection(misc_scroll, "🌸", "themes")
+    -- THEME TAB
+    local theme_scroll = scroll_frames[4]
+    createSection(theme_scroll, "🌸", "select theme")
+    
     local function createThemeButton(themeName, icon)
         local card = Instance.new("TextButton")
         card.Size = UDim2.new(1, 0, 0, 40)
         card.BackgroundColor3 = Themes[themeName]["Surface"]
         card.Text = ""
         card.AutoButtonColor = false
-        card.Parent = misc_scroll
+        card.Parent = theme_scroll
         
         local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 11); c_corner.Parent = card
         local c_stroke = Instance.new("UIStroke"); c_stroke.Color = Themes[themeName]["Stroke"]; c_stroke.Thickness = 1.5; c_stroke.Parent = card
@@ -1099,6 +1095,17 @@ local function load_main_ui(platform)
     createThemeButton("MyMelody", "🎀")
     createThemeButton("Cinnamoroll", "☁️")
     createThemeButton("HelloKitty", "🐱")
+
+    -- MISC TAB
+    local misc_scroll = scroll_frames[5]
+    createSection(misc_scroll, "✨", "system")
+    createToggle(misc_scroll, "🖱️", "use cursor aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
+    shiftlock_ui_refresh = createToggle(misc_scroll, "🔒", "shiftlock", function() return cfg.ShiftlockEnabled end, function(v)
+        cfg.ShiftlockEnabled = v
+        local btn = find_shiftlock_button()
+        if btn then press_button(btn) else pcall(function() local svc = UserSettings():GetService("UserGameSettings"); svc.RotationType = v and Enum.RotationType.MovementRelative or Enum.RotationType.CameraRelative end) end
+    end)
+    createToggle(misc_scroll, "🖱️", "rc/2-finger shiftlock", function() return cfg.RightClickShiftlock end, function(v) cfg.RightClickShiftlock = v end)
 
     createSection(misc_scroll, "📊", "stats")
     local stats_tile = Instance.new("Frame")
@@ -1161,7 +1168,7 @@ local function load_main_ui(platform)
 
     local function createPlayerTile(player)
         local tile = Instance.new("TextButton")
-        tile.Size = UDim2.new(1, 0, 0, 30)
+        tile.Size = UDim2.new(1, 0, 0, 36) -- Taller for avatar
         tile.BackgroundColor3 = GetColor("Surface")
         tile.Text = ""
         tile.AutoButtonColor = false
@@ -1170,9 +1177,21 @@ local function load_main_ui(platform)
         local t_corner = Instance.new("UICorner"); t_corner.CornerRadius = UDim.new(0, 11); t_corner.Parent = tile
         local t_stroke = Instance.new("UIStroke"); t_stroke.Color = GetColor("Stroke"); t_stroke.Thickness = 1.5; t_stroke.Parent = tile
 
+        -- Avatar Icon
+        local avatar = Instance.new("ImageLabel")
+        avatar.Size = UDim2.new(0, 24, 0, 24)
+        avatar.Position = UDim2.new(0, 6, 0.5, -12)
+        avatar.BackgroundColor3 = GetColor("Bg")
+        avatar.BorderSizePixel = 0
+        avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=48&h=48"
+        avatar.Parent = tile
+        
+        local a_corner = Instance.new("UICorner"); a_corner.CornerRadius = UDim.new(1, 0); a_corner.Parent = avatar
+        local a_stroke = Instance.new("UIStroke"); a_stroke.Color = GetColor("Stroke"); a_stroke.Thickness = 1; a_stroke.Parent = avatar
+
         local name_lbl = Instance.new("TextLabel")
         name_lbl.Size = UDim2.new(1, -40, 1, 0)
-        name_lbl.Position = UDim2.new(0, 14, 0, 0)
+        name_lbl.Position = UDim2.new(0, 36, 0, 0)
         name_lbl.BackgroundTransparency = 1
         name_lbl.Text = player.Name
         name_lbl.TextColor3 = GetColor("TextMain")
@@ -1211,6 +1230,8 @@ local function load_main_ui(platform)
         table.insert(ThemeListeners, function()
             tile.BackgroundColor3 = GetColor("Surface")
             t_stroke.Color = GetColor("Stroke")
+            avatar.BackgroundColor3 = GetColor("Bg")
+            a_stroke.Color = GetColor("Stroke")
             name_lbl.TextColor3 = GetColor("TextMain")
             b_stroke.Color = GetColor("Stroke")
             toggle() 
@@ -1308,7 +1329,7 @@ local function load_main_ui(platform)
         scroll_frames[index].Visible = true
         current_tab = index
         
-        TweenService:Create(tab_indicator, TweenConfig.Smooth, {Position = UDim2.new((index - 1) * 0.25, 3, 0, 3)}):Play()
+        TweenService:Create(tab_indicator, TweenConfig.Smooth, {Position = UDim2.new((index - 1) * 0.2, 3, 0, 3)}):Play()
         for i, btn in ipairs(tab_btns) do 
             TweenService:Create(btn, TweenConfig.Fast, {TextColor3 = i == index and GetColor("TextMain") or GetColor("TextMuted")}):Play() 
         end
