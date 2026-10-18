@@ -62,7 +62,7 @@ local bodyPartsList = {
     "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot"
 }
 
--- // 🍮 THEME CONFIGURATION (MORE THEMES!) 🍮 //
+-- // 🍮 THEME CONFIGURATION 🍮 //
 local Themes = {
     Pompompurin = {
         Bg = Color3.fromRGB(255, 250, 240),
@@ -292,50 +292,55 @@ LocalPlayer.CharacterAdded:Connect(function()
     stopFiring()
 end)
 
--- // 🎯 SAFE AUTO-AIM TRIGGERBOT LOOP 🎯 //
-task.spawn(function()
-    while task.wait(0.1) do
-        if cfg.TriggerbotEnabled and cfg.Enabled and not ui_flow_active then
-            local closestTarget, closestDistance = nil, math.huge
-            local myChar = LocalPlayer.Character
-            local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
-            local myHum = myChar and myChar:FindFirstChildOfClass("Humanoid")
-            
-            if myHRP and myHum and myHum.Health > 0 then
-                for _, plr in ipairs(Players:GetPlayers()) do
-                    if plr ~= LocalPlayer and (not cfg.TeamCheck or plr.Team ~= LocalPlayer.Team) then
-                        local char = plr.Character
-                        local hrp = char and char:FindFirstChild("HumanoidRootPart")
-                        local hum = char and char:FindFirstChildOfClass("Humanoid")
-                        if hrp and hum and hum.Health > 0 then
-                            local distance = (myHRP.Position - hrp.Position).Magnitude
-                            if distance < closestDistance then
-                                closestTarget = plr
-                                closestDistance = distance
-                            end
-                        end
-                    end
-                end
-                
-                if closestTarget and closestTarget.Character then
-                    local targetPart = closestTarget.Character:FindFirstChild("Head") or closestTarget.Character:FindFirstChild("Torso") or closestTarget.Character:FindFirstChild("UpperTorso")
-                    if targetPart then
-                        pcall(function()
-                            myHRP.CFrame = CFrame.new(myHRP.Position, targetPart.Position)
-                            if VirtualUser then
-                                VirtualUser:CaptureController()
-                                VirtualUser:ClickButton1(Vector2.new(1,1), cam.CFrame)
-                            elseif mouse1press and mouse1release then
-                                mouse1press()
-                                task.wait(0.05)
-                                mouse1release()
-                            elseif mouse1click then
-                                mouse1click()
-                            end
-                        end)
-                    end
+-- // 🎯 SAFE AUTO-AIM TRIGGERBOT 🎯 //
+local last_aim_time = 0
+RunService.Heartbeat:Connect(function()
+    if not cfg.TriggerbotEnabled or not cfg.Enabled or ui_flow_active then return end
+    local now = tick()
+    if now - last_aim_time < 0.15 then return end -- Cooldown to prevent engine crash
+    
+    local closestTarget, closestDistance = nil, math.huge
+    local myChar = LocalPlayer.Character
+    local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+    local myHum = myChar and myChar:FindFirstChildOfClass("Humanoid")
+    
+    if not myHRP or not myHum or myHum.Health <= 0 then return end
+    
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and (not cfg.TeamCheck or plr.Team ~= LocalPlayer.Team) then
+            local char = plr.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            local hum = char and char:FindFirstChildOfClass("Humanoid")
+            if hrp and hum and hum.Health > 0 then
+                local dist = (myHRP.Position - hrp.Position).Magnitude
+                if dist < closestDistance then
+                    closestTarget = plr
+                    closestDistance = dist
                 end
             end
+        end
+    end
+    
+    if closestTarget and closestTarget.Character then
+        local targetPart = closestTarget.Character:FindFirstChild("Head") or closestTarget.Character:FindFirstChild("Torso") or closestTarget.Character:FindFirstChild("UpperTorso")
+        if targetPart then
+            last_aim_time = now
+            pcall(function()
+                -- Rotate Camera safely instead of teleporting HRP
+                cam.CFrame = CFrame.new(cam.CFrame.Position, targetPart.Position)
+                
+                -- Click safely
+                if VirtualUser then
+                    VirtualUser:CaptureController()
+                    VirtualUser:ClickButton1(Vector2.new(1,1), cam.CFrame)
+                elseif mouse1press and mouse1release then
+                    mouse1press()
+                    task.wait(0.05)
+                    mouse1release()
+                elseif mouse1click then
+                    mouse1click()
+                end
+            end)
         end
     end
 end)
