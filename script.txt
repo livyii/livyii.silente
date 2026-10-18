@@ -1,4 +1,4 @@
--- 🌸 livyii.silente - [KAWAII SANRIO UI V4] 🎀
+-- 🌸 livyii.silente - [BUBBLY SANRIO TOP-TABS EDITION] 🎀
 print("[livyii] initializing cuteness overload...")
 
 -- // SERVICES //
@@ -62,17 +62,15 @@ local bodyPartsList = {
     "LeftLowerLeg", "RightLowerLeg", "LeftFoot", "RightFoot"
 }
 
--- // 🌸 THEME CONFIGURATION (DYNAMIC EMOJIS & COLORS) 🌸 //
+-- // 🌸 THEME CONFIGURATION 🌸 //
 local Themes = {
     Pompompurin = {
         Bg = Color3.fromRGB(255, 250, 240),
         Surface = Color3.fromRGB(255, 255, 255),
-        Stroke = Color3.fromRGB(255, 210, 170),
-        Accent = Color3.fromRGB(240, 160, 80),
-        TextMain = Color3.fromRGB(90, 60, 40),
-        TextMuted = Color3.fromRGB(160, 130, 110),
-        Grad1 = Color3.fromRGB(255, 245, 230),
-        Grad2 = Color3.fromRGB(255, 255, 255),
+        Stroke = Color3.fromRGB(30, 30, 30), -- Thick black border from image
+        Accent = Color3.fromRGB(240, 180, 60),
+        TextMain = Color3.fromRGB(40, 40, 40),
+        TextMuted = Color3.fromRGB(150, 150, 150),
         Emoji = "🍮",
         SectionEmoji = "🍮",
         TabEmojis = {"🎯", "⚔️", "✨", "🌸", "⚙️"}
@@ -80,12 +78,10 @@ local Themes = {
     MyMelody = {
         Bg = Color3.fromRGB(255, 240, 245),
         Surface = Color3.fromRGB(255, 255, 255),
-        Stroke = Color3.fromRGB(255, 180, 200),
+        Stroke = Color3.fromRGB(30, 30, 30),
         Accent = Color3.fromRGB(255, 120, 150),
-        TextMain = Color3.fromRGB(100, 50, 70),
+        TextMain = Color3.fromRGB(60, 20, 40),
         TextMuted = Color3.fromRGB(180, 130, 150),
-        Grad1 = Color3.fromRGB(255, 220, 230),
-        Grad2 = Color3.fromRGB(255, 255, 255),
         Emoji = "🎀",
         SectionEmoji = "🎀",
         TabEmojis = {"🎀", "⚔️", "✨", "🌸", "⚙️"}
@@ -93,12 +89,10 @@ local Themes = {
     Cinnamoroll = {
         Bg = Color3.fromRGB(240, 250, 255),
         Surface = Color3.fromRGB(255, 255, 255),
-        Stroke = Color3.fromRGB(180, 220, 255),
+        Stroke = Color3.fromRGB(30, 30, 30),
         Accent = Color3.fromRGB(120, 180, 255),
-        TextMain = Color3.fromRGB(50, 90, 140),
+        TextMain = Color3.fromRGB(20, 50, 90),
         TextMuted = Color3.fromRGB(120, 160, 200),
-        Grad1 = Color3.fromRGB(220, 240, 255),
-        Grad2 = Color3.fromRGB(255, 255, 255),
         Emoji = "☁️",
         SectionEmoji = "☁️",
         TabEmojis = {"☁️", "⚔️", "✨", "🌸", "⚙️"}
@@ -106,12 +100,10 @@ local Themes = {
     HelloKitty = {
         Bg = Color3.fromRGB(255, 245, 245),
         Surface = Color3.fromRGB(255, 255, 255),
-        Stroke = Color3.fromRGB(255, 160, 160),
+        Stroke = Color3.fromRGB(30, 30, 30),
         Accent = Color3.fromRGB(255, 80, 80),
-        TextMain = Color3.fromRGB(120, 50, 50),
+        TextMain = Color3.fromRGB(80, 20, 20),
         TextMuted = Color3.fromRGB(180, 120, 120),
-        Grad1 = Color3.fromRGB(255, 210, 210),
-        Grad2 = Color3.fromRGB(255, 255, 255),
         Emoji = "🐱",
         SectionEmoji = "🐱",
         TabEmojis = {"🐱", "⚔️", "✨", "🌸", "⚙️"}
@@ -132,8 +124,9 @@ local function ApplyTheme(themeName)
     end
 end
 
+-- Bubbly font from the image
 local FontConfig = {
-    Title = Enum.Font.FredokaOne,
+    Title = Enum.Font.FredokaOne, 
     Body = Enum.Font.GothamMedium,
     Bold = Enum.Font.GothamBold
 }
@@ -142,7 +135,6 @@ local TweenConfig = {
     Fast = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
     Smooth = TweenInfo.new(0.4, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
     Bouncy = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-    Pulse = TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
 }
 
 local function notify(title, text, duration)
@@ -183,6 +175,7 @@ if cfg.MaxDistance == nil then cfg.MaxDistance = 1000 end
 if cfg.TriggerbotEnabled == nil then cfg.TriggerbotEnabled = false end
 if cfg.TriggerbotDelay == nil then cfg.TriggerbotDelay = 0.05 end
 if cfg.TriggerbotFOV == nil then cfg.TriggerbotFOV = 10 end
+if cfg.TargetInfoEnabled == nil then cfg.TargetInfoEnabled = true end
 
 local function cleanup_targets()
     for plr, _ in pairs(cfg.TargetedPlayers) do if not plr.Parent then cfg.TargetedPlayers[plr] = nil end end
@@ -308,19 +301,9 @@ do
     toggle_btn.AutoButtonColor = false
     toggle_btn.Parent = float_gui
 
-    local t_c = Instance.new("UICorner"); t_c.CornerRadius = UDim.new(1, 0); t_c.Parent = toggle_btn
-    local t_s = Instance.new("UIStroke"); t_s.Color = GetColor("Stroke"); t_s.Thickness = 2.5; t_s.Parent = toggle_btn
-    
-    task.spawn(function()
-        while toggle_btn.Parent do
-            TweenService:Create(t_s, TweenConfig.Pulse, {Color = GetColor("Accent"), Thickness = 3.5}):Play()
-            TweenService:Create(toggle_btn, TweenConfig.Pulse, {Position = UDim2.new(1, -62, 0, 55)}):Play()
-            task.wait(1.5)
-            TweenService:Create(t_s, TweenConfig.Pulse, {Color = GetColor("Stroke"), Thickness = 2}):Play()
-            TweenService:Create(toggle_btn, TweenConfig.Pulse, {Position = UDim2.new(1, -62, 0, 65)}):Play()
-            task.wait(1.5)
-        end
-    end)
+    -- Sharp/thick style from image
+    local t_c = Instance.new("UICorner"); t_c.CornerRadius = UDim.new(0, 4); t_c.Parent = toggle_btn
+    local t_s = Instance.new("UIStroke"); t_s.Color = GetColor("Stroke"); t_s.Thickness = 3.5; t_s.Parent = toggle_btn
 
     local drag = false
     local ds, sp
@@ -337,8 +320,10 @@ do
     end)
     
     table.insert(ThemeListeners, function()
-        TweenService:Create(toggle_btn, TweenConfig.Smooth, {BackgroundColor3 = GetColor("Bg"), TextColor3 = GetColor("TextMain"), Text = GetColor("Emoji")}):Play()
-        TweenService:Create(t_s, TweenConfig.Smooth, {Color = GetColor("Stroke")}):Play()
+        toggle_btn.BackgroundColor3 = GetColor("Bg")
+        toggle_btn.TextColor3 = GetColor("TextMain")
+        toggle_btn.Text = GetColor("Emoji")
+        t_s.Color = GetColor("Stroke")
     end)
 end
 
@@ -366,47 +351,42 @@ local function show_platform_picker(callback)
     frame.Size = UDim2.new(0, 280, 0, 180)
     frame.Position = UDim2.new(0.5, 0, 0.5, 0)
     frame.AnchorPoint = Vector2.new(0.5, 0.5)
-    frame.BackgroundColor3 = GetColor("Bg")
+    frame.BackgroundColor3 = GetColor("Surface")
     frame.BorderSizePixel = 0
     frame.ClipsDescendants = true
     frame.Parent = plat_gui
     
-    local f_corner = Instance.new("UICorner"); f_corner.CornerRadius = UDim.new(0, 20); f_corner.Parent = frame
-    local f_stroke = Instance.new("UIStroke"); f_stroke.Color = GetColor("Stroke"); f_stroke.Thickness = 3; f_stroke.Parent = frame
-    
-    local f_grad = Instance.new("UIGradient")
-    f_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, GetColor("Grad1")), ColorSequenceKeypoint.new(1, GetColor("Grad2")) })
-    f_grad.Rotation = 45
-    f_grad.Parent = frame
+    -- Thick strokes, sharp corners
+    local f_corner = Instance.new("UICorner"); f_corner.CornerRadius = UDim.new(0, 6); f_corner.Parent = frame
+    local f_stroke = Instance.new("UIStroke"); f_stroke.Color = GetColor("Stroke"); f_stroke.Thickness = 4; f_stroke.Parent = frame
 
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 30)
     title.Position = UDim2.new(0, 0, 0, 20)
     title.BackgroundTransparency = 1
-    title.Text = GetColor("Emoji") .. " choose your device " .. GetColor("Emoji")
-    title.TextColor3 = GetColor("TextMain")
-    title.TextSize = 20
+    title.Text = "choose your device"
+    title.TextColor3 = GetColor("Accent")
+    title.TextSize = 22
     title.Font = FontConfig.Title
     title.Parent = frame
+    
+    local ts = Instance.new("UIStroke"); ts.Color = GetColor("Stroke"); ts.Thickness = 2; ts.Parent = title
 
     local function createCard(text, icon, pos, platform)
         local card = Instance.new("TextButton")
         card.Size = UDim2.new(0.4, 0, 0, 85)
         card.Position = UDim2.new(pos, 0, 0, 65)
-        card.BackgroundColor3 = GetColor("Surface")
+        card.BackgroundColor3 = GetColor("Bg")
         card.BorderSizePixel = 0
         card.Text = ""
         card.AutoButtonColor = false
         card.Parent = frame
         
-        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 16); c_corner.Parent = card
-        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 2; c_stroke.Parent = card
+        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 4); c_corner.Parent = card
+        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 3; c_stroke.Parent = card
         
         local i_lbl = Instance.new("TextLabel"); i_lbl.Size = UDim2.new(1, 0, 0, 45); i_lbl.Position = UDim2.new(0, 0, 0, 10); i_lbl.BackgroundTransparency = 1; i_lbl.Text = icon; i_lbl.TextSize = 34; i_lbl.Parent = card
-        local t_lbl = Instance.new("TextLabel"); t_lbl.Size = UDim2.new(1, 0, 0, 20); t_lbl.Position = UDim2.new(0, 0, 0, 55); t_lbl.BackgroundTransparency = 1; t_lbl.Text = text; t_lbl.TextColor3 = GetColor("TextMain"); t_lbl.TextSize = 14; t_lbl.Font = FontConfig.Bold; t_lbl.Parent = card
-
-        card.MouseEnter:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = GetColor("Accent"), Thickness = 3}):Play() end)
-        card.MouseLeave:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = GetColor("Stroke"), Thickness = 2}):Play() end)
+        local t_lbl = Instance.new("TextLabel"); t_lbl.Size = UDim2.new(1, 0, 0, 20); t_lbl.Position = UDim2.new(0, 0, 0, 55); t_lbl.BackgroundTransparency = 1; t_lbl.Text = text; t_lbl.TextColor3 = GetColor("Accent"); t_lbl.TextSize = 16; t_lbl.Font = FontConfig.Title; t_lbl.Parent = card
 
         card.MouseButton1Click:Connect(function()
             plat_gui:Destroy()
@@ -435,71 +415,46 @@ local function show_intro(platform, callback)
     bg.BorderSizePixel = 0
     bg.Parent = intro_gui
 
-    local bg_grad = Instance.new("UIGradient")
-    bg_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, GetColor("Grad1")), ColorSequenceKeypoint.new(1, GetColor("Grad2")) })
-    bg_grad.Rotation = 45
-    bg_grad.Parent = bg
-
-    -- Floating particles
-    for i = 1, 25 do
-        local p = Instance.new("TextLabel")
-        p.Size = UDim2.new(0, 30, 0, 30)
-        p.Position = UDim2.new(math.random(), 0, math.random() + 0.5, 0)
-        p.BackgroundTransparency = 1
-        p.Text = GetColor("Emoji")
-        p.TextSize = math.random(20, 40)
-        p.TextTransparency = 0.5
-        p.Parent = intro_gui
-        
-        task.spawn(function()
-            while p.Parent do
-                local targetPos = UDim2.new(p.Position.X.Scale, 0, -0.2, 0)
-                TweenService:Create(p, TweenInfo.new(math.random(3,7), Enum.EasingStyle.Linear), {Position = targetPos, TextTransparency = 1}):Play()
-                task.wait(math.random(3,7))
-                if p.Parent then p.Position = UDim2.new(math.random(), 0, 1.2, 0); p.TextTransparency = 0.5 end
-            end
-        end)
-    end
-
     local title = Instance.new("TextLabel")
     title.Size = UDim2.new(1, 0, 0, 40)
     title.Position = UDim2.new(0, 0, 0.4, -40)
     title.BackgroundTransparency = 1
     title.Text = GetColor("Emoji") .. " livyii.silente " .. GetColor("Emoji")
-    title.TextColor3 = GetColor("TextMain")
+    title.TextColor3 = GetColor("Accent")
     title.TextSize = 40
     title.Font = FontConfig.Title
     title.TextTransparency = 1
     title.Parent = intro_gui
+    
+    local ts = Instance.new("UIStroke"); ts.Color = GetColor("Stroke"); ts.Thickness = 3; ts.Parent = title
 
     local bar_bg = Instance.new("Frame")
-    bar_bg.Size = UDim2.new(0, 200, 0, 10)
+    bar_bg.Size = UDim2.new(0, 200, 0, 12)
     bar_bg.Position = UDim2.new(0.5, -100, 0.6, 0)
     bar_bg.BackgroundColor3 = GetColor("Surface")
     bar_bg.Parent = intro_gui
     
-    local bar_c = Instance.new("UICorner"); bar_c.CornerRadius = UDim.new(1, 0); bar_c.Parent = bar_bg
-    local bar_s = Instance.new("UIStroke"); bar_s.Color = GetColor("Stroke"); bar_s.Thickness = 2; bar_s.Parent = bar_bg
+    local bar_c = Instance.new("UICorner"); bar_c.CornerRadius = UDim.new(0, 2); bar_c.Parent = bar_bg
+    local bar_s = Instance.new("UIStroke"); bar_s.Color = GetColor("Stroke"); bar_s.Thickness = 3; bar_s.Parent = bar_bg
     
     local bar_fill = Instance.new("Frame")
     bar_fill.Size = UDim2.new(0, 0, 1, 0)
     bar_fill.BackgroundColor3 = GetColor("Accent")
     bar_fill.Parent = bar_bg
     
-    local bar_fc = Instance.new("UICorner"); bar_fc.CornerRadius = UDim.new(1, 0); bar_fc.Parent = bar_fill
+    local bar_fc = Instance.new("UICorner"); bar_fc.CornerRadius = UDim.new(0, 2); bar_fc.Parent = bar_fill
 
-    -- Intro Sequence
-    local ts = game:GetService("TweenService")
-    ts:Create(title, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {TextTransparency = 0, Position = UDim2.new(0, 0, 0.4, -50)}):Play()
+    local tweenService = game:GetService("TweenService")
+    tweenService:Create(title, TweenInfo.new(0.8, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {TextTransparency = 0, Position = UDim2.new(0, 0, 0.4, -50)}):Play()
     
     task.wait(0.5)
-    ts:Create(bar_fill, TweenInfo.new(1.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)}):Play()
+    tweenService:Create(bar_fill, TweenInfo.new(1.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Size = UDim2.new(1, 0, 1, 0)}):Play()
     task.wait(1.6)
     
-    ts:Create(title, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {TextTransparency = 1}):Play()
-    ts:Create(bar_bg, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
-    ts:Create(bar_s, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Transparency = 1}):Play()
-    ts:Create(bar_fill, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
+    tweenService:Create(title, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {TextTransparency = 1}):Play()
+    tweenService:Create(bar_bg, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
+    tweenService:Create(bar_s, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {Transparency = 1}):Play()
+    tweenService:Create(bar_fill, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {BackgroundTransparency = 1}):Play()
     
     task.wait(0.5)
     intro_gui:Destroy()
@@ -507,16 +462,16 @@ local function show_intro(platform, callback)
 end
 
 -- ==========================================
--- // 💖 MAIN INTERFACE (TOP-BAR LAYOUT) 💖 //
+-- // 💖 MAIN INTERFACE (DRAWING LAYOUT) 💖 //
 -- ==========================================
 local function load_main_ui(platform)
     clear_blurs()
 
-    local UI_W, UI_H = 380, 310
-    local CARD_H = 36
+    local UI_W, UI_H = 390, 330
+    local CARD_H = 38
     local TOGGLE_W, TOGGLE_H = 38, 20
-    local LABEL_SIZE = 11
-    local SLIDER_H = 38
+    local LABEL_SIZE = 12
+    local SLIDER_H = 40
     local SLIDER_KNOB = 14
 
     local l_bloom = Instance.new("BloomEffect"); l_bloom.Name = "livyii_Bloom"; l_bloom.Intensity = 0.5; l_bloom.Enabled = false; l_bloom.Parent = Lighting
@@ -540,50 +495,60 @@ local function load_main_ui(platform)
     main_gui.Parent = GuiParent
     current_main_gui = main_gui
 
-    -- MAIN FRAME
+    -- MAIN FRAME (White bg, thick border from image)
     local main = Instance.new("Frame")
     main.Size = UDim2.new(0, UI_W, 0, UI_H)
     main.Position = UDim2.new(0.5, -UI_W/2, 0.5, -UI_H/2)
-    main.BackgroundColor3 = GetColor("Bg")
+    main.BackgroundColor3 = GetColor("Surface")
     main.BorderSizePixel = 0
     main.Active = true
     main.Parent = main_gui
     ui_main_frame = main
 
-    local main_corner = Instance.new("UICorner"); main_corner.CornerRadius = UDim.new(0, 20); main_corner.Parent = main
-    local main_stroke = Instance.new("UIStroke"); main_stroke.Color = GetColor("Stroke"); main_stroke.Thickness = 3; main_stroke.Parent = main
-    
-    local main_grad = Instance.new("UIGradient")
-    main_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, GetColor("Grad1")), ColorSequenceKeypoint.new(1, GetColor("Grad2")) })
-    main_grad.Rotation = 45
-    main_grad.Parent = main
+    local main_corner = Instance.new("UICorner"); main_corner.CornerRadius = UDim.new(0, 4); main_corner.Parent = main
+    local main_stroke = Instance.new("UIStroke"); main_stroke.Color = GetColor("Stroke"); main_stroke.Thickness = 5; main_stroke.Parent = main
 
     table.insert(ThemeListeners, function()
-        main.BackgroundColor3 = GetColor("Bg")
+        main.BackgroundColor3 = GetColor("Surface")
         main_stroke.Color = GetColor("Stroke")
-        main_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, GetColor("Grad1")), ColorSequenceKeypoint.new(1, GetColor("Grad2")) })
     end)
 
-    -- TOP HEADER
+    -- DRAG LOGIC
+    local dragging = false
+    local dragStart, startPos
+    main.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true; dragStart = input.Position; startPos = main.Position
+        end
+    end)
+    main.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
+    end)
+
+    -- TOP HEADER (Title + Dev Badge)
     local header = Instance.new("Frame")
     header.Size = UDim2.new(1, 0, 0, 45)
-    header.BackgroundColor3 = GetColor("Surface")
-    header.BackgroundTransparency = 0.3
-    header.BorderSizePixel = 0
+    header.BackgroundTransparency = 1
     header.Parent = main
     
-    local h_corner = Instance.new("UICorner"); h_corner.CornerRadius = UDim.new(0, 20); h_corner.Parent = header
-    
     local title_lbl = Instance.new("TextLabel")
-    title_lbl.Size = UDim2.new(1, -100, 1, 0)
+    title_lbl.Size = UDim2.new(1, -60, 1, 0)
     title_lbl.Position = UDim2.new(0, 20, 0, 0)
     title_lbl.BackgroundTransparency = 1
     title_lbl.Text = GetColor("Emoji") .. " livyii.silente" 
-    title_lbl.TextColor3 = GetColor("TextMain")
-    title_lbl.TextSize = 18
+    title_lbl.TextColor3 = GetColor("Accent")
+    title_lbl.TextSize = 24
     title_lbl.Font = FontConfig.Title
     title_lbl.TextXAlignment = Enum.TextXAlignment.Left
     title_lbl.Parent = header
+    
+    local title_stroke = Instance.new("UIStroke"); title_stroke.Color = GetColor("Stroke"); title_stroke.Thickness = 2; title_stroke.Parent = title_lbl
 
     -- DEV BADGE
     local is_dev_user = false
@@ -594,75 +559,78 @@ local function load_main_ui(platform)
 
     if is_dev_user then
         local dev_badge = Instance.new("TextLabel")
-        dev_badge.Size = UDim2.new(0, 40, 0, 20)
-        dev_badge.Position = UDim2.new(1, -75, 0.5, -10)
+        dev_badge.Size = UDim2.new(0, 45, 0, 22)
+        dev_badge.Position = UDim2.new(1, -75, 0.5, -11)
         dev_badge.BackgroundColor3 = GetColor("Accent")
         dev_badge.Text = "DEV"
-        dev_badge.TextColor3 = Color3.fromRGB(255, 255, 255)
-        dev_badge.TextSize = 10
+        dev_badge.TextColor3 = GetColor("Surface")
+        dev_badge.TextSize = 12
         dev_badge.Font = FontConfig.Title
         dev_badge.Parent = header
         
-        local d_corner = Instance.new("UICorner"); d_corner.CornerRadius = UDim.new(1, 0); d_corner.Parent = dev_badge
+        local d_corner = Instance.new("UICorner"); d_corner.CornerRadius = UDim.new(0, 2); d_corner.Parent = dev_badge
+        local d_stroke = Instance.new("UIStroke"); d_stroke.Color = GetColor("Stroke"); d_stroke.Thickness = 2; d_stroke.Parent = dev_badge
+        
         table.insert(ThemeListeners, function()
             dev_badge.BackgroundColor3 = GetColor("Accent")
+            dev_badge.TextColor3 = GetColor("Surface")
+            d_stroke.Color = GetColor("Stroke")
         end)
     end
 
     local close_btn = Instance.new("TextButton")
-    close_btn.Size = UDim2.new(0, 26, 0, 26)
-    close_btn.Position = UDim2.new(1, -36, 0.5, -13)
+    close_btn.Size = UDim2.new(0, 28, 0, 28)
+    close_btn.Position = UDim2.new(1, -38, 0.5, -14)
     close_btn.BackgroundColor3 = GetColor("Surface")
-    close_btn.Text = "×"
-    close_btn.TextColor3 = GetColor("TextMain")
-    close_btn.TextSize = 22
-    close_btn.Font = FontConfig.Bold
+    close_btn.Text = "X"
+    close_btn.TextColor3 = GetColor("Accent")
+    close_btn.TextSize = 16
+    close_btn.Font = FontConfig.Title
     close_btn.AutoButtonColor = false
     close_btn.Parent = header
     
-    local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(1, 0); c_corner.Parent = close_btn
-    local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 2; c_stroke.Parent = close_btn
+    local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 2); c_corner.Parent = close_btn
+    local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 2.5; c_stroke.Parent = close_btn
     close_btn.MouseButton1Click:Connect(function() main_gui.Enabled = false end)
 
     table.insert(ThemeListeners, function()
-        header.BackgroundColor3 = GetColor("Surface")
-        title_lbl.TextColor3 = GetColor("TextMain")
+        title_lbl.TextColor3 = GetColor("Accent")
         title_lbl.Text = GetColor("Emoji") .. " livyii.silente"
+        title_stroke.Color = GetColor("Stroke")
         close_btn.BackgroundColor3 = GetColor("Surface")
-        close_btn.TextColor3 = GetColor("TextMain")
+        close_btn.TextColor3 = GetColor("Accent")
         c_stroke.Color = GetColor("Stroke")
     end)
 
-    -- DRAG LOGIC
-    local dragging = false
-    local dragStart, startPos
-    header.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true; dragStart = input.Position; startPos = main.Position
-        end
-    end)
-    header.InputChanged:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            local delta = input.Position - dragStart
-            main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end)
-    UIS.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
-    end)
-
-    -- TAB BAR (Horizontal)
-    local tab_bar = Instance.new("Frame")
-    tab_bar.Size = UDim2.new(1, -20, 0, 36)
-    tab_bar.Position = UDim2.new(0, 10, 0, 50)
-    tab_bar.BackgroundTransparency = 1
-    tab_bar.Parent = main
+    -- "tabs" BAR (From Image)
+    local tabs_container = Instance.new("Frame")
+    tabs_container.Size = UDim2.new(1, -40, 0, 40)
+    tabs_container.Position = UDim2.new(0, 20, 0, 50)
+    tabs_container.BackgroundColor3 = GetColor("Surface")
+    tabs_container.Parent = main
     
+    local tc_corner = Instance.new("UICorner"); tc_corner.CornerRadius = UDim.new(0, 4); tc_corner.Parent = tabs_container
+    local tc_stroke = Instance.new("UIStroke"); tc_stroke.Color = GetColor("Stroke"); tc_stroke.Thickness = 3.5; tc_stroke.Parent = tabs_container
+    
+    -- Bubbly "tabs" label behind or above the buttons
+    local tabs_label = Instance.new("TextLabel")
+    tabs_label.Size = UDim2.new(1, 0, 0, 20)
+    tabs_label.Position = UDim2.new(0, 0, 0, -22)
+    tabs_label.BackgroundTransparency = 1
+    tabs_label.Text = "tabs"
+    tabs_label.TextColor3 = GetColor("Accent")
+    tabs_label.TextSize = 18
+    tabs_label.Font = FontConfig.Title
+    tabs_label.Parent = main
+    
+    local tls = Instance.new("UIStroke"); tls.Color = GetColor("Stroke"); tls.Thickness = 2; tls.Parent = tabs_label
+
     local tab_layout = Instance.new("UIListLayout")
     tab_layout.FillDirection = Enum.FillDirection.Horizontal
     tab_layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    tab_layout.Padding = UDim.new(0, 6)
-    tab_layout.Parent = tab_bar
+    tab_layout.VerticalAlignment = Enum.VerticalAlignment.Center
+    tab_layout.Padding = UDim.new(0, 4)
+    tab_layout.Parent = tabs_container
 
     local tab_names = {"AIM", "COMBAT", "VISUAL", "THEMES", "MISC"}
     local tab_btns = {}
@@ -670,35 +638,35 @@ local function load_main_ui(platform)
 
     for i = 1, 5 do
         local tb = Instance.new("TextButton")
-        tb.Size = UDim2.new(0, 60, 1, 0)
-        tb.BackgroundColor3 = GetColor("Surface")
-        tb.Text = GetColor("TabEmojis")[i] .. " " .. tab_names[i]
-        tb.TextColor3 = i == 1 and GetColor("TextMain") or GetColor("TextMuted")
-        tb.TextSize = 11
-        tb.Font = FontConfig.Bold
+        tb.Size = UDim2.new(0, 62, 0, 28)
+        tb.BackgroundTransparency = 1
+        tb.Text = tab_names[i]
+        tb.TextColor3 = i == 1 and GetColor("Accent") or GetColor("TextMuted")
+        tb.TextSize = 14
+        tb.Font = FontConfig.Title
         tb.AutoButtonColor = false
-        tb.Parent = tab_bar
-        
-        local t_corner = Instance.new("UICorner"); t_corner.CornerRadius = UDim.new(1, 0); t_corner.Parent = tb
-        local t_stroke = Instance.new("UIStroke"); t_stroke.Color = GetColor("Stroke"); t_stroke.Thickness = 1.5; t_stroke.Parent = tb
+        tb.Parent = tabs_container
         
         table.insert(tab_btns, tb)
         
         local btn = tb
-        local strk = t_stroke
         local idx = i
         table.insert(ThemeListeners, function()
-            btn.BackgroundColor3 = GetColor("Surface")
-            strk.Color = GetColor("Stroke")
-            btn.Text = GetColor("TabEmojis")[idx] .. " " .. tab_names[idx]
-            btn.TextColor3 = idx == current_tab and GetColor("TextMain") or GetColor("TextMuted")
+            btn.TextColor3 = idx == current_tab and GetColor("Accent") or GetColor("TextMuted")
         end)
     end
 
+    table.insert(ThemeListeners, function()
+        tabs_container.BackgroundColor3 = GetColor("Surface")
+        tc_stroke.Color = GetColor("Stroke")
+        tabs_label.TextColor3 = GetColor("Accent")
+        tls.Color = GetColor("Stroke")
+    end)
+
     -- CONTENT AREA
     local content_area = Instance.new("Frame")
-    content_area.Size = UDim2.new(1, -20, 1, -100)
-    content_area.Position = UDim2.new(0, 10, 0, 95)
+    content_area.Size = UDim2.new(1, -40, 1, -140)
+    content_area.Position = UDim2.new(0, 20, 0, 100)
     content_area.BackgroundTransparency = 1
     content_area.Parent = main
 
@@ -708,7 +676,7 @@ local function load_main_ui(platform)
         sf.Size = UDim2.new(1, 0, 1, 0)
         sf.BackgroundTransparency = 1
         sf.CanvasSize = UDim2.new(0, 0, 0, 2000)
-        sf.ScrollBarThickness = 3
+        sf.ScrollBarThickness = 4
         sf.ScrollBarImageColor3 = GetColor("Accent")
         sf.Visible = (i == 1)
         sf.Parent = content_area
@@ -722,7 +690,7 @@ local function load_main_ui(platform)
         end)
     end
 
-    -- COMPONENTS
+    -- COMPONENTS (Styled with thick borders)
     local function createSection(parent, text)
         local sec = Instance.new("Frame")
         sec.Size = UDim2.new(1, 0, 0, 24)
@@ -733,30 +701,32 @@ local function load_main_ui(platform)
         lbl.Size = UDim2.new(1, -4, 1, 0)
         lbl.Position = UDim2.new(0, 4, 0, 0)
         lbl.BackgroundTransparency = 1
-        lbl.Text = GetColor("SectionEmoji") .. " " .. string.upper(text)
+        lbl.Text = string.upper(text)
         lbl.TextColor3 = GetColor("Accent")
-        lbl.TextSize = 11
+        lbl.TextSize = 14
         lbl.Font = FontConfig.Title
         lbl.TextXAlignment = Enum.TextXAlignment.Left
         lbl.Parent = sec
         
+        local s = Instance.new("UIStroke"); s.Color = GetColor("Stroke"); s.Thickness = 1.5; s.Parent = lbl
+
         table.insert(ThemeListeners, function()
-            lbl.Text = GetColor("SectionEmoji") .. " " .. string.upper(text)
             lbl.TextColor3 = GetColor("Accent")
+            s.Color = GetColor("Stroke")
         end)
     end
 
     local function createToggle(parent, icon, text, getState, setState)
         local card = Instance.new("TextButton")
         card.Size = UDim2.new(1, 0, 0, CARD_H)
-        card.BackgroundColor3 = GetColor("Surface")
+        card.BackgroundColor3 = GetColor("Bg")
         card.BorderSizePixel = 0
         card.Text = ""
         card.AutoButtonColor = false
         card.Parent = parent
         
-        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 12); c_corner.Parent = card
-        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 1.5; c_stroke.Parent = card
+        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 4); c_corner.Parent = card
+        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 3; c_stroke.Parent = card
 
         local lbl = Instance.new("TextLabel")
         lbl.Size = UDim2.new(1, -60, 1, 0)
@@ -772,36 +742,36 @@ local function load_main_ui(platform)
         local toggleBox = Instance.new("Frame")
         toggleBox.Size = UDim2.new(0, TOGGLE_W, 0, TOGGLE_H)
         toggleBox.Position = UDim2.new(1, -TOGGLE_W-12, 0.5, -TOGGLE_H/2)
-        toggleBox.BackgroundColor3 = getState() and GetColor("Accent") or Color3.fromRGB(220, 220, 220)
+        toggleBox.BackgroundColor3 = getState() and GetColor("Accent") or Color3.fromRGB(200, 200, 200)
         toggleBox.Parent = card
         
-        local tb_corner = Instance.new("UICorner"); tb_corner.CornerRadius = UDim.new(1, 0); tb_corner.Parent = toggleBox
-        local tb_stroke = Instance.new("UIStroke"); tb_stroke.Color = getState() and GetColor("Stroke") or Color3.fromRGB(200, 200, 200); tb_stroke.Thickness = 1.5; tb_stroke.Parent = toggleBox
+        local tb_corner = Instance.new("UICorner"); tb_corner.CornerRadius = UDim.new(0, 2); tb_corner.Parent = toggleBox
+        local tb_stroke = Instance.new("UIStroke"); tb_stroke.Color = GetColor("Stroke"); tb_stroke.Thickness = 2.5; tb_stroke.Parent = toggleBox
 
         local innerCore = Instance.new("Frame")
         innerCore.Size = UDim2.new(0, TOGGLE_H - 6, 0, TOGGLE_H - 6)
         innerCore.Position = getState() and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
-        innerCore.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        innerCore.BackgroundColor3 = GetColor("Surface")
         innerCore.Parent = toggleBox
         
-        local ic_corner = Instance.new("UICorner"); ic_corner.CornerRadius = UDim.new(1, 0); ic_corner.Parent = innerCore
+        local ic_corner = Instance.new("UICorner"); ic_corner.CornerRadius = UDim.new(0, 1); ic_corner.Parent = innerCore
+        local ic_stroke = Instance.new("UIStroke"); ic_stroke.Color = GetColor("Stroke"); ic_stroke.Thickness = 1.5; ic_stroke.Parent = innerCore
 
         local function applyVisual(state)
-            TweenService:Create(toggleBox, TweenConfig.Fast, {BackgroundColor3 = state and GetColor("Accent") or Color3.fromRGB(220, 220, 220)}):Play()
-            TweenService:Create(tb_stroke, TweenConfig.Fast, {Color = state and GetColor("Stroke") or Color3.fromRGB(200, 200, 200)}):Play()
+            TweenService:Create(toggleBox, TweenConfig.Fast, {BackgroundColor3 = state and GetColor("Accent") or Color3.fromRGB(200, 200, 200)}):Play()
             TweenService:Create(innerCore, TweenConfig.Bouncy, {
                 Position = state and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2),
             }):Play()
         end
 
         card.MouseButton1Click:Connect(function() local ns = not getState(); setState(ns); applyVisual(ns) end)
-        card.MouseEnter:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = GetColor("Accent"), Thickness = 2}):Play() end)
-        card.MouseLeave:Connect(function() TweenService:Create(c_stroke, TweenConfig.Fast, {Color = GetColor("Stroke"), Thickness = 1.5}):Play() end)
 
         table.insert(ThemeListeners, function()
-            card.BackgroundColor3 = GetColor("Surface")
+            card.BackgroundColor3 = GetColor("Bg")
             c_stroke.Color = GetColor("Stroke")
             lbl.TextColor3 = GetColor("TextMain")
+            tb_stroke.Color = GetColor("Stroke")
+            ic_stroke.Color = GetColor("Stroke")
             applyVisual(getState())
         end)
 
@@ -811,16 +781,16 @@ local function load_main_ui(platform)
     local function createSlider(parent, icon, text, min, max, getValue, setValue)
         local card = Instance.new("Frame")
         card.Size = UDim2.new(1, 0, 0, SLIDER_H)
-        card.BackgroundColor3 = GetColor("Surface")
+        card.BackgroundColor3 = GetColor("Bg")
         card.BorderSizePixel = 0
         card.Parent = parent
         
-        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 12); c_corner.Parent = card
-        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 1.5; c_stroke.Parent = card
+        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 4); c_corner.Parent = card
+        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 3; c_stroke.Parent = card
 
         local lbl = Instance.new("TextLabel")
         lbl.Size = UDim2.new(1, -40, 0, 16)
-        lbl.Position = UDim2.new(0, 14, 0, 4)
+        lbl.Position = UDim2.new(0, 14, 0, 6)
         lbl.BackgroundTransparency = 1
         lbl.Text = icon .. " " .. text
         lbl.TextColor3 = GetColor("TextMain")
@@ -831,39 +801,39 @@ local function load_main_ui(platform)
 
         local valLbl = Instance.new("TextLabel")
         valLbl.Size = UDim2.new(0, 30, 0, 16)
-        valLbl.Position = UDim2.new(1, -44, 0, 4)
+        valLbl.Position = UDim2.new(1, -44, 0, 6)
         valLbl.BackgroundTransparency = 1
         valLbl.Text = tostring(getValue())
         valLbl.TextColor3 = GetColor("Accent")
-        valLbl.TextSize = 11
+        valLbl.TextSize = 12
         valLbl.Font = FontConfig.Bold
         valLbl.Parent = card
 
         local track = Instance.new("Frame")
-        track.Size = UDim2.new(1, -28, 0, 6)
-        track.Position = UDim2.new(0, 14, 0, SLIDER_H - 14)
-        track.BackgroundColor3 = Color3.fromRGB(240, 230, 220)
+        track.Size = UDim2.new(1, -28, 0, 8)
+        track.Position = UDim2.new(0, 14, 0, SLIDER_H - 16)
+        track.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
         track.Parent = card
         
-        local t_corner = Instance.new("UICorner"); t_corner.CornerRadius = UDim.new(1, 0); t_corner.Parent = track
+        local t_corner = Instance.new("UICorner"); t_corner.CornerRadius = UDim.new(0, 2); t_corner.Parent = track
+        local t_stroke = Instance.new("UIStroke"); t_stroke.Color = GetColor("Stroke"); t_stroke.Thickness = 2; t_stroke.Parent = track
 
         local fill = Instance.new("Frame")
         fill.Size = UDim2.new((getValue() - min) / (max - min), 0, 1, 0)
         fill.BackgroundColor3 = GetColor("Accent")
         fill.Parent = track
-        
-        local f_corner = Instance.new("UICorner"); f_corner.CornerRadius = UDim.new(1, 0); f_corner.Parent = fill
+        local f_corner = Instance.new("UICorner"); f_corner.CornerRadius = UDim.new(0, 2); f_corner.Parent = fill
 
         local knob = Instance.new("TextButton")
         knob.Size = UDim2.new(0, SLIDER_KNOB, 0, SLIDER_KNOB)
         knob.Position = UDim2.new((getValue() - min) / (max - min), -SLIDER_KNOB/2, 0.5, -SLIDER_KNOB/2)
-        knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        knob.BackgroundColor3 = GetColor("Surface")
         knob.Text = ""
         knob.AutoButtonColor = false
         knob.Parent = track
         
-        local k_corner = Instance.new("UICorner"); k_corner.CornerRadius = UDim.new(1, 0); k_corner.Parent = knob
-        local k_glow = Instance.new("UIStroke"); k_glow.Color = GetColor("Accent"); k_glow.Thickness = 2; k_glow.Parent = knob
+        local k_corner = Instance.new("UICorner"); k_corner.CornerRadius = UDim.new(0, 2); k_corner.Parent = knob
+        local k_stroke = Instance.new("UIStroke"); k_stroke.Color = GetColor("Stroke"); k_stroke.Thickness = 2.5; k_stroke.Parent = knob
 
         local isDragging = false
         local function updateSlider(xPos)
@@ -875,30 +845,32 @@ local function load_main_ui(platform)
             knob.Position = UDim2.new(pct, -SLIDER_KNOB/2, 0.5, -SLIDER_KNOB/2)
         end
         
-        knob.MouseButton1Down:Connect(function() isDragging = true; TweenService:Create(k_glow, TweenConfig.Fast, {Thickness = 4}):Play() end)
-        UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then isDragging = false; TweenService:Create(k_glow, TweenConfig.Fast, {Thickness = 2}):Play() end end)
+        knob.MouseButton1Down:Connect(function() isDragging = true end)
+        UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then isDragging = false end end)
         UIS.InputChanged:Connect(function(input) if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then updateSlider(input.Position.X) end end)
         track.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then isDragging = true; updateSlider(input.Position.X) end end)
 
         table.insert(ThemeListeners, function()
-            card.BackgroundColor3 = GetColor("Surface")
+            card.BackgroundColor3 = GetColor("Bg")
             c_stroke.Color = GetColor("Stroke")
             lbl.TextColor3 = GetColor("TextMain")
             valLbl.TextColor3 = GetColor("Accent")
             fill.BackgroundColor3 = GetColor("Accent")
-            k_glow.Color = GetColor("Accent")
+            t_stroke.Color = GetColor("Stroke")
+            k_stroke.Color = GetColor("Stroke")
+            knob.BackgroundColor3 = GetColor("Surface")
         end)
     end
 
     local function createDropdown(parent, icon, text, options, getValue, setValue)
         local card = Instance.new("Frame")
         card.Size = UDim2.new(1, 0, 0, CARD_H)
-        card.BackgroundColor3 = GetColor("Surface")
+        card.BackgroundColor3 = GetColor("Bg")
         card.BorderSizePixel = 0
         card.Parent = parent
         
-        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 12); c_corner.Parent = card
-        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 1.5; c_stroke.Parent = card
+        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 4); c_corner.Parent = card
+        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 3; c_stroke.Parent = card
 
         local lbl = Instance.new("TextLabel")
         lbl.Size = UDim2.new(0.45, 0, 1, 0)
@@ -912,29 +884,29 @@ local function load_main_ui(platform)
         lbl.Parent = card
 
         local btn = Instance.new("TextButton")
-        btn.Size = UDim2.new(0.4, 0, 0, CARD_H - 12)
-        btn.Position = UDim2.new(0.58, 0, 0.5, -(CARD_H - 12)/2)
-        btn.BackgroundColor3 = GetColor("Bg")
+        btn.Size = UDim2.new(0.4, 0, 0, CARD_H - 14)
+        btn.Position = UDim2.new(0.58, 0, 0.5, -(CARD_H - 14)/2)
+        btn.BackgroundColor3 = GetColor("Surface")
         btn.Text = tostring(getValue())
         btn.TextColor3 = GetColor("Accent")
-        btn.TextSize = 11
+        btn.TextSize = 12
         btn.Font = FontConfig.Bold
         btn.AutoButtonColor = false
         btn.Parent = card
         
-        local b_corner = Instance.new("UICorner"); b_corner.CornerRadius = UDim.new(0, 8); b_corner.Parent = btn
-        local b_stroke = Instance.new("UIStroke"); b_stroke.Color = GetColor("Stroke"); b_stroke.Thickness = 1.5; b_stroke.Parent = btn
+        local b_corner = Instance.new("UICorner"); b_corner.CornerRadius = UDim.new(0, 2); b_corner.Parent = btn
+        local b_stroke = Instance.new("UIStroke"); b_stroke.Color = GetColor("Stroke"); b_stroke.Thickness = 2; b_stroke.Parent = btn
 
         local container = Instance.new("Frame")
         container.Size = UDim2.new(0.4, 0, 0, math.min(#options, 6) * 24)
         container.Position = UDim2.new(0.58, 0, 0, CARD_H)
-        container.BackgroundColor3 = GetColor("Surface")
+        container.BackgroundColor3 = GetColor("Bg")
         container.Visible = false
         container.ZIndex = 30
         container.Parent = card
         
-        local ct_corner = Instance.new("UICorner"); ct_corner.CornerRadius = UDim.new(0, 8); ct_corner.Parent = container
-        local ct_stroke = Instance.new("UIStroke"); ct_stroke.Color = GetColor("Stroke"); ct_stroke.Thickness = 1.5; ct_stroke.Parent = container
+        local ct_corner = Instance.new("UICorner"); ct_corner.CornerRadius = UDim.new(0, 2); ct_corner.Parent = container
+        local ct_stroke = Instance.new("UIStroke"); ct_stroke.Color = GetColor("Stroke"); ct_stroke.Thickness = 2; ct_stroke.Parent = container
 
         local scroll = Instance.new("ScrollingFrame")
         scroll.Size = UDim2.new(1, 0, 1, 0)
@@ -950,32 +922,30 @@ local function load_main_ui(platform)
         for _, opt in ipairs(options) do
             local ob = Instance.new("TextButton")
             ob.Size = UDim2.new(1, 0, 0, 22)
-            ob.BackgroundColor3 = GetColor("Surface")
+            ob.BackgroundColor3 = GetColor("Bg")
             ob.Text = tostring(opt)
-            ob.TextColor3 = GetColor("TextMuted")
-            ob.TextSize = 10
+            ob.TextColor3 = GetColor("TextMain")
+            ob.TextSize = 11
             ob.Font = FontConfig.Body
             ob.AutoButtonColor = false
             ob.Parent = scroll
             
-            ob.MouseEnter:Connect(function() TweenService:Create(ob, TweenConfig.Fast, {BackgroundColor3 = GetColor("Bg"), TextColor3 = GetColor("TextMain")}):Play() end)
-            ob.MouseLeave:Connect(function() TweenService:Create(ob, TweenConfig.Fast, {BackgroundColor3 = GetColor("Surface"), TextColor3 = GetColor("TextMuted")}):Play() end)
-            ob.MouseButton1Click:Connect(function() btn.Text = tostring(opt); btn.TextColor3 = GetColor("TextMain"); container.Visible = false; setValue(opt) end)
+            ob.MouseButton1Click:Connect(function() btn.Text = tostring(opt); container.Visible = false; setValue(opt) end)
 
             table.insert(ThemeListeners, function()
-                ob.BackgroundColor3 = GetColor("Surface")
-                ob.TextColor3 = GetColor("TextMuted")
+                ob.BackgroundColor3 = GetColor("Bg")
+                ob.TextColor3 = GetColor("TextMain")
             end)
         end
 
         table.insert(ThemeListeners, function()
-            card.BackgroundColor3 = GetColor("Surface")
+            card.BackgroundColor3 = GetColor("Bg")
             c_stroke.Color = GetColor("Stroke")
             lbl.TextColor3 = GetColor("TextMain")
-            btn.BackgroundColor3 = GetColor("Bg")
+            btn.BackgroundColor3 = GetColor("Surface")
             btn.TextColor3 = GetColor("Accent")
             b_stroke.Color = GetColor("Stroke")
-            container.BackgroundColor3 = GetColor("Surface")
+            container.BackgroundColor3 = GetColor("Bg")
             ct_stroke.Color = GetColor("Stroke")
             scroll.ScrollBarImageColor3 = GetColor("Accent")
         end)
@@ -1014,6 +984,7 @@ local function load_main_ui(platform)
     createToggle(visual_scroll, "📍", "tracer", function() return cfg.TracerEnabled end, function(v) cfg.TracerEnabled = v end)
     createToggle(visual_scroll, "🎯", "crosshair", function() return cfg.CrosshairEnabled end, function(v) cfg.CrosshairEnabled = v end)
     createToggle(visual_scroll, "🔄", "rotation", function() return cfg.CrosshairRotationEnabled end, function(v) cfg.CrosshairRotationEnabled = v end)
+    createToggle(visual_scroll, "ℹ️", "target info", function() return cfg.TargetInfoEnabled end, function(v) cfg.TargetInfoEnabled = v end)
     
     createSection(visual_scroll, "lighting")
     createSlider(visual_scroll, "⏰", "time of day", 0, 24, function() return math.floor(Lighting.ClockTime) end, function(v) Lighting.ClockTime = v end)
@@ -1032,26 +1003,28 @@ local function load_main_ui(platform)
     
     local function createThemeButton(themeName, icon)
         local card = Instance.new("TextButton")
-        card.Size = UDim2.new(1, 0, 0, 44)
+        card.Size = UDim2.new(1, 0, 0, 46)
         card.BackgroundColor3 = Themes[themeName]["Bg"]
         card.BorderSizePixel = 0
         card.Text = ""
         card.AutoButtonColor = false
         card.Parent = themes_scroll
         
-        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 12); c_corner.Parent = card
-        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = Themes[themeName]["Stroke"]; c_stroke.Thickness = 2; c_stroke.Parent = card
+        local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 4); c_corner.Parent = card
+        local c_stroke = Instance.new("UIStroke"); c_stroke.Color = Themes[themeName]["Stroke"]; c_stroke.Thickness = 3; c_stroke.Parent = card
 
         local lbl = Instance.new("TextLabel")
         lbl.Size = UDim2.new(1, -50, 1, 0)
         lbl.Position = UDim2.new(0, 14, 0, 0)
         lbl.BackgroundTransparency = 1
         lbl.Text = icon .. " " .. themeName
-        lbl.TextColor3 = Themes[themeName]["TextMain"]
-        lbl.TextSize = 14
-        lbl.Font = FontConfig.Bold
+        lbl.TextColor3 = Themes[themeName]["Accent"]
+        lbl.TextSize = 16
+        lbl.Font = FontConfig.Title
         lbl.TextXAlignment = Enum.TextXAlignment.Left
         lbl.Parent = card
+
+        local ls = Instance.new("UIStroke"); ls.Color = Themes[themeName]["Stroke"]; ls.Thickness = 1.5; ls.Parent = lbl
 
         card.MouseButton1Click:Connect(function()
             ApplyTheme(themeName)
@@ -1077,11 +1050,11 @@ local function load_main_ui(platform)
     createSection(misc_scroll, "stats")
     local stats_tile = Instance.new("Frame")
     stats_tile.Size = UDim2.new(1, 0, 0, 75)
-    stats_tile.BackgroundColor3 = GetColor("Surface")
+    stats_tile.BackgroundColor3 = GetColor("Bg")
     stats_tile.Parent = misc_scroll
     
-    local st_corner = Instance.new("UICorner"); st_corner.CornerRadius = UDim.new(0, 12); st_corner.Parent = stats_tile
-    local st_stroke = Instance.new("UIStroke"); st_stroke.Color = GetColor("Stroke"); st_stroke.Thickness = 1.5; st_stroke.Parent = stats_tile
+    local st_corner = Instance.new("UICorner"); st_corner.CornerRadius = UDim.new(0, 4); st_corner.Parent = stats_tile
+    local st_stroke = Instance.new("UIStroke"); st_stroke.Color = GetColor("Stroke"); st_stroke.Thickness = 3; st_stroke.Parent = stats_tile
 
     local st_title = Instance.new("TextLabel")
     st_title.Size = UDim2.new(1, -16, 0, 16)
@@ -1089,7 +1062,7 @@ local function load_main_ui(platform)
     st_title.BackgroundTransparency = 1
     st_title.Text = "how many times executed?"
     st_title.TextColor3 = GetColor("TextMuted")
-    st_title.TextSize = 10
+    st_title.TextSize = 11
     st_title.Font = FontConfig.Body
     st_title.TextXAlignment = Enum.TextXAlignment.Left
     st_title.Parent = stats_tile
@@ -1100,7 +1073,7 @@ local function load_main_ui(platform)
     st_num.BackgroundTransparency = 1
     st_num.Text = tostring(exec_count) .. "! 🎀"
     st_num.TextColor3 = GetColor("Accent")
-    st_num.TextSize = 22
+    st_num.TextSize = 24
     st_num.Font = FontConfig.Title
     st_num.TextXAlignment = Enum.TextXAlignment.Left
     st_num.Parent = stats_tile
@@ -1110,18 +1083,18 @@ local function load_main_ui(platform)
     st_sub.Position = UDim2.new(0, 14, 0, 54)
     st_sub.BackgroundTransparency = 1
     st_sub.Text = "this script was made 2 months ago!"
-    st_sub.TextColor3 = GetColor("Stroke")
-    st_sub.TextSize = 9
+    st_sub.TextColor3 = GetColor("Accent")
+    st_sub.TextSize = 10
     st_sub.Font = FontConfig.Bold
     st_sub.TextXAlignment = Enum.TextXAlignment.Left
     st_sub.Parent = stats_tile
     
     table.insert(ThemeListeners, function()
-        stats_tile.BackgroundColor3 = GetColor("Surface")
+        stats_tile.BackgroundColor3 = GetColor("Bg")
         st_stroke.Color = GetColor("Stroke")
         st_title.TextColor3 = GetColor("TextMuted")
         st_num.TextColor3 = GetColor("Accent")
-        st_sub.TextColor3 = GetColor("Stroke")
+        st_sub.TextColor3 = GetColor("Accent")
     end)
 
     createSection(misc_scroll, "cursed souls")
@@ -1135,14 +1108,14 @@ local function load_main_ui(platform)
 
     local function createPlayerTile(player)
         local tile = Instance.new("TextButton")
-        tile.Size = UDim2.new(1, 0, 0, 30)
-        tile.BackgroundColor3 = GetColor("Surface")
+        tile.Size = UDim2.new(1, 0, 0, 32)
+        tile.BackgroundColor3 = GetColor("Bg")
         tile.Text = ""
         tile.AutoButtonColor = false
         tile.Parent = player_list
         
-        local t_corner = Instance.new("UICorner"); t_corner.CornerRadius = UDim.new(0, 10); t_corner.Parent = tile
-        local t_stroke = Instance.new("UIStroke"); t_stroke.Color = GetColor("Stroke"); t_stroke.Thickness = 1.5; t_stroke.Parent = tile
+        local t_corner = Instance.new("UICorner"); t_corner.CornerRadius = UDim.new(0, 4); t_corner.Parent = tile
+        local t_stroke = Instance.new("UIStroke"); t_stroke.Color = GetColor("Stroke"); t_stroke.Thickness = 2; t_stroke.Parent = tile
 
         local name_lbl = Instance.new("TextLabel")
         name_lbl.Size = UDim2.new(1, -40, 1, 0)
@@ -1158,25 +1131,25 @@ local function load_main_ui(platform)
         local box = Instance.new("Frame")
         box.Size = UDim2.new(0, TOGGLE_W, 0, TOGGLE_H)
         box.Position = UDim2.new(1, -TOGGLE_W-12, 0.5, -TOGGLE_H/2)
-        box.BackgroundColor3 = cfg.TargetedPlayers[player] and GetColor("Accent") or Color3.fromRGB(220, 220, 220)
+        box.BackgroundColor3 = cfg.TargetedPlayers[player] and GetColor("Accent") or Color3.fromRGB(200, 200, 200)
         box.Parent = tile
         
-        local b_corner = Instance.new("UICorner"); b_corner.CornerRadius = UDim.new(1, 0); b_corner.Parent = box
-        local b_stroke = Instance.new("UIStroke"); b_stroke.Color = cfg.TargetedPlayers[player] and GetColor("Stroke") or Color3.fromRGB(200, 200, 200); b_stroke.Thickness = 1.5; b_stroke.Parent = box
+        local b_corner = Instance.new("UICorner"); b_corner.CornerRadius = UDim.new(0, 2); b_corner.Parent = box
+        local b_stroke = Instance.new("UIStroke"); b_stroke.Color = GetColor("Stroke"); b_stroke.Thickness = 2; b_stroke.Parent = box
 
         local inner = Instance.new("Frame")
         inner.Size = UDim2.new(0, TOGGLE_H - 6, 0, TOGGLE_H - 6)
         inner.Position = cfg.TargetedPlayers[player] and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
-        inner.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        inner.BackgroundColor3 = GetColor("Surface")
         inner.Parent = box
         
-        local i_corner = Instance.new("UICorner"); i_corner.CornerRadius = UDim.new(1, 0); i_corner.Parent = inner
+        local i_corner = Instance.new("UICorner"); i_corner.CornerRadius = UDim.new(0, 1); i_corner.Parent = inner
+        local i_stroke = Instance.new("UIStroke"); i_stroke.Color = GetColor("Stroke"); i_stroke.Thickness = 1.5; i_stroke.Parent = inner
 
         local function toggle()
             local ns = not (cfg.TargetedPlayers[player] == true)
             cfg.TargetedPlayers[player] = ns or nil
-            TweenService:Create(box, TweenConfig.Fast, {BackgroundColor3 = ns and GetColor("Accent") or Color3.fromRGB(220, 220, 220)}):Play()
-            TweenService:Create(b_stroke, TweenConfig.Fast, {Color = ns and GetColor("Stroke") or Color3.fromRGB(200, 200, 200)}):Play()
+            TweenService:Create(box, TweenConfig.Fast, {BackgroundColor3 = ns and GetColor("Accent") or Color3.fromRGB(200, 200, 200)}):Play()
             TweenService:Create(inner, TweenConfig.Bouncy, {
                 Position = ns and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
             }):Play()
@@ -1184,9 +1157,12 @@ local function load_main_ui(platform)
         tile.MouseButton1Click:Connect(toggle)
 
         table.insert(ThemeListeners, function()
-            tile.BackgroundColor3 = GetColor("Surface")
+            tile.BackgroundColor3 = GetColor("Bg")
             t_stroke.Color = GetColor("Stroke")
             name_lbl.TextColor3 = GetColor("TextMain")
+            b_stroke.Color = GetColor("Stroke")
+            i_stroke.Color = GetColor("Stroke")
+            inner.BackgroundColor3 = GetColor("Surface")
             toggle() 
             toggle() 
         end)
@@ -1211,8 +1187,7 @@ local function load_main_ui(platform)
         current_tab = index
         
         for i, btn in ipairs(tab_btns) do 
-            TweenService:Create(btn, TweenConfig.Fast, {TextColor3 = i == index and GetColor("TextMain") or GetColor("TextMuted")}):Play() 
-            TweenService:Create(btn, TweenConfig.Fast, {BackgroundColor3 = i == index and GetColor("Accent") or GetColor("Surface")}):Play() 
+            TweenService:Create(btn, TweenConfig.Fast, {TextColor3 = i == index and GetColor("Accent") or GetColor("TextMuted")}):Play() 
         end
     end
     
@@ -1224,11 +1199,11 @@ local function load_main_ui(platform)
     createSection(misc_scroll, "melody loader")
     local melodihhh_tile = Instance.new("Frame")
     melodihhh_tile.Size = UDim2.new(1, 0, 0, 90)
-    melodihhh_tile.BackgroundColor3 = GetColor("Surface")
+    melodihhh_tile.BackgroundColor3 = GetColor("Bg")
     melodihhh_tile.Parent = misc_scroll
     
-    local mtc = Instance.new("UICorner"); mtc.CornerRadius = UDim.new(0, 12); mtc.Parent = melodihhh_tile
-    local mts = Instance.new("UIStroke"); mts.Color = GetColor("Stroke"); mts.Thickness = 1.5; mts.Parent = melodihhh_tile
+    local mtc = Instance.new("UICorner"); mtc.CornerRadius = UDim.new(0, 4); mtc.Parent = melodihhh_tile
+    local mts = Instance.new("UIStroke"); mts.Color = GetColor("Stroke"); mts.Thickness = 3; mts.Parent = melodihhh_tile
 
     local mtl = Instance.new("TextLabel")
     mtl.Size = UDim2.new(1, -16, 0, 16)
@@ -1236,15 +1211,15 @@ local function load_main_ui(platform)
     mtl.BackgroundTransparency = 1
     mtl.Text = "🎵 load melodihhh"
     mtl.TextColor3 = GetColor("TextMain")
-    mtl.TextSize = 12
-    mtl.Font = FontConfig.Bold
+    mtl.TextSize = 14
+    mtl.Font = FontConfig.Title
     mtl.TextXAlignment = Enum.TextXAlignment.Left
     mtl.Parent = melodihhh_tile
 
     local mkey = Instance.new("TextBox")
-    mkey.Size = UDim2.new(1, -28, 0, 30)
+    mkey.Size = UDim2.new(1, -28, 0, 32)
     mkey.Position = UDim2.new(0, 14, 0, 50)
-    mkey.BackgroundColor3 = GetColor("Bg")
+    mkey.BackgroundColor3 = GetColor("Surface")
     mkey.BorderSizePixel = 0
     mkey.Text = ""
     mkey.PlaceholderText = "enter key..."
@@ -1255,14 +1230,14 @@ local function load_main_ui(platform)
     mkey.ClearTextOnFocus = false
     mkey.Parent = melodihhh_tile
     
-    local mkey_c = Instance.new("UICorner"); mkey_c.CornerRadius = UDim.new(0, 8); mkey_c.Parent = mkey
-    local mkey_s = Instance.new("UIStroke"); mkey_s.Color = GetColor("Stroke"); mkey_s.Thickness = 1.5; mkey_s.Parent = mkey
+    local mkey_c = Instance.new("UICorner"); mkey_c.CornerRadius = UDim.new(0, 4); mkey_c.Parent = mkey
+    local mkey_s = Instance.new("UIStroke"); mkey_s.Color = GetColor("Stroke"); mkey_s.Thickness = 2; mkey_s.Parent = mkey
 
     table.insert(ThemeListeners, function()
-        melodihhh_tile.BackgroundColor3 = GetColor("Surface")
+        melodihhh_tile.BackgroundColor3 = GetColor("Bg")
         mts.Color = GetColor("Stroke")
         mtl.TextColor3 = GetColor("TextMain")
-        mkey.BackgroundColor3 = GetColor("Bg")
+        mkey.BackgroundColor3 = GetColor("Surface")
         mkey.TextColor3 = GetColor("TextMain")
         mkey.PlaceholderColor3 = GetColor("TextMuted")
         mkey_s.Color = GetColor("Stroke")
@@ -1292,9 +1267,7 @@ local function load_main_ui(platform)
         end
     end)
 
-    -- Apply initial states
     switchTab(1)
-
     ui_flow_active = false
     notify("🍮 livyii.silente", "cuteness loaded successfully!", 3)
 end
@@ -1323,45 +1296,42 @@ else
     key_gui.Parent = GuiParent
     
     local kf = Instance.new("Frame")
-    kf.Size = UDim2.new(0, 260, 0, 180) -- Clean size
+    kf.Size = UDim2.new(0, 260, 0, 180)
     kf.Position = UDim2.new(0.5, 0, 0.5, 0)
     kf.AnchorPoint = Vector2.new(0.5, 0.5)
-    kf.BackgroundColor3 = GetColor("Bg")
+    kf.BackgroundColor3 = GetColor("Surface")
     kf.ClipsDescendants = true
     kf.Parent = key_gui
     
-    local kfc = Instance.new("UICorner"); kfc.CornerRadius = UDim.new(0, 20); kfc.Parent = kf
-    local kfs = Instance.new("UIStroke"); kfs.Color = GetColor("Stroke"); kfs.Thickness = 3; kfs.Parent = kf
-    
-    local kg = Instance.new("UIGradient")
-    kg.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, GetColor("Grad1")), ColorSequenceKeypoint.new(1, GetColor("Grad2")) })
-    kg.Rotation = 45
-    kg.Parent = kf
+    local kfc = Instance.new("UICorner"); kfc.CornerRadius = UDim.new(0, 4); kfc.Parent = kf
+    local kfs = Instance.new("UIStroke"); kfs.Color = GetColor("Stroke"); kfs.Thickness = 4; kfs.Parent = kf
 
     local kt = Instance.new("TextLabel")
     kt.Size = UDim2.new(1, 0, 0, 30)
     kt.Position = UDim2.new(0, 0, 0, 15)
     kt.BackgroundTransparency = 1
     kt.Text = "Welcome to livyii.silente"
-    kt.TextColor3 = GetColor("TextMain")
-    kt.TextSize = 16
+    kt.TextColor3 = GetColor("Accent")
+    kt.TextSize = 20
     kt.Font = FontConfig.Title
     kt.Parent = kf
+    
+    local kts = Instance.new("UIStroke"); kts.Color = GetColor("Stroke"); kts.Thickness = 2; kts.Parent = kt
 
     local ksub = Instance.new("TextLabel")
     ksub.Size = UDim2.new(1, 0, 0, 16)
-    ksub.Position = UDim2.new(0, 0, 0, 38)
+    ksub.Position = UDim2.new(0, 0, 0, 40)
     ksub.BackgroundTransparency = 1
     ksub.Text = "please enter your key below"
     ksub.TextColor3 = GetColor("TextMuted")
-    ksub.TextSize = 11
+    ksub.TextSize = 12
     ksub.Font = FontConfig.Body
     ksub.Parent = kf
 
     local kbox = Instance.new("TextBox")
     kbox.Size = UDim2.new(0.8, 0, 0, 36)
     kbox.Position = UDim2.new(0.1, 0, 0, 65)
-    kbox.BackgroundColor3 = GetColor("Surface")
+    kbox.BackgroundColor3 = GetColor("Bg")
     kbox.BorderSizePixel = 0
     kbox.Text = ""
     kbox.PlaceholderText = "Key..."
@@ -1372,22 +1342,21 @@ else
     kbox.ClearTextOnFocus = false
     kbox.Parent = kf
     
-    local kbc = Instance.new("UICorner"); kbc.CornerRadius = UDim.new(0, 10); kbc.Parent = kbox
-    local kbs = Instance.new("UIStroke"); kbs.Color = GetColor("Stroke"); kbs.Thickness = 1.5; kbs.Parent = kbox
+    local kbc = Instance.new("UICorner"); kbc.CornerRadius = UDim.new(0, 4); kbc.Parent = kbox
+    local kbs = Instance.new("UIStroke"); kbs.Color = GetColor("Stroke"); kbs.Thickness = 2; kbs.Parent = kbox
 
     local ksubmit = Instance.new("TextButton")
     ksubmit.Size = UDim2.new(0.4, 0, 0, 36)
     ksubmit.Position = UDim2.new(0.3, 0, 0, 115)
     ksubmit.BackgroundColor3 = GetColor("Accent")
     ksubmit.Text = "Unlock"
-    ksubmit.TextColor3 = Color3.fromRGB(255,255,255)
-    ksubmit.TextSize = 14
+    ksubmit.TextColor3 = GetColor("Surface")
+    ksubmit.TextSize = 16
     ksubmit.Font = FontConfig.Title
     ksubmit.Parent = kf
     
-    local ksc = Instance.new("UICorner"); ksc.CornerRadius = UDim.new(0, 10); ksc.Parent = ksubmit
-    ksubmit.MouseEnter:Connect(function() TweenService:Create(ksubmit, TweenConfig.Fast, {BackgroundColor3 = GetColor("Stroke")}):Play() end)
-    ksubmit.MouseLeave:Connect(function() TweenService:Create(ksubmit, TweenConfig.Fast, {BackgroundColor3 = GetColor("Accent")}):Play() end)
+    local ksc = Instance.new("UICorner"); ksc.CornerRadius = UDim.new(0, 4); ksc.Parent = ksubmit
+    local kss = Instance.new("UIStroke"); kss.Color = GetColor("Stroke"); kss.Thickness = 2; kss.Parent = ksubmit
 
     local kstatus = Instance.new("TextLabel")
     kstatus.Size = UDim2.new(1, -16, 0, 14)
@@ -1426,7 +1395,7 @@ task.spawn(function()
         for i = 1, 4 do
             local line = Drawing.new("Line")
             line.Thickness = cfg.CrosshairOutlineThickness
-            line.Color = Color3.fromRGB(255, 255, 255)
+            line.Color = Color3.fromRGB(20, 20, 20)
             line.Visible = false
             table.insert(outline_lines, line)
             
@@ -1450,7 +1419,7 @@ task.spawn(function()
         info_text.Center = true
         info_text.Outline = true
         info_text.OutlineColor = Color3.new(0, 0, 0)
-        info_text.Color = GetColor("TextMain")
+        info_text.Color = GetColor("Accent")
         info_text.Font = 2
         info_text.Visible = false
         
@@ -1475,13 +1444,12 @@ task.spawn(function()
             pcall(function() highlight:Destroy() end)
         end)
 
-        -- Update colors based on theme
         table.insert(ThemeListeners, function()
             for i = 1, 4 do
                 crosshair_lines[i].Color = GetColor("Accent")
             end
             fov_circle.Color = GetColor("Accent")
-            info_text.Color = GetColor("TextMain")
+            info_text.Color = GetColor("Accent")
             highlight.FillColor = GetColor("Accent")
             highlight.OutlineColor = GetColor("Stroke")
             tracer.Color = GetColor("Accent")
@@ -1603,7 +1571,6 @@ task.spawn(function()
                 end
             end
 
-            -- Crosshair Drawing
             if cfg.CrosshairEnabled then
                 local pos = (target_part and cfg.FollowTarget) and (select(1, cam:WorldToViewportPoint(get_aim_position(target_part)))) or cfg.CrosshairPosition
                 local size = cfg.CrosshairSize
