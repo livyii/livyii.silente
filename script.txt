@@ -1,4 +1,4 @@
--- 🍮 livyii.silente - [CRASH FIX + NEW THEMES] 🎀
+-- 🍮 livyii.silente - [STABLE BUILD] 🎀
 print("[livyii] initializing cuteness...")
 
 -- // SERVICES //
@@ -181,7 +181,7 @@ genv.SilentAim = genv.SilentAim or {
     RequireTool = true, KnockCheck = true, WallCheck = false, RevolverBypass = false,
     UseCursorAim = false, ShiftlockEnabled = false, SilentAimClosestPart = false,
     TriggerbotEnabled = false, TriggerbotDelay = 0.05, TriggerbotFOV = 10,
-    CursorTriggerbotEnabled = false, CursorTriggerbotDelay = 0.0,
+    CursorTriggerbotEnabled = false, CursorTriggerbotDelay = 0.05,
     CrosshairEnabled = true, CrosshairSize = 10, CrosshairGap = 4, CrosshairThickness = 1.5,
     CrosshairPosition = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y / 2),
     ToggleKey = Enum.KeyCode.RightShift, HighlightEnabled = true, TracerEnabled = true,
@@ -203,7 +203,7 @@ if cfg.TriggerbotDelay == nil then cfg.TriggerbotDelay = 0.05 end
 if cfg.TriggerbotFOV == nil then cfg.TriggerbotFOV = 10 end
 if cfg.TargetInfoEnabled == nil then cfg.TargetInfoEnabled = true end
 if cfg.CursorTriggerbotEnabled == nil then cfg.CursorTriggerbotEnabled = false end
-if cfg.CursorTriggerbotDelay == nil then cfg.CursorTriggerbotDelay = 0.0 end
+if cfg.CursorTriggerbotDelay == nil then cfg.CursorTriggerbotDelay = 0.05 end
 
 local function cleanup_targets()
     for plr, _ in pairs(cfg.TargetedPlayers) do if not plr.Parent then cfg.TargetedPlayers[plr] = nil end end
@@ -255,7 +255,7 @@ local function startFiring()
             local g = simple_triggerbot.get_gun()
             if not g or not cfg.CursorTriggerbotEnabled then break end
             simple_triggerbot.rapid(g)
-            task.wait(cfg.CursorTriggerbotDelay)
+            task.wait(math.max(cfg.CursorTriggerbotDelay, 0.05))
         end
         simple_triggerbot.is_firing = false
     end)
@@ -293,54 +293,53 @@ LocalPlayer.CharacterAdded:Connect(function()
 end)
 
 -- // 🎯 SAFE AUTO-AIM TRIGGERBOT 🎯 //
-local last_aim_time = 0
-RunService.Heartbeat:Connect(function()
-    if not cfg.TriggerbotEnabled or not cfg.Enabled or ui_flow_active then return end
-    local now = tick()
-    if now - last_aim_time < 0.15 then return end -- Cooldown to prevent engine crash
-    
-    local closestTarget, closestDistance = nil, math.huge
-    local myChar = LocalPlayer.Character
-    local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
-    local myHum = myChar and myChar:FindFirstChildOfClass("Humanoid")
-    
-    if not myHRP or not myHum or myHum.Health <= 0 then return end
-    
-    for _, plr in ipairs(Players:GetPlayers()) do
-        if plr ~= LocalPlayer and (not cfg.TeamCheck or plr.Team ~= LocalPlayer.Team) then
-            local char = plr.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            if hrp and hum and hum.Health > 0 then
-                local dist = (myHRP.Position - hrp.Position).Magnitude
-                if dist < closestDistance then
-                    closestTarget = plr
-                    closestDistance = dist
+task.spawn(function()
+    while task.wait(0.15) do -- Safe delay to prevent engine freeze
+        if cfg.TriggerbotEnabled and cfg.Enabled and not ui_flow_active then
+            local myChar = LocalPlayer.Character
+            local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
+            local myHum = myChar and myChar:FindFirstChildOfClass("Humanoid")
+            
+            if myHRP and myHum and myHum.Health > 0 then
+                local closestTarget, closestDistance = nil, math.huge
+                
+                for _, plr in ipairs(Players:GetPlayers()) do
+                    if plr ~= LocalPlayer and (not cfg.TeamCheck or plr.Team ~= LocalPlayer.Team) then
+                        local char = plr.Character
+                        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+                        local hum = char and char:FindFirstChildOfClass("Humanoid")
+                        if hrp and hum and hum.Health > 0 then
+                            local dist = (myHRP.Position - hrp.Position).Magnitude
+                            if dist < closestDistance then
+                                closestTarget = plr
+                                closestDistance = dist
+                            end
+                        end
+                    end
+                end
+                
+                if closestTarget and closestTarget.Character then
+                    local targetPart = closestTarget.Character:FindFirstChild("Head") or closestTarget.Character:FindFirstChild("Torso") or closestTarget.Character:FindFirstChild("UpperTorso")
+                    if targetPart then
+                        pcall(function()
+                            -- Rotate Camera safely instead of teleporting HRP to prevent crash
+                            cam.CFrame = CFrame.lookAt(cam.CFrame.Position, targetPart.Position)
+                            
+                            -- Safely click
+                            if mouse1press and mouse1release then
+                                mouse1press()
+                                task.wait(0.05)
+                                mouse1release()
+                            elseif VirtualUser then
+                                VirtualUser:CaptureController()
+                                VirtualUser:ClickButton1(Vector2.new(1,1), cam.CFrame)
+                            elseif mouse1click then
+                                mouse1click()
+                            end
+                        end)
+                    end
                 end
             end
-        end
-    end
-    
-    if closestTarget and closestTarget.Character then
-        local targetPart = closestTarget.Character:FindFirstChild("Head") or closestTarget.Character:FindFirstChild("Torso") or closestTarget.Character:FindFirstChild("UpperTorso")
-        if targetPart then
-            last_aim_time = now
-            pcall(function()
-                -- Rotate Camera safely instead of teleporting HRP
-                cam.CFrame = CFrame.new(cam.CFrame.Position, targetPart.Position)
-                
-                -- Click safely
-                if VirtualUser then
-                    VirtualUser:CaptureController()
-                    VirtualUser:ClickButton1(Vector2.new(1,1), cam.CFrame)
-                elseif mouse1press and mouse1release then
-                    mouse1press()
-                    task.wait(0.05)
-                    mouse1release()
-                elseif mouse1click then
-                    mouse1click()
-                end
-            end)
         end
     end
 end)
