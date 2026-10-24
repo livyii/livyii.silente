@@ -1,5 +1,5 @@
 -- 🍮 livyii.silente - [STABLE BUILD] 🎀
--- [MERGED] danffamain2 features — now visible in tabs
+-- [MERGED] danffamain2 features — visible in tabs
 print("[livyii] initializing cuteness...")
 
 -- // SERVICES //
@@ -137,6 +137,58 @@ local function clear_blurs()
     for _, v in ipairs(Lighting:GetChildren()) do
         if v:IsA("BlurEffect") and v.Name == "livyii_Blur" then v:Destroy() end
     end
+end
+
+-- [MERGED] fog presets (no Halloween entries)
+local savedFog = {
+    FogColor = Lighting.FogColor,
+    FogStart = Lighting.FogStart,
+    FogEnd = Lighting.FogEnd,
+    Ambient = Lighting.Ambient,
+    OutdoorAmbient = Lighting.OutdoorAmbient,
+    Brightness = Lighting.Brightness,
+}
+
+local fogPresets = {
+    { "♡ Reset Lighting", nil },
+    { "♡ Soft Pink", Color3.fromRGB(255, 126, 38) },
+    { "♡ Dreamy Blue", Color3.fromRGB(140, 112, 190) },
+    { "♡ Lavender Mist", Color3.fromRGB(156, 104, 205) },
+    { "♡ Warm Sunset", Color3.fromRGB(255, 126, 38) },
+    { "♡ Mint Dream", Color3.fromRGB(147, 211, 112) },
+    { "♡ Red", Color3.fromRGB(255, 73, 61) },
+    { "♡ Light Red", Color3.fromRGB(255, 144, 91) },
+    { "♡ Dark Red", Color3.fromRGB(135, 31, 48) },
+    { "♡ Orange", Color3.fromRGB(255, 119, 30) },
+    { "♡ Light Orange", Color3.fromRGB(255, 173, 93) },
+    { "♡ Dark Orange", Color3.fromRGB(172, 72, 20) },
+    { "♡ Yellow", Color3.fromRGB(255, 201, 76) },
+    { "♡ Lime", Color3.fromRGB(165, 218, 89) },
+    { "♡ Green", Color3.fromRGB(108, 179, 76) },
+    { "♡ Cyan", Color3.fromRGB(93, 203, 181) },
+    { "♡ Electric Blue", Color3.fromRGB(125, 142, 255) },
+    { "♡ Blue", Color3.fromRGB(103, 101, 226) },
+    { "♡ Purple", Color3.fromRGB(153, 85, 214) },
+    { "♡ Violet", Color3.fromRGB(121, 60, 177) },
+    { "♡ Pink", Color3.fromRGB(255, 121, 89) },
+    { "♡ Hot Pink", Color3.fromRGB(245, 78, 107) },
+}
+
+local function applyFog(color)
+    if not color then
+        Lighting.FogColor = savedFog.FogColor
+        Lighting.FogStart = savedFog.FogStart
+        Lighting.FogEnd = savedFog.FogEnd
+        Lighting.Ambient = savedFog.Ambient
+        Lighting.OutdoorAmbient = savedFog.OutdoorAmbient
+        Lighting.Brightness = savedFog.Brightness
+        return
+    end
+    Lighting.FogColor = color
+    Lighting.FogStart = 0
+    Lighting.FogEnd = 280
+    Lighting.Ambient = color:Lerp(Color3.new(1, 1, 1), 0.35)
+    Lighting.OutdoorAmbient = color
 end
 
 -- // CONFIGURATION TABLE //
@@ -1252,6 +1304,30 @@ local function load_main_ui(platform)
     createSlider(visual_scroll, "🌈", "saturation", -1, 1, function() return l_cc.Saturation end, function(v) l_cc.Saturation = v end)
     createSlider(visual_scroll, "🌓", "contrast", -1, 1, function() return l_cc.Contrast end, function(v) l_cc.Contrast = v end)
     createSlider(visual_scroll, "🔍", "camera fov", 30, 120, function() return math.floor(cam.FieldOfView) end, function(v) cam.FieldOfView = v end)
+
+    createSection(visual_scroll, "🌫️", "fog presets")
+    for _, preset in ipairs(fogPresets) do
+        local f_name, f_color = preset[1], preset[2]
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.new(1, 0, 0, 30)
+        btn.BackgroundColor3 = GetColor("Surface")
+        btn.Text = f_name
+        btn.TextColor3 = f_color or GetColor("TextMain")
+        btn.Font = FontConfig.Bold
+        btn.TextSize = 10
+        btn.AutoButtonColor = false
+        btn.Parent = visual_scroll
+        local bc = Instance.new("UICorner", btn); bc.CornerRadius = UDim.new(0, 11)
+        local bs = Instance.new("UIStroke", btn); bs.Color = GetColor("Stroke"); bs.Thickness = 1.2
+        btn.MouseButton1Click:Connect(function()
+            applyFog(f_color)
+        end)
+        table.insert(ThemeListeners, function()
+            btn.BackgroundColor3 = GetColor("Surface")
+            bs.Color = GetColor("Stroke")
+            btn.TextColor3 = f_color or GetColor("TextMain")
+        end)
+    end
 
     -- ═══════════ THEME TAB ═══════════
     local theme_scroll = scroll_frames[4]
