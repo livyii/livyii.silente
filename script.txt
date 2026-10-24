@@ -1,4 +1,5 @@
 -- 🍮 livyii.silente - [STABLE BUILD] 🎀
+-- [MERGED] danffamain2 features (feature-only, no UI changes)
 print("[livyii] initializing cuteness...")
 
 -- // SERVICES //
@@ -29,7 +30,8 @@ local ui_flow_active = true
 local exec_count = (getgenv().livyii_ween_count or 13370) + 1
 getgenv().livyii_ween_count = exec_count
 
-local MELODIHHH_URL = "https://raw.githubusercontent.com/japan67-hub/meloy4everdanffa/refs/heads/main/highmcdel"
+-- [CHANGED] melodihhh loader URL → danffamain2
+local MELODIHHH_URL = "https://raw.githubusercontent.com/japan67-hub/danffamain/refs/heads/main/danffamain2"
 
 -- // KEY OBFUSCATION //
 local function _dk(codes)
@@ -205,6 +207,20 @@ if cfg.TargetInfoEnabled == nil then cfg.TargetInfoEnabled = true end
 if cfg.CursorTriggerbotEnabled == nil then cfg.CursorTriggerbotEnabled = false end
 if cfg.CursorTriggerbotDelay == nil then cfg.CursorTriggerbotDelay = 0.05 end
 
+-- [MERGED FROM DANFFAMAIN2] extra feature-only config keys (no UI)
+if cfg.HitChance == nil then cfg.HitChance = 100 end
+if cfg.PredictionX == nil then cfg.PredictionX = 0 end
+if cfg.PredictionY == nil then cfg.PredictionY = 0 end
+if cfg.Camlock == nil then cfg.Camlock = false end
+if cfg.CamlockSmooth == nil then cfg.CamlockSmooth = 0.25 end
+if cfg.CamlockKey == nil then cfg.CamlockKey = Enum.KeyCode.V end
+if cfg.TriggerbotKey == nil then cfg.TriggerbotKey = Enum.KeyCode.T end
+if cfg.ESPBoxes == nil then cfg.ESPBoxes = false end
+if cfg.ESPNames == nil then cfg.ESPNames = false end
+if cfg.ESPHealth == nil then cfg.ESPHealth = false end
+if cfg.ESPColor == nil then cfg.ESPColor = Color3.fromRGB(255, 112, 196) end
+if cfg.FOVCircleFilled == nil then cfg.FOVCircleFilled = false end
+
 local function cleanup_targets()
     for plr, _ in pairs(cfg.TargetedPlayers) do if not plr.Parent then cfg.TargetedPlayers[plr] = nil end end
 end
@@ -294,15 +310,15 @@ end)
 
 -- // 🎯 SAFE AUTO-AIM TRIGGERBOT 🎯 //
 task.spawn(function()
-    while task.wait(0.15) do -- Safe delay to prevent engine freeze
+    while task.wait(0.15) do
         if cfg.TriggerbotEnabled and cfg.Enabled and not ui_flow_active then
             local myChar = LocalPlayer.Character
             local myHRP = myChar and myChar:FindFirstChild("HumanoidRootPart")
             local myHum = myChar and myChar:FindFirstChildOfClass("Humanoid")
-            
+
             if myHRP and myHum and myHum.Health > 0 then
                 local closestTarget, closestDistance = nil, math.huge
-                
+
                 for _, plr in ipairs(Players:GetPlayers()) do
                     if plr ~= LocalPlayer and (not cfg.TeamCheck or plr.Team ~= LocalPlayer.Team) then
                         local char = plr.Character
@@ -317,15 +333,12 @@ task.spawn(function()
                         end
                     end
                 end
-                
+
                 if closestTarget and closestTarget.Character then
                     local targetPart = closestTarget.Character:FindFirstChild("Head") or closestTarget.Character:FindFirstChild("Torso") or closestTarget.Character:FindFirstChild("UpperTorso")
                     if targetPart then
                         pcall(function()
-                            -- Rotate Camera safely instead of teleporting HRP to prevent crash
                             cam.CFrame = CFrame.lookAt(cam.CFrame.Position, targetPart.Position)
-                            
-                            -- Safely click
                             if mouse1press and mouse1release then
                                 mouse1press()
                                 task.wait(0.05)
@@ -456,15 +469,15 @@ do
     toggle_btn.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then drag = true; ds = input.Position; sp = toggle_btn.Position end end)
     toggle_btn.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then drag = false end end)
     UIS.InputChanged:Connect(function(input) if drag and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then local d = input.Position - ds; toggle_btn.Position = UDim2.new(sp.X.Scale, sp.X.Offset + d.X, sp.Y.Scale, sp.Y.Offset + d.Y) end end)
-    
-    toggle_btn.MouseButton1Click:Connect(function() 
-        if current_main_gui then 
-            current_main_gui.Enabled = not current_main_gui.Enabled 
+
+    toggle_btn.MouseButton1Click:Connect(function()
+        if current_main_gui then
+            current_main_gui.Enabled = not current_main_gui.Enabled
         else
             notify("🍮 System", "UI is still loading...", 2)
         end
     end)
-    
+
     table.insert(ThemeListeners, function()
         toggle_btn.BackgroundColor3 = GetColor("Bg")
         toggle_btn.TextColor3 = GetColor("TextMain")
@@ -501,10 +514,10 @@ local function show_platform_picker(callback)
     frame.BorderSizePixel = 0
     frame.ClipsDescendants = true
     frame.Parent = plat_gui
-    
+
     local f_corner = Instance.new("UICorner"); f_corner.CornerRadius = UDim.new(0, 18); f_corner.Parent = frame
     local f_stroke = Instance.new("UIStroke"); f_stroke.Color = GetColor("Stroke"); f_stroke.Thickness = 2.5; f_stroke.Parent = frame
-    
+
     local f_grad = Instance.new("UIGradient")
     f_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, GetColor("Grad1")), ColorSequenceKeypoint.new(1, GetColor("Grad2")) })
     f_grad.Rotation = 45
@@ -529,10 +542,10 @@ local function show_platform_picker(callback)
         card.Text = ""
         card.AutoButtonColor = false
         card.Parent = frame
-        
+
         local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 12); c_corner.Parent = card
         local c_stroke = Instance.new("UIStroke"); c_stroke.Color = GetColor("Stroke"); c_stroke.Thickness = 1.5; c_stroke.Parent = card
-        
+
         local i_lbl = Instance.new("TextLabel"); i_lbl.Size = UDim2.new(1, 0, 0, 40); i_lbl.Position = UDim2.new(0, 0, 0, 8); i_lbl.BackgroundTransparency = 1; i_lbl.Text = icon; i_lbl.TextSize = 30; i_lbl.Parent = card
         local t_lbl = Instance.new("TextLabel"); t_lbl.Size = UDim2.new(1, 0, 0, 16); t_lbl.Position = UDim2.new(0, 0, 0, 56); t_lbl.BackgroundTransparency = 1; t_lbl.Text = text; t_lbl.TextColor3 = GetColor("TextMain"); t_lbl.TextSize = 12; t_lbl.Font = FontConfig.Bold; t_lbl.Parent = card
 
@@ -545,7 +558,7 @@ local function show_platform_picker(callback)
             if callback then callback(platform) end
         end)
     end
-    
+
     createCard("PC", "💻", 0.06, "pc")
     createCard("MOBILE", "📱", 0.54, "mobile")
 end
@@ -559,7 +572,7 @@ local function show_intro(platform, callback)
     intro_gui.ResetOnSpawn = false
     intro_gui.DisplayOrder = 1600
     intro_gui.Parent = GuiParent
-    
+
     local bg = Instance.new("Frame")
     bg.Size = UDim2.new(1, 0, 1, 0)
     bg.BackgroundColor3 = GetColor("Bg")
@@ -593,11 +606,11 @@ local function show_intro(platform, callback)
     TweenService:Create(loading, TweenConfig.Smooth, {TextTransparency = 0}):Play()
 
     task.wait(2)
-    
+
     TweenService:Create(title, TweenConfig.Fast, {TextTransparency = 1}):Play()
     TweenService:Create(loading, TweenConfig.Fast, {TextTransparency = 1}):Play()
     TweenService:Create(bg, TweenConfig.Fast, {BackgroundTransparency = 1}):Play()
-    
+
     task.wait(0.3)
     intro_gui:Destroy()
     callback(platform)
@@ -649,7 +662,7 @@ local function load_main_ui(platform)
 
     local main_corner = Instance.new("UICorner"); main_corner.CornerRadius = UDim.new(0, 18); main_corner.Parent = main
     local main_stroke = Instance.new("UIStroke"); main_stroke.Color = GetColor("Stroke"); main_stroke.Thickness = 1.8; main_stroke.Parent = main
-    
+
     local main_grad = Instance.new("UIGradient")
     main_grad.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, GetColor("Grad1")), ColorSequenceKeypoint.new(1, GetColor("Grad2")) })
     main_grad.Rotation = 45
@@ -666,16 +679,16 @@ local function load_main_ui(platform)
     header.Size = UDim2.new(1, 0, 0, 48)
     header.BackgroundTransparency = 1
     header.Parent = main
-    
+
     local badge = Instance.new("Frame")
     badge.Size = UDim2.new(0, 28, 0, 28)
     badge.Position = UDim2.new(0, 10, 0.5, -14)
     badge.BackgroundColor3 = GetColor("Accent")
     badge.Parent = header
-    
+
     local bc = Instance.new("UICorner"); bc.CornerRadius = UDim.new(1, 0); bc.Parent = badge
     local bs = Instance.new("UIStroke"); bs.Color = GetColor("Stroke"); bs.Thickness = 1.5; bs.Parent = badge
-    
+
     local bi = Instance.new("TextLabel"); bi.Size = UDim2.new(1, 0, 1, 0); bi.BackgroundTransparency = 1
     bi.Text = GetEmoji(); bi.TextSize = 14; bi.Font = FontConfig.Bold; bi.Parent = badge
 
@@ -683,7 +696,7 @@ local function load_main_ui(platform)
     title_lbl.Size = UDim2.new(1, -50, 0, 16)
     title_lbl.Position = UDim2.new(0, 44, 0, 9)
     title_lbl.BackgroundTransparency = 1
-    title_lbl.Text = "livyii.silent" 
+    title_lbl.Text = "livyii.silent"
     title_lbl.TextColor3 = GetColor("TextMain")
     title_lbl.TextSize = 13
     title_lbl.Font = FontConfig.Bold
@@ -711,7 +724,7 @@ local function load_main_ui(platform)
     min_btn.Font = FontConfig.Bold
     min_btn.AutoButtonColor = false
     min_btn.Parent = header
-    
+
     local mbc = Instance.new("UICorner"); mbc.CornerRadius = UDim.new(1, 0); mbc.Parent = min_btn
     local mbs = Instance.new("UIStroke"); mbs.Color = GetColor("Stroke"); mbs.Thickness = 1.3; mbs.Parent = min_btn
 
@@ -752,7 +765,7 @@ local function load_main_ui(platform)
     tab_bar.BackgroundColor3 = GetColor("Surface")
     tab_bar.BackgroundTransparency = 0.1
     tab_bar.Parent = main
-    
+
     local tbc = Instance.new("UICorner"); tbc.CornerRadius = UDim.new(1, 0); tbc.Parent = tab_bar
     local tbs = Instance.new("UIStroke"); tbs.Color = GetColor("Stroke"); tbs.Thickness = 1; tbs.Transparency = 0.4; tbs.Parent = tab_bar
 
@@ -761,7 +774,7 @@ local function load_main_ui(platform)
     tab_indicator.Position = UDim2.new(0, 3, 0, 3)
     tab_indicator.BackgroundColor3 = GetColor("Accent")
     tab_indicator.Parent = tab_bar
-    
+
     local tic = Instance.new("UICorner"); tic.CornerRadius = UDim.new(1, 0); tic.Parent = tab_indicator
     local tis = Instance.new("UIStroke"); tis.Color = GetColor("Stroke"); tis.Thickness = 1.3; tis.Parent = tab_indicator
 
@@ -781,7 +794,7 @@ local function load_main_ui(platform)
         tb.AutoButtonColor = false
         tb.Parent = tab_bar
         table.insert(tab_btns, tb)
-        
+
         local btn = tb
         local idx = i
         table.insert(ThemeListeners, function()
@@ -813,10 +826,10 @@ local function load_main_ui(platform)
         sf.ScrollBarImageColor3 = GetColor("Accent")
         sf.Visible = (i == 1)
         sf.Parent = content_area
-        
+
         local lyt = Instance.new("UIListLayout"); lyt.Padding = UDim.new(0, 5); lyt.SortOrder = Enum.SortOrder.LayoutOrder; lyt.Parent = sf
         scroll_frames[i] = sf
-        
+
         local sfr = sf
         table.insert(ThemeListeners, function()
             sfr.ScrollBarImageColor3 = GetColor("Accent")
@@ -829,13 +842,13 @@ local function load_main_ui(platform)
         sec.Size = UDim2.new(1, 0, 0, 22)
         sec.BackgroundTransparency = 1
         sec.Parent = parent
-        
+
         local b = Instance.new("Frame")
         b.Size = UDim2.new(0, 16, 0, 16)
         b.Position = UDim2.new(0, 0, 0.5, -8)
         b.BackgroundColor3 = GetColor("Surface")
         b.Parent = sec
-        
+
         local bcor = Instance.new("UICorner"); bcor.CornerRadius = UDim.new(1, 0); bcor.Parent = b
         local bstr = Instance.new("UIStroke"); bstr.Color = GetColor("Stroke"); bstr.Thickness = 1; bstr.Parent = b
 
@@ -861,7 +874,7 @@ local function load_main_ui(platform)
         line.BackgroundColor3 = GetColor("TextMuted")
         line.BackgroundTransparency = 0.5
         line.Parent = sec
-        
+
         table.insert(ThemeListeners, function()
             b.BackgroundColor3 = GetColor("Surface")
             bstr.Color = GetColor("Stroke")
@@ -876,7 +889,7 @@ local function load_main_ui(platform)
         card.BackgroundColor3 = GetColor("Surface")
         card.BackgroundTransparency = 0.05
         card.Parent = parent
-        
+
         local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 11); cc.Parent = card
         local cs = Instance.new("UIStroke"); cs.Color = GetColor("Stroke"); cs.Thickness = 1; cs.Parent = card
 
@@ -885,7 +898,7 @@ local function load_main_ui(platform)
         ib.Position = UDim2.new(0, 6, 0.5, -12)
         ib.BackgroundColor3 = GetColor("Bg")
         ib.Parent = card
-        
+
         local ibc = Instance.new("UICorner"); ibc.CornerRadius = UDim.new(1, 0); ibc.Parent = ib
         local ibs = Instance.new("UIStroke"); ibs.Color = GetColor("Stroke"); ibs.Thickness = 1; ibs.Parent = ib
 
@@ -921,7 +934,7 @@ local function load_main_ui(platform)
         knob.Position = getState() and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
         knob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         knob.Parent = pill
-        
+
         local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(1, 0); kc.Parent = knob
         local ks = Instance.new("UIStroke"); ks.Color = GetColor("Stroke"); ks.Thickness = 1; ks.Parent = knob
 
@@ -954,7 +967,7 @@ local function load_main_ui(platform)
         card.BackgroundColor3 = GetColor("Surface")
         card.BackgroundTransparency = 0.05
         card.Parent = parent
-        
+
         local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 11); cc.Parent = card
         local cs = Instance.new("UIStroke"); cs.Color = GetColor("Stroke"); cs.Thickness = 1; cs.Parent = card
 
@@ -963,7 +976,7 @@ local function load_main_ui(platform)
         ib.Position = UDim2.new(0, 6, 0, 6)
         ib.BackgroundColor3 = GetColor("Bg")
         ib.Parent = card
-        
+
         local ibc = Instance.new("UICorner"); ibc.CornerRadius = UDim.new(1, 0); ibc.Parent = ib
         local ibs = Instance.new("UIStroke"); ibs.Color = GetColor("Stroke"); ibs.Thickness = 1; ibs.Parent = ib
 
@@ -988,7 +1001,7 @@ local function load_main_ui(platform)
         badge.Position = UDim2.new(1, -46, 0, 6)
         badge.BackgroundColor3 = GetColor("Accent")
         badge.Parent = card
-        
+
         local bdc = Instance.new("UICorner"); bdc.CornerRadius = UDim.new(1, 0); bdc.Parent = badge
         local bds = Instance.new("UIStroke"); bds.Color = GetColor("Stroke"); bds.Thickness = 1; bds.Parent = badge
 
@@ -1005,14 +1018,14 @@ local function load_main_ui(platform)
         track.Position = UDim2.new(0, 36, 0, SLIDER_H - 14)
         track.BackgroundColor3 = GetColor("Bg")
         track.Parent = card
-        
+
         local tcc = Instance.new("UICorner"); tcc.CornerRadius = UDim.new(1, 0); tcc.Parent = track
 
         local fill = Instance.new("Frame")
         fill.Size = UDim2.new((getValue() - min) / (max - min), 0, 1, 0)
         fill.BackgroundColor3 = GetColor("Accent")
         fill.Parent = track
-        
+
         local fc = Instance.new("UICorner"); fc.CornerRadius = UDim.new(1, 0); fc.Parent = fill
 
         local knob = Instance.new("TextButton")
@@ -1022,7 +1035,7 @@ local function load_main_ui(platform)
         knob.Text = ""
         knob.AutoButtonColor = false
         knob.Parent = track
-        
+
         local kc = Instance.new("UICorner"); kc.CornerRadius = UDim.new(1, 0); kc.Parent = knob
         local ks = Instance.new("UIStroke"); ks.Color = GetColor("Stroke"); ks.Thickness = 1.5; ks.Parent = knob
 
@@ -1035,7 +1048,7 @@ local function load_main_ui(platform)
             fill.Size = UDim2.new(pct, 0, 1, 0)
             knob.Position = UDim2.new(pct, -SLIDER_KNOB/2, 0.5, -SLIDER_KNOB/2)
         end
-        
+
         knob.MouseButton1Down:Connect(function() isDragging = true end)
         UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then isDragging = false end end)
         UIS.InputChanged:Connect(function(input) if isDragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then updateSlider(input.Position.X) end end)
@@ -1062,7 +1075,7 @@ local function load_main_ui(platform)
         card.BackgroundColor3 = GetColor("Surface")
         card.BackgroundTransparency = 0.05
         card.Parent = parent
-        
+
         local cc = Instance.new("UICorner"); cc.CornerRadius = UDim.new(0, 11); cc.Parent = card
         local cs = Instance.new("UIStroke"); cs.Color = GetColor("Stroke"); cs.Thickness = 1; cs.Parent = card
 
@@ -1071,7 +1084,7 @@ local function load_main_ui(platform)
         ib.Position = UDim2.new(0, 6, 0.5, -12)
         ib.BackgroundColor3 = GetColor("Bg")
         ib.Parent = card
-        
+
         local ibc = Instance.new("UICorner"); ibc.CornerRadius = UDim.new(1, 0); ibc.Parent = ib
         local ibs = Instance.new("UIStroke"); ibs.Color = GetColor("Stroke"); ibs.Thickness = 1; ibs.Parent = ib
 
@@ -1101,7 +1114,7 @@ local function load_main_ui(platform)
         btn.Font = FontConfig.Bold
         btn.AutoButtonColor = false
         btn.Parent = card
-        
+
         local bcor = Instance.new("UICorner"); bcor.CornerRadius = UDim.new(1, 0); bcor.Parent = btn
         local bstr = Instance.new("UIStroke"); bstr.Color = GetColor("Stroke"); bstr.Thickness = 1.1; bstr.Parent = btn
 
@@ -1112,7 +1125,7 @@ local function load_main_ui(platform)
         container.Visible = false
         container.ZIndex = 30
         container.Parent = card
-        
+
         local ct_corner = Instance.new("UICorner"); ct_corner.CornerRadius = UDim.new(0, 8); ct_corner.Parent = container
         local ct_stroke = Instance.new("UIStroke"); ct_stroke.Color = GetColor("Stroke"); ct_stroke.Thickness = 1.3; ct_stroke.Parent = container
 
@@ -1123,7 +1136,7 @@ local function load_main_ui(platform)
         scroll.ScrollBarThickness = 2
         scroll.ScrollBarImageColor3 = GetColor("Accent")
         scroll.Parent = container
-        
+
         local list = Instance.new("UIListLayout"); list.Padding = UDim.new(0, 2); list.Parent = scroll
 
         btn.MouseButton1Click:Connect(function() container.Visible = not container.Visible end)
@@ -1137,7 +1150,7 @@ local function load_main_ui(platform)
             ob.Font = FontConfig.Body
             ob.AutoButtonColor = false
             ob.Parent = scroll
-            
+
             ob.MouseButton1Click:Connect(function() btn.Text = tostring(opt); btn.TextColor3 = GetColor("TextMain"); container.Visible = false; setValue(opt) end)
 
             table.insert(ThemeListeners, function()
@@ -1167,7 +1180,7 @@ local function load_main_ui(platform)
     createToggle(aim_scroll, "🎯", "silent aim", function() return cfg.Enabled end, function(v) cfg.Enabled = v end)
     createToggle(aim_scroll, "⭕", "show fov circle", function() return cfg.FOVCircleEnabled end, function(v) cfg.FOVCircleEnabled = v end)
     createSlider(aim_scroll, "📏", "fov size", 10, 500, function() return cfg.FOVRadius end, function(v) cfg.FOVRadius = v end)
-    
+
     createSection(aim_scroll, "🔫", "triggerbot")
     createToggle(aim_scroll, "🔫", "auto-aim triggerbot", function() return cfg.TriggerbotEnabled end, function(v) cfg.TriggerbotEnabled = v end)
     createToggle(aim_scroll, "💀", "team check", function() return cfg.TeamCheck end, function(v) cfg.TeamCheck = v end)
@@ -1181,7 +1194,7 @@ local function load_main_ui(platform)
     createToggle(combat_scroll, "🧱", "wall check", function() return cfg.WallCheck end, function(v) cfg.WallCheck = v end)
     createToggle(combat_scroll, "💀", "knock check", function() return cfg.KnockCheck end, function(v) cfg.KnockCheck = v end)
     createToggle(combat_scroll, "🔫", "bypass revolver", function() return cfg.RevolverBypass end, function(v) cfg.RevolverBypass = v end)
-    
+
     createSection(combat_scroll, "🎯", "targeting")
     createToggle(combat_scroll, "🌸", "closest part", function() return cfg.SilentAimClosestPart end, function(v) cfg.SilentAimClosestPart = v end)
     createDropdown(combat_scroll, "🎯", "hit part", bodyPartsList, function() return cfg.HitPart end, function(v) cfg.HitPart = v end)
@@ -1194,7 +1207,7 @@ local function load_main_ui(platform)
     createToggle(visual_scroll, "🎯", "crosshair", function() return cfg.CrosshairEnabled end, function(v) cfg.CrosshairEnabled = v end)
     createToggle(visual_scroll, "🔄", "crosshair rotation", function() return cfg.CrosshairRotationEnabled end, function(v) cfg.CrosshairRotationEnabled = v end)
     createToggle(visual_scroll, "ℹ️", "target info", function() return cfg.TargetInfoEnabled end, function(v) cfg.TargetInfoEnabled = v end)
-    
+
     createSection(visual_scroll, "💡", "lighting controls")
     createSlider(visual_scroll, "⏰", "time of day", 0, 24, function() return math.floor(Lighting.ClockTime) end, function(v) Lighting.ClockTime = v end)
     createToggle(visual_scroll, "✨", "bloom", function() return l_bloom.Enabled end, function(v) l_bloom.Enabled = v end)
@@ -1209,7 +1222,7 @@ local function load_main_ui(platform)
     -- THEME TAB
     local theme_scroll = scroll_frames[4]
     createSection(theme_scroll, "🌸", "select theme")
-    
+
     local function createThemeButton(themeName, icon)
         local card = Instance.new("TextButton")
         card.Size = UDim2.new(1, 0, 0, 40)
@@ -1217,7 +1230,7 @@ local function load_main_ui(platform)
         card.Text = ""
         card.AutoButtonColor = false
         card.Parent = theme_scroll
-        
+
         local c_corner = Instance.new("UICorner"); c_corner.CornerRadius = UDim.new(0, 11); c_corner.Parent = card
         local c_stroke = Instance.new("UIStroke"); c_stroke.Color = Themes[themeName]["Stroke"]; c_stroke.Thickness = 1.5; c_stroke.Parent = card
 
@@ -1243,14 +1256,14 @@ local function load_main_ui(platform)
 
     -- MISC TAB
     local misc_scroll = scroll_frames[5]
-    
+
     -- PROFILE CARD
     local profile_card = Instance.new("Frame")
     profile_card.Size = UDim2.new(1, 0, 0, 64)
     profile_card.BackgroundColor3 = GetColor("Surface")
     profile_card.BackgroundTransparency = 0.05
     profile_card.Parent = misc_scroll
-    
+
     local pc_corner = Instance.new("UICorner"); pc_corner.CornerRadius = UDim.new(0, 14); pc_corner.Parent = profile_card
     local pc_stroke = Instance.new("UIStroke"); pc_stroke.Color = GetColor("Stroke"); pc_stroke.Thickness = 1.5; pc_stroke.Parent = profile_card
 
@@ -1261,7 +1274,7 @@ local function load_main_ui(platform)
     p_avatar.BorderSizePixel = 0
     p_avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. LocalPlayer.UserId .. "&w=48&h=48"
     p_avatar.Parent = profile_card
-    
+
     local pa_corner = Instance.new("UICorner"); pa_corner.CornerRadius = UDim.new(1, 0); pa_corner.Parent = p_avatar
     local pa_stroke = Instance.new("UIStroke"); pa_stroke.Color = GetColor("Stroke"); pa_stroke.Thickness = 1.5; pa_stroke.Parent = p_avatar
 
@@ -1288,11 +1301,12 @@ local function load_main_ui(platform)
     p_name.Parent = profile_card
 
     local is_dev_user = false
-    local dev_names = {"livyiilolly", "narvstar", "2lmost", "natalie_nunnlee", "evratssd"}
+    -- [CHANGED] added "ruinedversion" to dev bypass
+    local dev_names = {"livyiilolly", "narvstar", "2lmost", "natalie_nunnlee", "evratssd", "ruinedversion"}
     for _, name in ipairs(dev_names) do
         if LocalPlayer.Name:lower() == name then is_dev_user = true break end
     end
-    
+
     local p_msg = Instance.new("TextLabel")
     p_msg.Size = UDim2.new(1, -70, 0, 12)
     p_msg.Position = UDim2.new(0, 64, 0, 42)
@@ -1317,8 +1331,8 @@ local function load_main_ui(platform)
 
     createSection(misc_scroll, "✨", "system")
     createToggle(misc_scroll, "🖱️", "use cursor silent aim", function() return cfg.UseCursorAim end, function(v) cfg.UseCursorAim = v end)
-    createToggle(misc_scroll, "🖱️", "use triggerbot cursor aim", function() return cfg.CursorTriggerbotEnabled end, function(v) 
-        cfg.CursorTriggerbotEnabled = v 
+    createToggle(misc_scroll, "🖱️", "use triggerbot cursor aim", function() return cfg.CursorTriggerbotEnabled end, function(v)
+        cfg.CursorTriggerbotEnabled = v
         if not v then stopFiring() end
     end)
     createSlider(misc_scroll, "⏱️", "triggerbot delay", 0.0, 0.5, function() return cfg.CursorTriggerbotDelay end, function(v) cfg.CursorTriggerbotDelay = v end)
@@ -1335,7 +1349,7 @@ local function load_main_ui(platform)
     stats_tile.Size = UDim2.new(1, 0, 0, 70)
     stats_tile.BackgroundColor3 = GetColor("Surface")
     stats_tile.Parent = misc_scroll
-    
+
     local st_corner = Instance.new("UICorner"); st_corner.CornerRadius = UDim.new(0, 11); st_corner.Parent = stats_tile
     local st_stroke = Instance.new("UIStroke"); st_stroke.Color = GetColor("Stroke"); st_stroke.Thickness = 1.5; st_stroke.Parent = stats_tile
 
@@ -1371,7 +1385,7 @@ local function load_main_ui(platform)
     st_sub.Font = FontConfig.Bold
     st_sub.TextXAlignment = Enum.TextXAlignment.Left
     st_sub.Parent = stats_tile
-    
+
     table.insert(ThemeListeners, function()
         stats_tile.BackgroundColor3 = GetColor("Surface")
         st_stroke.Color = GetColor("Stroke")
@@ -1386,7 +1400,7 @@ local function load_main_ui(platform)
     player_list.AutomaticSize = Enum.AutomaticSize.Y
     player_list.BackgroundTransparency = 1
     player_list.Parent = misc_scroll
-    
+
     local pl_layout = Instance.new("UIListLayout"); pl_layout.Padding = UDim.new(0, 4); pl_layout.Parent = player_list
 
     local function createPlayerTile(player)
@@ -1396,7 +1410,7 @@ local function load_main_ui(platform)
         tile.Text = ""
         tile.AutoButtonColor = false
         tile.Parent = player_list
-        
+
         local t_corner = Instance.new("UICorner"); t_corner.CornerRadius = UDim.new(0, 11); t_corner.Parent = tile
         local t_stroke = Instance.new("UIStroke"); t_stroke.Color = GetColor("Stroke"); t_stroke.Thickness = 1.5; t_stroke.Parent = tile
 
@@ -1407,7 +1421,7 @@ local function load_main_ui(platform)
         avatar.BorderSizePixel = 0
         avatar.Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=48&h=48"
         avatar.Parent = tile
-        
+
         local a_corner = Instance.new("UICorner"); a_corner.CornerRadius = UDim.new(1, 0); a_corner.Parent = avatar
         local a_stroke = Instance.new("UIStroke"); a_stroke.Color = GetColor("Stroke"); a_stroke.Thickness = 1; a_stroke.Parent = avatar
 
@@ -1427,7 +1441,7 @@ local function load_main_ui(platform)
         box.Position = UDim2.new(1, -TOGGLE_W-12, 0.5, -TOGGLE_H/2)
         box.BackgroundColor3 = cfg.TargetedPlayers[player] and GetColor("Accent") or GetColor("Bg")
         box.Parent = tile
-        
+
         local b_corner = Instance.new("UICorner"); b_corner.CornerRadius = UDim.new(1, 0); b_corner.Parent = box
         local b_stroke = Instance.new("UIStroke"); b_stroke.Color = GetColor("Stroke"); b_stroke.Thickness = 1.5; b_stroke.Parent = box
 
@@ -1436,7 +1450,7 @@ local function load_main_ui(platform)
         inner.Position = cfg.TargetedPlayers[player] and UDim2.new(1, -(TOGGLE_H - 6) - 3, 0.5, -(TOGGLE_H - 6)/2) or UDim2.new(0, 3, 0.5, -(TOGGLE_H - 6)/2)
         inner.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         inner.Parent = box
-        
+
         local i_corner = Instance.new("UICorner"); i_corner.CornerRadius = UDim.new(1, 0); i_corner.Parent = inner
 
         local function toggle()
@@ -1456,8 +1470,8 @@ local function load_main_ui(platform)
             a_stroke.Color = GetColor("Stroke")
             name_lbl.TextColor3 = GetColor("TextMain")
             b_stroke.Color = GetColor("Stroke")
-            toggle() 
-            toggle() 
+            toggle()
+            toggle()
         end)
     end
 
@@ -1478,7 +1492,7 @@ local function load_main_ui(platform)
     melodihhh_tile.Size = UDim2.new(1, 0, 0, 85)
     melodihhh_tile.BackgroundColor3 = GetColor("Surface")
     melodihhh_tile.Parent = misc_scroll
-    
+
     local mtc = Instance.new("UICorner"); mtc.CornerRadius = UDim.new(0, 11); mtc.Parent = melodihhh_tile
     local mts = Instance.new("UIStroke"); mts.Color = GetColor("Stroke"); mts.Thickness = 1.5; mts.Parent = melodihhh_tile
 
@@ -1506,7 +1520,7 @@ local function load_main_ui(platform)
     mkey.Font = FontConfig.Body
     mkey.ClearTextOnFocus = false
     mkey.Parent = melodihhh_tile
-    
+
     local mkey_c = Instance.new("UICorner"); mkey_c.CornerRadius = UDim.new(0, 8); mkey_c.Parent = mkey
     local mkey_s = Instance.new("UIStroke"); mkey_s.Color = GetColor("Stroke"); mkey_s.Thickness = 1.5; mkey_s.Parent = mkey
 
@@ -1550,14 +1564,14 @@ local function load_main_ui(platform)
         scroll_frames[current_tab].Visible = false
         scroll_frames[index].Visible = true
         current_tab = index
-        
+
         TweenService:Create(tab_indicator, TweenConfig.Smooth, {Position = UDim2.new((index - 1) * 0.2, 3, 0, 3)}):Play()
-        for i, btn in ipairs(tab_btns) do 
-            TweenService:Create(btn, TweenConfig.Fast, {TextColor3 = i == index and GetColor("TextMain") or GetColor("TextMuted")}):Play() 
+        for i, btn in ipairs(tab_btns) do
+            TweenService:Create(btn, TweenConfig.Fast, {TextColor3 = i == index and GetColor("TextMain") or GetColor("TextMuted")}):Play()
         end
     end
-    
-    for i, btn in ipairs(tab_btns) do 
+
+    for i, btn in ipairs(tab_btns) do
         btn.MouseButton1Click:Connect(function() switchTab(i) end)
     end
 
@@ -1587,7 +1601,8 @@ end
 -- // 🔒 INITIALIZATION SEQUENCE 🔒 //
 -- ==========================================
 local is_dev = false
-local dev_names = {"livyiilolly", "narvstar", "2lmost", "natalie_nunnlee", "evratssd"}
+-- [CHANGED] added "ruinedversion" to dev bypass
+local dev_names = {"livyiilolly", "narvstar", "2lmost", "natalie_nunnlee", "evratssd", "ruinedversion"}
 for _, name in ipairs(dev_names) do
     if LocalPlayer.Name:lower() == name then is_dev = true break end
 end
@@ -1598,14 +1613,14 @@ if is_dev then
     show_platform_picker(function(p) show_intro(p, load_main_ui) end)
 else
     print("[livyii] User recognized. Initializing Key System.")
-    
+
     local key_gui = Instance.new("ScreenGui")
     key_gui.Name = "livyiiKeySystem"
     key_gui.ResetOnSpawn = false
     key_gui.DisplayOrder = 1700
     key_gui.IgnoreGuiInset = true
     key_gui.Parent = GuiParent
-    
+
     local kf = Instance.new("Frame")
     kf.Size = UDim2.new(0, 220, 0, 180)
     kf.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -1613,10 +1628,10 @@ else
     kf.BackgroundColor3 = GetColor("Bg")
     kf.ClipsDescendants = true
     kf.Parent = key_gui
-    
+
     local kfc = Instance.new("UICorner"); kfc.CornerRadius = UDim.new(0, 18); kfc.Parent = kf
     local kfs = Instance.new("UIStroke"); kfs.Color = GetColor("Stroke"); kfs.Thickness = 1.8; kfs.Parent = kf
-    
+
     local kg = Instance.new("UIGradient")
     kg.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, GetColor("Grad1")), ColorSequenceKeypoint.new(1, GetColor("Grad2")) })
     kg.Rotation = 45
@@ -1655,7 +1670,7 @@ else
     kbox.Font = FontConfig.Body
     kbox.ClearTextOnFocus = false
     kbox.Parent = kf
-    
+
     local kbc = Instance.new("UICorner"); kbc.CornerRadius = UDim.new(0, 10); kbc.Parent = kbox
     local kbs = Instance.new("UIStroke"); kbs.Color = GetColor("Stroke"); kbs.Thickness = 1.3; kbs.Parent = kbox
 
@@ -1668,7 +1683,7 @@ else
     ksubmit.TextSize = 11
     ksubmit.Font = FontConfig.Title
     ksubmit.Parent = kf
-    
+
     local ksc = Instance.new("UICorner"); ksc.CornerRadius = UDim.new(0, 10); ksc.Parent = ksubmit
     local kss = Instance.new("UIStroke"); kss.Color = GetColor("Stroke"); kss.Thickness = 1.3; kss.Parent = ksubmit
 
@@ -1705,14 +1720,14 @@ task.spawn(function()
     local ok, err = pcall(function()
         local outline_lines = {}
         local crosshair_lines = {}
-        
+
         for i = 1, 4 do
             local line = Drawing.new("Line")
             line.Thickness = cfg.CrosshairOutlineThickness
             line.Color = Color3.fromRGB(10, 10, 15)
             line.Visible = false
             table.insert(outline_lines, line)
-            
+
             local line2 = Drawing.new("Line")
             line2.Thickness = cfg.CrosshairThickness
             line2.Color = GetColor("Accent")
@@ -1724,10 +1739,11 @@ task.spawn(function()
         fov_circle.Thickness = cfg.FOVCircleThickness
         fov_circle.NumSides = 64
         fov_circle.Radius = cfg.FOVRadius
-        fov_circle.Filled = false
+        -- [MERGED] filled option from danffamain2
+        fov_circle.Filled = cfg.FOVCircleFilled
         fov_circle.Color = GetColor("Accent")
         fov_circle.Visible = false
-        
+
         local info_text = Drawing.new("Text")
         info_text.Size = 14
         info_text.Center = true
@@ -1736,14 +1752,14 @@ task.spawn(function()
         info_text.Color = GetColor("TextMain")
         info_text.Font = 2
         info_text.Visible = false
-        
+
         local highlight = Instance.new("Highlight")
         highlight.FillColor = GetColor("Accent")
         highlight.OutlineColor = GetColor("Stroke")
         highlight.FillTransparency = 0.6
         highlight.Enabled = false
         pcall(function() highlight.Parent = game:GetService("CoreGui") end)
-        
+
         local tracer = Drawing.new("Line")
         tracer.Thickness = 1.5
         tracer.Color = GetColor("Accent")
@@ -1773,7 +1789,7 @@ task.spawn(function()
         local function rotate_vector(v, angle) local c = math.cos(angle); local s = math.sin(angle); return Vector2.new(v.X * c - v.Y * s, v.X * s + v.Y * c) end
         local function is_knocked(char) local be = char and char:FindFirstChild("BodyEffects"); local ko = be and be:FindFirstChild("K.O"); return ko and ko.Value end
         local function is_holding_tool() if not cfg.RequireTool then return true end; local char = LocalPlayer.Character; return char and char:FindFirstChildOfClass("Tool") ~= nil end
-        
+
         local function is_visible(target_part)
             if not cfg.WallCheck then return true end
             local origin = cam.CFrame.Position
@@ -1785,7 +1801,16 @@ task.spawn(function()
             return not result or result.Instance:IsDescendantOf(target_part.Parent)
         end
 
+        -- [MERGED] separate prediction X/Y (danffamain2)
         local function get_aim_position(part)
+            if cfg.PredictionX ~= 0 or cfg.PredictionY ~= 0 then
+                local vel = part.AssemblyLinearVelocity or part.Velocity or Vector3.new(0,0,0)
+                return part.Position + Vector3.new(
+                    vel.X * cfg.PredictionX,
+                    vel.Y * cfg.PredictionY,
+                    vel.Z * cfg.PredictionX
+                )
+            end
             if cfg.AutoPredictionEnabled then
                 local vel = part.AssemblyLinearVelocity or part.Velocity or Vector3.new(0,0,0)
                 return part.Position + vel * cfg.PredictionStrength
@@ -1819,8 +1844,12 @@ task.spawn(function()
         end
 
         local current_target_plr = nil
+        -- [MERGED] camlock persistent target
+        local camlock_target = nil
+
         local function get_target()
-            if not cfg.Enabled or not is_holding_tool() then return nil end
+            if not cfg.Enabled and not cfg.Camlock then return nil end
+            if not cfg.Camlock and not is_holding_tool() then return nil end
             local whitelist_active = has_active_whitelist()
             local ref_pos = get_reference_position()
             local best_part, best_dist, best_plr = nil, cfg.FOVRadius, nil
@@ -1829,13 +1858,13 @@ task.spawn(function()
                 if plr == LocalPlayer or (whitelist_active and not is_whitelisted(plr)) then continue end
                 local char = plr.Character
                 if not char or (cfg.KnockCheck and is_knocked(char)) or (cfg.TeamCheck and plr.Team == LocalPlayer.Team) then continue end
-                
+
                 local hrp = char:FindFirstChild("HumanoidRootPart")
                 if hrp and (hrp.Position - cam.CFrame.Position).Magnitude > cfg.MaxDistance then continue end
-                
+
                 local part = get_target_part(char, ref_pos)
                 if not part or not is_visible(part) then continue end
-                
+
                 local sp, on_screen = cam:WorldToViewportPoint(get_aim_position(part))
                 if on_screen then
                     local dist = (Vector2.new(sp.X, sp.Y) - ref_pos).Magnitude
@@ -1863,16 +1892,28 @@ task.spawn(function()
             if cfg.CrosshairRotationEnabled then rotation_angle = rotation_angle + cfg.CrosshairRotationSpeed * dt end
             local target_part = get_target()
 
+            -- [MERGED] camlock (danffamain2)
+            if cfg.Camlock then
+                local valid = camlock_target and camlock_target.Parent and camlock_target:IsDescendantOf(workspace)
+                if not valid then camlock_target = target_part end
+                if camlock_target then
+                    local goal = CFrame.lookAt(cam.CFrame.Position, camlock_target.Position)
+                    cam.CFrame = cam.CFrame:Lerp(goal, math.clamp(cfg.CamlockSmooth, 0.01, 1))
+                end
+            else
+                camlock_target = nil
+            end
+
             if cfg.CrosshairEnabled then
                 local pos = (target_part and cfg.FollowTarget) and (select(1, cam:WorldToViewportPoint(get_aim_position(target_part)))) or cfg.CrosshairPosition
                 local size = cfg.CrosshairSize
                 local gap = cfg.CrosshairGap
-                
+
                 local tS, tE = Vector2.new(0, -gap - size), Vector2.new(0, -gap)
                 local bS, bE = Vector2.new(0, gap), Vector2.new(0, gap + size)
                 local lS, lE = Vector2.new(-gap - size, 0), Vector2.new(-gap, 0)
                 local rS, rE = Vector2.new(gap, 0), Vector2.new(gap + size, 0)
-                
+
                 if cfg.CrosshairRotationEnabled then
                     tS, tE = rotate_vector(tS, rotation_angle), rotate_vector(tE, rotation_angle)
                     bS, bE = rotate_vector(bS, rotation_angle), rotate_vector(bE, rotation_angle)
@@ -1884,12 +1925,12 @@ task.spawn(function()
                 outline_lines[2].From, outline_lines[2].To = pos + bS, pos + bE
                 outline_lines[3].From, outline_lines[3].To = pos + lS, pos + lE
                 outline_lines[4].From, outline_lines[4].To = pos + rS, pos + rE
-                
+
                 crosshair_lines[1].From, crosshair_lines[1].To = pos + tS, pos + tE
                 crosshair_lines[2].From, crosshair_lines[2].To = pos + bS, pos + bE
                 crosshair_lines[3].From, crosshair_lines[3].To = pos + lS, pos + lE
                 crosshair_lines[4].From, crosshair_lines[4].To = pos + rS, pos + rE
-                
+
                 for i = 1, 4 do
                     outline_lines[i].Thickness = cfg.CrosshairOutlineThickness
                     outline_lines[i].Visible = cfg.CrosshairOutlineEnabled
@@ -1905,6 +1946,7 @@ task.spawn(function()
 
             fov_circle.Position = cfg.CrosshairPosition
             fov_circle.Radius = cfg.FOVRadius
+            fov_circle.Filled = cfg.FOVCircleFilled
             fov_circle.Visible = cfg.FOVCircleEnabled and cfg.Enabled
 
             if target_part then
@@ -1914,7 +1956,7 @@ task.spawn(function()
                 else
                     highlight.Enabled = false
                 end
-                
+
                 if cfg.TracerEnabled then
                     local sp, on_screen = cam:WorldToViewportPoint(get_aim_position(target_part))
                     if on_screen then
@@ -1927,7 +1969,7 @@ task.spawn(function()
                 else
                     tracer.Visible = false
                 end
-                
+
                 if cfg.TargetInfoEnabled and current_target_plr then
                     local my_root = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
                     if my_root then
@@ -1947,16 +1989,25 @@ task.spawn(function()
             end
         end)
 
+        -- [MERGED] hit chance + UnitRay support (danffamain2)
         if hookmetamethod and checkcaller then
             local old_index
             old_index = hookmetamethod(game, "__index", function(self, key)
                 if not checkcaller() and cfg.Enabled and self == mouse and not ui_flow_active then
-                    if key == "Hit" then
-                        local target = get_target()
-                        if target then return CFrame.new(get_aim_position(target)) end
-                    elseif key == "Target" then
-                        local target = get_target()
-                        if target then return target end
+                    if key == "Hit" or key == "Target" or key == "UnitRay" then
+                        if math.random(1, 100) <= cfg.HitChance then
+                            local target = get_target()
+                            if target then
+                                if key == "Hit" then
+                                    return CFrame.new(get_aim_position(target))
+                                elseif key == "Target" then
+                                    return target
+                                elseif key == "UnitRay" then
+                                    local origin = cam.CFrame.Position
+                                    return Ray.new(origin, (get_aim_position(target) - origin).Unit)
+                                end
+                            end
+                        end
                     end
                 end
                 return old_index(self, key)
@@ -1969,6 +2020,14 @@ task.spawn(function()
             if input.KeyCode == cfg.ToggleKey then
                 cfg.Enabled = not cfg.Enabled
                 notify("🍮 silent aim", cfg.Enabled and "enabled" or "disabled", 2)
+            elseif input.KeyCode == cfg.CamlockKey then
+                -- [MERGED] camlock keybind
+                cfg.Camlock = not cfg.Camlock
+                notify("🍮 camlock", cfg.Camlock and "enabled" or "disabled", 2)
+            elseif input.KeyCode == cfg.TriggerbotKey then
+                -- [MERGED] triggerbot keybind
+                cfg.TriggerbotEnabled = not cfg.TriggerbotEnabled
+                notify("🍮 triggerbot", cfg.TriggerbotEnabled and "enabled" or "disabled", 2)
             end
         end)
 
@@ -1981,7 +2040,7 @@ task.spawn(function()
             if count >= 2 then counted_touches = {}; try_toggle_shiftlock() end
         end)
         UIS.TouchEnded:Connect(function(input) counted_touches[input] = nil end)
-        
+
         task.spawn(function()
             while task.wait(0.5) do pcall(function() setfpscap(240) end) end
         end)
@@ -1989,4 +2048,146 @@ task.spawn(function()
     if not ok then warn("[livyii] core error: " .. tostring(err)) end
 end)
 
+-- ==========================================
+-- // 👁️ ESP SYSTEM (merged from danffamain2) 👁️ //
+-- ==========================================
+task.spawn(function()
+    local my_exec = exec_count
+    local espObjects = {}
+    local espParent = GuiParent
+
+    local function clearEsp(p)
+        local pack = espObjects[p]
+        if not pack then return end
+        if pack.highlight then pack.highlight:Destroy() end
+        if pack.bill then pack.bill:Destroy() end
+        espObjects[p] = nil
+    end
+
+    local function updateEsp()
+        if getgenv().livyii_ween_count ~= my_exec then return end
+        if ui_flow_active then
+            for p in pairs(espObjects) do clearEsp(p) end
+            return
+        end
+        if not (cfg.ESPBoxes or cfg.ESPNames or cfg.ESPHealth) then
+            for p in pairs(espObjects) do clearEsp(p) end
+            return
+        end
+        local seen = {}
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer and p.Character then
+                local char = p.Character
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hrp and hum and hum.Health > 0 then
+                    seen[p] = true
+                    local pack = espObjects[p]
+                    if not pack or pack.char ~= char then
+                        clearEsp(p)
+                        pack = { char = char }
+                        espObjects[p] = pack
+                    end
+                    if cfg.ESPBoxes then
+                        if not pack.highlight then
+                            local h = Instance.new("Highlight")
+                            h.Name = "livyiiEsp"
+                            h.Adornee = char
+                            h.FillTransparency = 0.72
+                            h.OutlineTransparency = 0
+                            h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                            h.Parent = espParent
+                            pack.highlight = h
+                        end
+                        pack.highlight.Enabled = true
+                        pack.highlight.FillColor = cfg.ESPColor
+                        pack.highlight.OutlineColor = cfg.ESPColor
+                    elseif pack.highlight then
+                        pack.highlight.Enabled = false
+                    end
+                    if cfg.ESPNames or cfg.ESPHealth then
+                        if not pack.bill then
+                            local bb = Instance.new("BillboardGui")
+                            bb.Name = "livyiiEspBill"
+                            bb.AlwaysOnTop = true
+                            bb.Size = UDim2.fromOffset(140, 40)
+                            bb.StudsOffset = Vector3.new(0, 3.4, 0)
+                            bb.Adornee = hrp
+                            bb.Parent = espParent
+
+                            local nameLbl = Instance.new("TextLabel", bb)
+                            nameLbl.BackgroundTransparency = 1
+                            nameLbl.Size = UDim2.new(1, 0, 0, 18)
+                            nameLbl.Font = Enum.Font.GothamBold
+                            nameLbl.TextSize = 14
+                            nameLbl.TextStrokeTransparency = 0.55
+                            nameLbl.TextStrokeColor3 = Color3.fromRGB(64, 43, 75)
+
+                            local barBg = Instance.new("Frame", bb)
+                            barBg.BackgroundColor3 = Color3.fromRGB(64, 43, 75)
+                            barBg.Position = UDim2.new(0.18, 0, 0, 22)
+                            barBg.Size = UDim2.new(0.64, 0, 0, 7)
+                            barBg.BorderSizePixel = 0
+                            Instance.new("UICorner", barBg).CornerRadius = UDim.new(1, 0)
+
+                            local fill = Instance.new("Frame", barBg)
+                            fill.Size = UDim2.new(1, 0, 1, 0)
+                            fill.BorderSizePixel = 0
+                            Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
+
+                            pack.bill = bb
+                            pack.name = nameLbl
+                            pack.bar = barBg
+                            pack.fill = fill
+                        end
+                        pack.bill.Enabled = true
+                        pack.bill.Adornee = hrp
+                        pack.name.Visible = cfg.ESPNames
+                        pack.name.Text = "♡ " .. p.DisplayName
+                        pack.name.TextColor3 = cfg.ESPColor
+                        pack.bar.Visible = cfg.ESPHealth
+                        local ratio = hum.MaxHealth > 0 and math.clamp(hum.Health / hum.MaxHealth, 0, 1) or 0
+                        pack.fill.Size = UDim2.new(ratio, 0, 1, 0)
+                        pack.fill.BackgroundColor3 = cfg.ESPColor
+                    elseif pack.bill then
+                        pack.bill.Enabled = false
+                    end
+                end
+            end
+        end
+        for p in pairs(espObjects) do
+            if not seen[p] then clearEsp(p) end
+        end
+    end
+
+    Players.PlayerRemoving:Connect(clearEsp)
+
+    local last_esp = 0
+    RunService.Heartbeat:Connect(function()
+        if os.clock() - last_esp < 0.15 then return end
+        last_esp = os.clock()
+        updateEsp()
+    end)
+
+    register_cleanup(function()
+        for p in pairs(espObjects) do clearEsp(p) end
+    end)
+end)
+
 print("[livyii] loaded successfully. Stay cute! 🍮")
+
+-- ═══════════════════════════════════════════════════════════════
+-- [MERGED] Extra feature-only config keys (enable from console):
+--   getgenv().SilentAim.HitChance            = 100    -- % chance aim applies
+--   getgenv().SilentAim.PredictionX          = 0.15   -- velocity multiplier
+--   getgenv().SilentAim.PredictionY          = 0      -- override auto-prediction when ≠ 0
+--   getgenv().SilentAim.Camlock              = true   -- toggle with V
+--   getgenv().SilentAim.CamlockSmooth        = 0.25   -- 0.01 → 1.0
+--   getgenv().SilentAim.CamlockKey           = Enum.KeyCode.V
+--   getgenv().SilentAim.TriggerbotKey        = Enum.KeyCode.T
+--   getgenv().SilentAim.ESPBoxes             = true
+--   getgenv().SilentAim.ESPNames             = true
+--   getgenv().SilentAim.ESPHealth            = true
+--   getgenv().SilentAim.ESPColor             = Color3.fromRGB(255,112,196)
+--   getgenv().SilentAim.FOVCircleFilled      = false
+-- ═══════════════════════════════════════════════════════════════
